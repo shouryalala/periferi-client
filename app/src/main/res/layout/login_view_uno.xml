@@ -8,13 +8,15 @@
         android:id="@+id/email"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:inputType="textEmailAddress"
         android:hint="Email address"/>
 
     <Button
         android:id="@+id/button_continue"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/button_continue"/>
+        android:text="@string/button_continue"
+        android:onClick="email_next"/>
     <TextView
         android:id="@+id/textView"
         android:layout_width="match_parent"
