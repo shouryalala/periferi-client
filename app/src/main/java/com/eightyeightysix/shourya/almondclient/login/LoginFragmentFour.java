@@ -47,7 +47,7 @@ public class LoginFragmentFour extends Fragment {
         nameButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                    mListener.nameListener( fname.getText().toString(), lname.getText().toString());
+                mListener.nameListener( fname.getText().toString(), lname.getText().toString());
             }
         });
     }

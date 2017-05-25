@@ -2,6 +2,7 @@ package com.eightyeightysix.shourya.almondclient.login;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -13,6 +14,7 @@ import android.util.Log;
 import android.view.View;
 
 import com.eightyeightysix.shourya.almondclient.FeedActivity;
+import com.eightyeightysix.shourya.almondclient.LoadingActivity;
 import com.eightyeightysix.shourya.almondclient.R;
 
 
@@ -98,10 +100,16 @@ public class LoginActivity extends FragmentActivity implements
         uname = a;
         Log.d(LOG_TAG, emailId+password+dob+uname+fname+lname);
         //TODO send data to server and get accesstoken
-        Intent feed_activity = new Intent(LoginActivity.this, FeedActivity.class);
+
         //Bundle args = new Bundle();
         //args.putString("accessToken", "hello");
         //feed_activity.put
+        SharedPreferences sharedPreferences = getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("Name", fname + " " + lname);
+        editor.apply();
+        Intent loading_activity = new Intent(LoginActivity.this, LoadingActivity.class);
+        startActivity(loading_activity);
     }
 
     @Override
