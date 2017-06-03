@@ -1,5 +1,6 @@
 package com.eightyeightysix.shourya.almondclient;
 
+import android.graphics.Color;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,13 +13,19 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.Dash;
+import com.google.android.gms.maps.model.Dot;
+import com.google.android.gms.maps.model.Gap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PatternItem;
 import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 
@@ -26,7 +33,7 @@ public class RequestZoneActivity extends FragmentActivity implements OnMapReadyC
                                                                     GoogleMap.OnMapClickListener,
                                                                     GoogleMap.OnMapLongClickListener,
                                                                     GoogleMap.OnMarkerDragListener{
-
+    //TODO save instance so as to load it when there is a change in the screen orientation
     private GoogleMap mMap;
     private static final double minLongitudeShift = 0.002;
     private static final double minLatitudeShift = -0.002;
@@ -34,10 +41,13 @@ public class RequestZoneActivity extends FragmentActivity implements OnMapReadyC
     private static LatLng a,b,c,d,t_a,t_b,t_c,t_d;
     private List<LatLng> points;
     private List<Marker> markers;
-    private Polygon zonePolygon;
+    private Polygon zonePolygon, zoneUpdatePolygon;
     private boolean longClick = false;
     private Button refresh, accept;
-    private static final double MAX_ZONE_AREA= 696969;
+    //TODO figure out values for MAX and MIN
+    private static final double MAX_ZONE_AREA= 9000000;
+    private static final double MIN_ZONE_AREA= 10000;
+    private static final int ZONE_EDGES = 4;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,14 +85,15 @@ public class RequestZoneActivity extends FragmentActivity implements OnMapReadyC
         mMap = googleMap;
         longClick = true;
         LatLng dilli = new LatLng(28.613166, 77.208519);
-        mMap.addMarker(new MarkerOptions().position(dilli).title(":*"));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(dilli, 15));
+
         coordinates = new MarkerOptions[4];
+        points = new ArrayList<>(4);
+        markers = new ArrayList<>(4);
+
         mMap.setOnMapLongClickListener(this);
         mMap.setOnMapClickListener(this);
         mMap.setOnMarkerDragListener(this);
-        points = new ArrayList<>(4);
-        markers = new ArrayList<>(4);
     }
 
     @Override
@@ -92,6 +103,8 @@ public class RequestZoneActivity extends FragmentActivity implements OnMapReadyC
 
     public void createMinRectangle(LatLng coordinate) {
         PolygonOptions minRectangle = new PolygonOptions();
+        PolygonOptions mintempRectangle = new PolygonOptions();
+
         double originLat = coordinate.latitude;
         double originLong = coordinate.longitude;
 
@@ -112,9 +125,19 @@ public class RequestZoneActivity extends FragmentActivity implements OnMapReadyC
 
         minRectangle.add(a,b,c,d);
         //TODO use new method
-        minRectangle.strokeColor(getResources().getColor(R.color.opaque_red));
-        minRectangle.fillColor(getResources().getColor(R.color.translucent_red));
+        minRectangle.strokeColor(Color.BLUE);// getResources().getColor(R.color.opaque_red));
+        minRectangle.fillColor(Color.CYAN);//getResources().getColor(R.color.translucent_red));
+        minRectangle.strokeWidth(12);
+
+        mintempRectangle.add(a,b,c,d);
+        mintempRectangle.strokeColor(Color.BLUE);// getResources().getColor(R.color.opaque_red));
+        //mintempRectangle.fillColor(Color.CYAN);//getResources().getColor(R.color.translucent_red));
+        mintempRectangle.strokeWidth(10);
+        List<PatternItem> pattern = Arrays.<PatternItem>asList(
+                new Dot(), new Gap(20), new Dash(30), new Gap(20));
+        mintempRectangle.strokePattern(pattern);
         zonePolygon = mMap.addPolygon(minRectangle);
+        zoneUpdatePolygon = mMap.addPolygon(mintempRectangle);
     }
 
     public void updateShape(Marker marker) {
@@ -149,7 +172,7 @@ public class RequestZoneActivity extends FragmentActivity implements OnMapReadyC
                 Log.d("Almondlog", "Going to default");
             }
         }
-        zonePolygon.setPoints(points);
+        zoneUpdatePolygon.setPoints(points);
         updateMarkers();
     }
 
@@ -201,8 +224,59 @@ public class RequestZoneActivity extends FragmentActivity implements OnMapReadyC
         updateShape(marker);
     }
 
+    public void areaViolation() {
+        points.set(0, t_a);
+        points.set(1, t_b);
+        points.set(2, t_c);
+        points.set(3, t_d);
+        zoneUpdatePolygon.setPoints(points);
+        updateMarkers();
+    }
+
     @Override
     public void onMarkerDragEnd(Marker marker) {
-        //TODO add area calculation methods. If area > maxArea or < minArea revert back to previous zone shape
+        double area = computeZoneArea(points);
+        if(area > MAX_ZONE_AREA){
+           Toast.makeText(getApplicationContext(), "Zone area too great", Toast.LENGTH_LONG).show();
+            areaViolation();
+        }
+        else if(area < MIN_ZONE_AREA) {
+            Toast.makeText(getApplicationContext(), "Zone area too small", Toast.LENGTH_LONG).show();
+            areaViolation();
+        }
+        else {
+            t_a = points.get(0);
+            t_b = points.get(1);
+            t_c = points.get(2);
+            t_d = points.get(3);
+
+            zonePolygon.setPoints(points);
+        }
+    }
+
+    //area calculation methods
+    public static double computeZoneArea(List<LatLng> edgeCoordinates) {
+        double radius = 6371009.0D;
+        double total = 0.0D;
+        LatLng prev = (LatLng)edgeCoordinates.get(ZONE_EDGES - 1);
+        double prevTanLat = Math.tan((1.5707963267948966D - Math.toRadians(prev.latitude)) / 2.0D);
+        double prevLng = Math.toRadians(prev.longitude);
+
+        double lng;
+        for(Iterator var11 = edgeCoordinates.iterator(); var11.hasNext(); prevLng = lng) {
+            LatLng point = (LatLng)var11.next();
+            double tanLat = Math.tan((1.5707963267948966D - Math.toRadians(point.latitude)) / 2.0D);
+            lng = Math.toRadians(point.longitude);
+            total += polarTriangleArea(tanLat, lng, prevTanLat, prevLng);
+            prevTanLat = tanLat;
+        }
+        total = total * radius * radius;
+        return Math.abs(total);
+    }
+
+    private static double polarTriangleArea(double tan1, double lng1, double tan2, double lng2) {
+        double deltaLng = lng1 - lng2;
+        double t = tan1 * tan2;
+        return 2.0D * Math.atan2(t * Math.sin(deltaLng), 1.0D + t * Math.cos(deltaLng));
     }
 }
