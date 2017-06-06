@@ -12,6 +12,8 @@ public class LoadingActivity extends BaseActivity implements BaseActivity.permis
         super.onCreate(savedInstanceState);
         mLocator = new GPSLocator(this);
         requestAllPermissions(this);
+        getScreenCenter();
+        setContentView(R.layout.activity_feed);
     }
 
     @Override
