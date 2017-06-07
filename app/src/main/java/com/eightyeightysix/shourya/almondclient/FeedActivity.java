@@ -17,8 +17,6 @@ public class FeedActivity extends BaseActivity {
     ZonePinchSurfaceView pinchView;
     private static final String DEBUG_TAG = "AlmondLog::" + FeedActivity.class.getSimpleName();
 
-
-
     interface pinchListener{
         void setPinchRadius(PointF index, PointF thumb);
         void exitPinch();
@@ -31,14 +29,7 @@ public class FeedActivity extends BaseActivity {
         setContentView(R.layout.activity_feed);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getScreenCenter();    //temp
-
-        pinchView = (ZonePinchSurfaceView) findViewById(R.id.pinchView);
-        pinchView.setZOrderOnTop(true);
-
-        primary = new PointF(INVALID_POINTER,INVALID_POINTER);
-        secondary = new PointF(INVALID_POINTER,INVALID_POINTER);
-
+        gestureInit();
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -48,8 +39,15 @@ public class FeedActivity extends BaseActivity {
                         .setAction("Action", null).show();
             }
         });
+    }
 
-        //pinchInit();
+    private void gestureInit() {
+        getScreenCenter();    //temp
+        pinchView = (ZonePinchSurfaceView) findViewById(R.id.pinchView);
+        pinchView.setZOrderOnTop(true);
+
+        primary = new PointF(INVALID_POINTER,INVALID_POINTER);
+        secondary = new PointF(INVALID_POINTER,INVALID_POINTER);
     }
 
     @Override
@@ -62,27 +60,11 @@ public class FeedActivity extends BaseActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
         }
-
         return super.onOptionsItemSelected(item);
-    }
-
-    public void pinchInit() {
-        pinchView.resume();
-    }
-
-    public void pinchExit() {
-        pinchView.pause();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        //pinchExit();
     }
 
     @Override
@@ -96,7 +78,7 @@ public class FeedActivity extends BaseActivity {
 
         switch(action) {
             case MotionEvent.ACTION_DOWN: {
-                primary.set(event.getRawX(), event.getRawY());
+                //primary.set(event.getRawX(), event.getRawY());
                 //pinchView.debug(primary);
                 mDiaPrimary = event.getPointerId(index);
                 primary.set(event.getX(index), event.getY(index));
