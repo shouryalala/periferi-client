@@ -21,7 +21,7 @@ public class LoadingActivity extends AppCompatActivity{
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView();
+        //setContentView();
 
         mSettings = getPreferences(Context.MODE_PRIVATE);
         String defaultName = "Unknown";

@@ -47,20 +47,16 @@ import java.util.List;
 public class LoginFragmentOne extends Fragment {
     //Facebook
     LoginButton loginButton;
-    TextView textView;
     CallbackManager callbackManager;
     public static FragmentOneListener mListener;
-    private static boolean fb_email, fb_dob;
-    EditText email;
-    Button cntButton;
-    public static String fb_fname, fb_lname, fb_emailText = "", fb_dobText = "";
+    private boolean fb_email, fb_dob;
+    public String fb_id, fb_fname, fb_lname, fb_sname, fb_gender, fb_emailText , fb_dobText ;
 
-    private final String LOG_TAG = "shouryalala";
+    private final String DEBUG_TAG = "AlmondLog:: " + LoginFragmentOne.class.getSimpleName() ;
 
 
     public interface FragmentOneListener {
-        void emailListener(String a);
-        void fblistener(String a, String g, boolean b, String c, boolean d, String e);
+        void fblistener(String id, String fname, String lname, String sname, String gender, String email, boolean emailAvailable, String dob, boolean dobAvailable);
     }
 
     private AccessTokenTracker accessTokenTracker;
@@ -72,34 +68,62 @@ public class LoginFragmentOne extends Fragment {
         public void onSuccess(LoginResult loginResult) {
 
             accessToken = loginResult.getAccessToken();
+            Log.d(DEBUG_TAG, "Access Token: " + accessToken.getUserId());
             accessToken.getUserId();
-            Profile profile = Profile.getCurrentProfile();
-            //fb_name = profile.getName();
-            fb_fname = profile.getFirstName();
-            fb_lname = profile.getLastName();
+
             GraphRequest request = GraphRequest.newMeRequest(
                 loginResult.getAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
                     @Override
                     public void onCompleted(JSONObject object, GraphResponse response) {
-                    Log.v("LoginActivity", response.toString());
-                    try {
-                        String mail = object.getString("email");
-                        fb_emailText = fb_emailText.concat(mail);
-                    }catch (JSONException e){
-                        Log.d(LOG_TAG, "email not received");
-                        fb_email = false;
+                        Log.d(DEBUG_TAG, "GraphRequestCalled");
+                        Log.d(DEBUG_TAG, response.toString());
+                        try {
+                            fb_emailText = object.getString("email");
+                        }catch (JSONException e){
+                            Log.d(DEBUG_TAG, "email not received");
+                            fb_email = false;
+                        }
+                        try {
+                            fb_dobText = object.getString("birthday"); // 01/31/1980 format
+                        }catch(JSONException e) {
+                            Log.d(DEBUG_TAG, "dob not received");
+                            fb_dob = false;
+                        }
+                        try {
+                            fb_fname = object.getString("first_name");
+                            Log.d(DEBUG_TAG, "First name: "+ fb_fname);
+                        }catch (JSONException e){
+                            Log.d(DEBUG_TAG, "fname not received");
+                        }
+                        try {
+                            fb_lname = object.getString("last_name");
+                        }catch(JSONException e) {
+                            Log.d(DEBUG_TAG, "lname not received");
+                        }
+                        try {
+                            fb_id = object.getString("id");
+                        }catch(JSONException e) {
+                            Log.d(DEBUG_TAG, "id not received");
+                        }
+                        try {
+                            fb_gender = object.getString("gender");
+                        }catch(JSONException e) {
+                            Log.d(DEBUG_TAG, "gender not received");
+                        }
+                        try {
+                            fb_sname = object.getString("short_name");
+                        }catch(JSONException e) {
+                            Log.d(DEBUG_TAG, "sname not received");
+                        }
+                        mListener.fblistener(fb_id,fb_fname,fb_lname,fb_sname,fb_gender,fb_emailText,fb_email,fb_dobText,fb_dob);
                     }
-                    try {
-                        String dob = object.getString("birthday"); // 01/31/1980 format
-                        fb_dobText = fb_dobText.concat(dob);
-                    }catch(JSONException e) {
-                        Log.d(LOG_TAG, "dob not received");
-                        fb_dob = false;
-                    }
-                }
             });
-            mListener.fblistener(fb_fname, fb_lname, fb_email, fb_emailText, fb_dob, fb_dobText);
+            Bundle parameters = new Bundle();
+            parameters.putString("fields", "id, birthday, email, gender, first_name, last_name, short_name");
+            request.setParameters(parameters);
+            request.executeAsync();
         }
+
 
         @Override
         public void onCancel() {
@@ -127,10 +151,9 @@ public class LoginFragmentOne extends Fragment {
         profileTracker = new ProfileTracker() {
             @Override
             protected void onCurrentProfileChanged(Profile oldProfile, Profile newProfile) {
-
+                Log.d(DEBUG_TAG, "CurrentProfileChangedCalled");
             }
         };
-
         accessTokenTracker.startTracking();
         profileTracker.startTracking();
     }
@@ -141,7 +164,7 @@ public class LoginFragmentOne extends Fragment {
         try {
             mListener = (FragmentOneListener) context;
         }catch(ClassCastException e) {
-            Log.d(LOG_TAG, "context error");
+            Log.d(DEBUG_TAG, "context error");
         }
     }
 
@@ -154,30 +177,13 @@ public class LoginFragmentOne extends Fragment {
     public void onViewCreated(View view, Bundle savedInstances) {
         super.onViewCreated(view, savedInstances);
 
-        textView = (TextView) view.findViewById(R.id.textView);
         loginButton = (LoginButton) view.findViewById(R.id.button_facebook);
-        cntButton = (Button) view.findViewById(R.id.button_continue);
-        email = (EditText) view.findViewById(R.id.email);
         List<String> permissions = Arrays.asList("email","public_profile","user_birthday");
 
         loginButton.setReadPermissions(permissions);
         loginButton.setFragment(this);
         loginButton.registerCallback(callbackManager, callback);
 
-        //SignUp
-       cntButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //TODO check if account already present. If so login directly with password
-                String emailId = email.getText().toString();
-                if(emailId.length() == 0)
-                    Toast.makeText(getActivity().getApplicationContext(), getString(R.string.field_empty),Toast.LENGTH_LONG).show();
-                else if(!emailId.contains("@"))
-                    Toast.makeText(getActivity().getApplicationContext(),getString(R.string.invalid_email),Toast.LENGTH_LONG).show();
-                else
-                    mListener.emailListener(emailId);
-            }
-        });
     }
 
     @Override

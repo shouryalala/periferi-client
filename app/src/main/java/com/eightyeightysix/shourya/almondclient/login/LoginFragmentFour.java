@@ -40,7 +40,7 @@ public class LoginFragmentFour extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        nameButton = (Button) view.findViewById(R.id.uname);
+        //nameButton = (Button) view.findViewById(R.id.uname);
         fname = (EditText) view.findViewById(R.id.fname);
         lname = (EditText) view.findViewById(R.id.lname);
 

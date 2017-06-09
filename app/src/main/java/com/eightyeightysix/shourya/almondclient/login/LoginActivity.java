@@ -12,11 +12,11 @@ import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.eightyeightysix.shourya.almondclient.FeedActivity;
 import com.eightyeightysix.shourya.almondclient.LoadingActivity;
 import com.eightyeightysix.shourya.almondclient.R;
-
 
 /*
  * Created by shourya on 22/5/17.
@@ -24,15 +24,12 @@ import com.eightyeightysix.shourya.almondclient.R;
 
 public class LoginActivity extends FragmentActivity implements
         LoginFragmentOne.FragmentOneListener,
-        LoginFragmentTwo.FragmentTwoListener,
-        LoginFragmentThree.FragmentThreeListener,
-        LoginFragmentFour.FragmentFourListener,
-        LoginFragmentFive.FragmentFiveListener{
+        LoginFragmentFour.FragmentFourListener{
 
 
-    private static String LOG_TAG = "shouryalala";
+    private final static String DEBUG_TAG = "AlmondLog:: " + LoginActivity.class.getSimpleName();
     private LoginFragmentOne firstFragment;
-    private static final int NUM_PAGES = 4;
+    private static final int NUM_PAGES = 2;
     //private ViewPager mPager;
     private NonSwipeableViewPager nPager;
     private PagerAdapter mPagerAdapter;
@@ -44,23 +41,13 @@ public class LoginActivity extends FragmentActivity implements
         super.onCreate(savedInstances);
         setContentView(R.layout.login_activity);
         mContext = getApplicationContext();
-        // callbackManager = CallbackManager.Factory.create();
-        //mPager = (ViewPager) findViewById(R.id.pager);
         nPager = (NonSwipeableViewPager) findViewById(R.id.pager2);
 
         if (findViewById(R.id.fragment_container) != null) {
-//            if (savedInstances == null) {
                 mPagerAdapter = new LoginSlidePagerAdapter(getSupportFragmentManager());
-                //mPager.setAdapter(mPagerAdapter);
                 nPager.setAdapter(mPagerAdapter);
-//                firstFragment = new LoginFragmentOne();
-//                getSupportFragmentManager().beginTransaction()
-//                        .add(R.id.fragment_container, firstFragment).commit();
-//            }
         }
-
     }
-
     @Override
     public void onBackPressed() {
         if (nPager.getCurrentItem() == 0) {
@@ -70,62 +57,29 @@ public class LoginActivity extends FragmentActivity implements
         }
     }
 
-    @Override
-    public void emailListener(String a) {
-        emailId = a;
-        nPager.setCurrentItem(1);
-    }
 
     @Override
-    public void passwordListener(String a) {
-        password = a;
-        nPager.setCurrentItem(2);
-    }
-
-    @Override
-    public void dobListener(String a) {
-        dob = a;
-        nPager.setCurrentItem(3);
-    }
-
-    @Override
-    public void nameListener(String b, String c) {
-        fname = b;
-        lname = c;
-        nPager.setCurrentItem(4);
-    }
-
-    @Override
-    public void signupListener(String a) {
-        uname = a;
-        Log.d(LOG_TAG, emailId+password+dob+uname+fname+lname);
-        //TODO send data to server and get accesstoken
-
-        //Bundle args = new Bundle();
-        //args.putString("accessToken", "hello");
-        //feed_activity.put
-        SharedPreferences sharedPreferences = getPreferences(Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("Name", fname + " " + lname);
-        editor.apply();
-        Intent loading_activity = new Intent(LoginActivity.this, LoadingActivity.class);
-        startActivity(loading_activity);
-    }
-
-    @Override
-    public void fblistener(String g,String a, boolean b, String c, boolean d, String e) {
-        fname = g;
-        lname = a;
-        if(b) emailId = c;
+    public void fblistener(String id1, String fname1, String lname1, String sname1, String gender1, String email1, boolean emailAvailable, String dob1, boolean dobAvailable) {
+        Log.d(DEBUG_TAG, "Callback called");
+        fname = fname1;
+        lname = lname1;
+        Log.d(DEBUG_TAG, "fname and fname1 are: " + fname + fname1);
+        if(emailAvailable) emailId = email1;
         else{
             //TODO add email fragment
-            //nPager.setCurrentItem(//4);
         }
-        if(d) dob = e;
+        if(dobAvailable) dob = dob1;
         else {
             nPager.setCurrentItem(3);
         }
-        nPager.setCurrentItem(4);
+        Toast.makeText(getApplicationContext(), "Hello "+ fname + "!", Toast.LENGTH_LONG).show();
+        Intent i = new Intent(LoginActivity.this, FeedActivity.class);
+        startActivity(i);
+    }
+
+    @Override
+    public void nameListener(String a, String b) {
+
     }
 
     private class LoginSlidePagerAdapter extends FragmentStatePagerAdapter {
@@ -137,11 +91,7 @@ public class LoginActivity extends FragmentActivity implements
         public Fragment getItem(int position) {
             switch (position) {
                 case 0: return new LoginFragmentOne();
-                case 1: return new LoginFragmentTwo();
-                case 2: return new LoginFragmentThree();
                 case 3: return new LoginFragmentFour();
-                case 4: return new LoginFragmentFive();
-                //case 5: return new fbEmailFragment();
                 default: return new LoginFragmentOne();
             }
 

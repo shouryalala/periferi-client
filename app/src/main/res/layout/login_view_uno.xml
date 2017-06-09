@@ -4,32 +4,9 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <EditText
-        android:id="@+id/email"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:inputType="textEmailAddress"
-        android:hint="Email address"/>
-
-    <Button
-        android:id="@+id/button_continue"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/button_continue"
-        android:onClick="email_next"/>
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
     <com.facebook.login.widget.LoginButton
         android:id="@+id/button_facebook"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         />
-    <Button
-        android:id="@+id/button_google"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/button_google"/>
 </LinearLayout>
