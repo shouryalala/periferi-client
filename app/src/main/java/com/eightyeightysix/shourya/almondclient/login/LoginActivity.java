@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -19,6 +20,13 @@ import com.eightyeightysix.shourya.almondclient.BaseActivity;
 import com.eightyeightysix.shourya.almondclient.FeedActivity;
 import com.eightyeightysix.shourya.almondclient.LoadingActivity;
 import com.eightyeightysix.shourya.almondclient.R;
+import com.facebook.AccessToken;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FacebookAuthProvider;
+import com.google.firebase.auth.FirebaseUser;
 
 /*
  * Created by shourya on 22/5/17.
@@ -60,7 +68,7 @@ public class LoginActivity extends BaseActivity implements
 
 
     @Override
-    public void fblistener(String id1, String fname1, String lname1, String sname1, String gender1, String email1, boolean emailAvailable, String dob1, boolean dobAvailable) {
+    public void fblistener(String token, String id1, String fname1, String lname1, String sname1, String gender1, String email1, boolean emailAvailable, String dob1, boolean dobAvailable) {
         Log.d(DEBUG_TAG, "fbListener Callback called");
         if(emailAvailable) emailId = email1;
         else{
@@ -88,9 +96,35 @@ public class LoginActivity extends BaseActivity implements
         //TODO send data to server
 
         setDefaults(id1,fname1,lname1,sname1,email1);
+        Log.d(DEBUG_TAG, "Just before authenticate call: " + token);
+        //Firebase Auth
+        fireBaseAuthenticate(token);
 
         Intent i = new Intent(LoginActivity.this, FeedActivity.class);
         startActivity(i);
+    }
+
+    private void fireBaseAuthenticate(String token) {
+        AuthCredential credential = FacebookAuthProvider.getCredential(token);
+        Log.d(DEBUG_TAG, credential.toString());
+        mAuth.signInWithCredential(credential)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // Sign in success, update UI with the signed-in user's information
+                            Log.d(DEBUG_TAG, "signInWithCredential:success");
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            Log.d(DEBUG_TAG, "FirebaseAuth: " + user.toString());
+                            //updateUI(user);
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Log.d(DEBUG_TAG, "signInWithCredential:failure", task.getException());
+
+                            //updateUI(null);
+                        }
+                    }
+                });
     }
 
     @Override

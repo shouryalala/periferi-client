@@ -8,6 +8,9 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
 /*
  * Created by shourya on 31/5/17.
  */
@@ -20,6 +23,9 @@ public class BaseActivity extends AppCompatActivity{
     public static boolean mLocationRequestReturned = true;
     public static final String UNAVAILABLE = "error404";
     public GPSLocator mLocator;
+    //Firebase
+    public static FirebaseAuth mAuth;
+    public static FirebaseUser mFireUser;
 
     private static final int SECOND_MILLIS = 1000;
     private static final int MINUTE_MILLIS = 60 * SECOND_MILLIS;

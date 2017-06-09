@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "297604749135",
+    "firebase_url": "https://almond-1495716821635.firebaseio.com",
+    "project_id": "almond-1495716821635",
+    "storage_bucket": "almond-1495716821635.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:297604749135:android:b87adaf45b5a8a44",
+        "android_client_info": {
+          "package_name": "com.eightyeightysix.shourya.almondclient"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "297604749135-bdagej5tdoc3fuqkqdad5b7bils6q43e.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.eightyeightysix.shourya.almondclient",
+            "certificate_hash": "6ec84a0d332cd2bcd9375643865be71fe2f1e022"
+          }
+        },
+        {
+          "client_id": "297604749135-q26um87rguprmhf5i6oth41tpqu3dbps.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD9PJ21FY7FGMBFBLzTOkWpu3mdf_EyWSc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "297604749135-q26um87rguprmhf5i6oth41tpqu3dbps.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
