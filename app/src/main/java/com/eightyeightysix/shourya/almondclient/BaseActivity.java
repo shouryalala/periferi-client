@@ -2,6 +2,7 @@ package com.eightyeightysix.shourya.almondclient;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -12,6 +13,13 @@ import android.widget.Toast;
  */
 
 public class BaseActivity extends AppCompatActivity{
+    public static String userId;
+    public static String userName;
+    public static String displayName;
+    public static String userEmail;
+    public static boolean mLocationRequestReturned = true;
+    public static final String UNAVAILABLE = "error404";
+    public GPSLocator mLocator;
 
     private static final int SECOND_MILLIS = 1000;
     private static final int MINUTE_MILLIS = 60 * SECOND_MILLIS;
@@ -25,19 +33,19 @@ public class BaseActivity extends AppCompatActivity{
     private static final int MONTHS = 30 * DAYS;
     private static final int YEARS = 365 * DAYS;
 
+    private final static String DEBUG_TAG = "AlmondLog:: " + BaseActivity.class.getSimpleName();
     private static final int MY_REQUEST_ACCESS_FINE_LOCATION = 69;
     public static boolean permissionLocation = false;
 
-    public GPSLocator mLocator;
-
+    //location callback for later - tutorials
     interface permissionsListener{
         public void locationListener();
     }
 
-    permissionsListener pListener;
+    //permissionsListener pListener;
 
     public void requestAllPermissions(Context context) {
-        pListener = (permissionsListener) context;
+        //pListener = (permissionsListener) context;
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_REQUEST_ACCESS_FINE_LOCATION);
     }
 
@@ -53,7 +61,7 @@ public class BaseActivity extends AppCompatActivity{
                     permissionLocation = false;
                     //TODO tell the user that this functionality is a core necessity for the functioning of the application
                 }
-                pListener.locationListener();
+                locationListener(mLocator);
             }
         }
     }
@@ -61,4 +69,25 @@ public class BaseActivity extends AppCompatActivity{
     public void toastit(String message) {
         Toast.makeText(this, message, Toast.LENGTH_LONG).show();
     }
+
+    public static void setDefaults(String id, String fname, String lname, String sname, String email) {
+        userId = id;
+        userName = fname + " " + lname;
+        if(sname != null)displayName = sname;
+        else
+            displayName = fname;
+        userEmail = email;
+    }
+
+    public void locationListener(GPSLocator locate) {
+        mLocationRequestReturned = true;
+        if(permissionLocation) {
+            locate.getLocation();
+            toastit("Latitude: " + locate.getLatitude() + "\nLongitude: " + locate.getLongitude());
+        }
+        else {
+            toastit("Almond cant function without Location");
+        }
+    }
+
 }

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -14,6 +15,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.eightyeightysix.shourya.almondclient.BaseActivity;
 import com.eightyeightysix.shourya.almondclient.FeedActivity;
 import com.eightyeightysix.shourya.almondclient.LoadingActivity;
 import com.eightyeightysix.shourya.almondclient.R;
@@ -22,7 +24,7 @@ import com.eightyeightysix.shourya.almondclient.R;
  * Created by shourya on 22/5/17.
  */
 
-public class LoginActivity extends FragmentActivity implements
+public class LoginActivity extends BaseActivity implements
         LoginFragmentOne.FragmentOneListener,
         LoginFragmentFour.FragmentFourListener{
 
@@ -30,7 +32,6 @@ public class LoginActivity extends FragmentActivity implements
     private final static String DEBUG_TAG = "AlmondLog:: " + LoginActivity.class.getSimpleName();
     private LoginFragmentOne firstFragment;
     private static final int NUM_PAGES = 2;
-    //private ViewPager mPager;
     private NonSwipeableViewPager nPager;
     private PagerAdapter mPagerAdapter;
     private static String emailId, password, dob, uname, fname, lname;
@@ -60,10 +61,7 @@ public class LoginActivity extends FragmentActivity implements
 
     @Override
     public void fblistener(String id1, String fname1, String lname1, String sname1, String gender1, String email1, boolean emailAvailable, String dob1, boolean dobAvailable) {
-        Log.d(DEBUG_TAG, "Callback called");
-        fname = fname1;
-        lname = lname1;
-        Log.d(DEBUG_TAG, "fname and fname1 are: " + fname + fname1);
+        Log.d(DEBUG_TAG, "fbListener Callback called");
         if(emailAvailable) emailId = email1;
         else{
             //TODO add email fragment
@@ -72,7 +70,25 @@ public class LoginActivity extends FragmentActivity implements
         else {
             nPager.setCurrentItem(3);
         }
-        Toast.makeText(getApplicationContext(), "Hello "+ fname + "!", Toast.LENGTH_LONG).show();
+
+        //set SharedPreferences Defaults
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString("id", id1);
+        editor.putString("first_name", fname1);
+        editor.putString("last_name", lname1);
+        editor.putString("short_name", sname1);
+        editor.putString("gender", gender1);
+        if(emailAvailable)
+            editor.putString("email", email1);
+        if(dobAvailable)
+            editor.putString("dob", dob1);
+        editor.apply();
+
+        //TODO send data to server
+
+        setDefaults(id1,fname1,lname1,sname1,email1);
+
         Intent i = new Intent(LoginActivity.this, FeedActivity.class);
         startActivity(i);
     }
@@ -94,7 +110,6 @@ public class LoginActivity extends FragmentActivity implements
                 case 3: return new LoginFragmentFour();
                 default: return new LoginFragmentOne();
             }
-
         }
 
         @Override
