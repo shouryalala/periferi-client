@@ -14,8 +14,11 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class FeedActivity extends BaseActivity {
     //TODO Put location requests in the tutorial pages. For now keep in feed page
@@ -46,13 +49,23 @@ public class FeedActivity extends BaseActivity {
             requestAllPermissions(this);
         }
 
-        //FireBase database instance TEST;
-        DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference("magic");
-        mDatabase.setValue("success");
-
-        Log.d(DEBUG_TAG, "Database Updates");
-
         Log.d(DEBUG_TAG, userId + userName + userEmail + displayName);
+
+        //Firebase events
+        DatabaseReference reference = mDatabase.getReference("users/Shourya/party");
+
+        ValueEventListener userListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Log.d(DEBUG_TAG, dataSnapshot.toString());
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+        reference.addValueEventListener(userListener);
     }
 
     @Override

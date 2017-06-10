@@ -8,9 +8,12 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
+import com.eightyeightysix.shourya.almondclient.data.User;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.Map;
 
 /*
  * Created by shourya on 31/5/17.
@@ -27,7 +30,7 @@ public class BaseActivity extends AppCompatActivity{
     //Firebase
     public static FirebaseAuth mAuth;
     public static FirebaseUser mFireUser;
-   // public static FirebaseDatabase mDatabase;
+    public static FirebaseDatabase mDatabase;
 
     private static final int SECOND_MILLIS = 1000;
     private static final int MINUTE_MILLIS = 60 * SECOND_MILLIS;
@@ -44,6 +47,8 @@ public class BaseActivity extends AppCompatActivity{
     private final static String DEBUG_TAG = "AlmondLog:: " + BaseActivity.class.getSimpleName();
     private static final int MY_REQUEST_ACCESS_FINE_LOCATION = 69;
     public static boolean permissionLocation = false;
+
+    public static User mUser;
 
     //location callback for later - tutorials
     interface permissionsListener{
@@ -72,6 +77,15 @@ public class BaseActivity extends AppCompatActivity{
                 locationListener(mLocator);
             }
         }
+    }
+
+    public static String substituteString(String template, Map<String, String> substitutions) {
+        String result = template;
+        for (Map.Entry<String, String> substitution : substitutions.entrySet()) {
+            String pattern = "{" + substitution.getKey() + "}";
+            result = result.replace(pattern, substitution.getValue());
+        }
+        return result;
     }
 
     public void toastit(String message) {

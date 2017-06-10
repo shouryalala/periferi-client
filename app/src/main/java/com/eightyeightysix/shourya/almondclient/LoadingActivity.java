@@ -21,6 +21,8 @@ public class LoadingActivity extends BaseActivity {
         //Firebase auth getInstance
         mAuth = FirebaseAuth.getInstance();
         mFireUser = mAuth.getCurrentUser();
+        //Get database Reference
+        mDatabase = FirebaseDatabase.getInstance();
 
         if(mFireUser != null) {
             SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
