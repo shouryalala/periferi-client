@@ -14,6 +14,9 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 public class FeedActivity extends BaseActivity {
     //TODO Put location requests in the tutorial pages. For now keep in feed page
 
@@ -34,7 +37,7 @@ public class FeedActivity extends BaseActivity {
             }
         });
 
-        //fetch location
+        //fetch location instantiation
         mLocator = new GPSLocator(this);
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
@@ -42,6 +45,12 @@ public class FeedActivity extends BaseActivity {
             mLocationRequestReturned = false;
             requestAllPermissions(this);
         }
+
+        //FireBase database instance TEST;
+        DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference("magic");
+        mDatabase.setValue("success");
+
+        Log.d(DEBUG_TAG, "Database Updates");
 
         Log.d(DEBUG_TAG, userId + userName + userEmail + displayName);
     }

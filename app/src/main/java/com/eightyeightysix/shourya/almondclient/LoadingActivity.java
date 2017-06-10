@@ -7,6 +7,7 @@ import android.preference.PreferenceManager;
 
 import com.eightyeightysix.shourya.almondclient.login.LoginActivity;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.FirebaseDatabase;
 
 /*
  * Created by shourya on 23/5/17.
