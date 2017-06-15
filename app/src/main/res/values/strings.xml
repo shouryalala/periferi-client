@@ -14,4 +14,8 @@
     <string name="young_age">You arent eligible. Sorry</string>
     <string name="invalid_uname">Username field can\'t be empty</string>
     <string name="uname_space">Username field can\'t be empty</string>
+    <string name="no_chats">No Chats Yet</string>
+    <string name="message_hint">Let\'s make a friend!</string>
+    <string name="send_button_text">Send</string>
+
 </resources>

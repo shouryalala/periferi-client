@@ -101,22 +101,6 @@ public class LoginActivity extends BaseActivity implements
         tEmail = email1;
         tDob = dob1;
 
-        //set SharedPreferences Defaults
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putString("id", id1);
-        editor.putString("first_name", fname1);
-        editor.putString("last_name", lname1);
-        editor.putString("short_name", sname1);
-        editor.putString("gender", gender1);
-        if(emailAvailable)
-            editor.putString("email", email1);
-        if(dobAvailable)
-            editor.putString("dob", dob1);
-        editor.apply();
-
-        //setDefaults(id1,fname1,lname1,sname1,email1);
-
         //Firebase Auth
         fireBaseAuthenticate(token);
 
@@ -149,6 +133,19 @@ public class LoginActivity extends BaseActivity implements
         //Register User::
         final User userForm = new User(fUid, tFname, tLname, tSname, tEmail, tDob, tGender);
 
+        //TODO do in separate thread
+        //set SharedPreferences Defaults
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString("id", fUid);
+        editor.putString("first_name", tFname);
+        editor.putString("last_name", tLname);
+        editor.putString("short_name", tSname);
+        editor.putString("gender", tGender);
+        editor.putString("email", tEmail);
+        editor.putString("dob", tDob);
+        editor.apply();
+
         //reference String
         Map<String, String> params = new HashMap<String, String>();
         Log.d(DEBUG_TAG, "fireID: " + fUid);
@@ -176,7 +173,7 @@ public class LoginActivity extends BaseActivity implements
 
             }
         };
-        create_user.addValueEventListener(userListener);
+        create_user.addListenerForSingleValueEvent(userListener);
 
         Intent i = new Intent(LoginActivity.this, FeedActivity.class);
         startActivity(i);

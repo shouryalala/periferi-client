@@ -6,6 +6,8 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -14,15 +16,17 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.eightyeightysix.shourya.almondclient.data.User;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-public class FeedActivity extends BaseActivity {
+public class FeedActivity extends BaseActivity implements ChatListFragment.StartChatListener{
     //TODO Put location requests in the tutorial pages. For now keep in feed page
 
+    FragmentManager fragmentManager;
     private final static String DEBUG_TAG = "AlmondLog:: " + BaseActivity.class.getSimpleName();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +44,18 @@ public class FeedActivity extends BaseActivity {
             }
         });
 
+        if(findViewById(R.id.fragment_container_feed) != null) {
+            if(savedInstanceState != null) {
+                //if restored from a previous state
+                return;
+            }
+            //initialise fragment Manager
+            fragmentManager = getSupportFragmentManager();
+            Log.d(DEBUG_TAG, "Entering ChatListFragment");
+            ChatListFragment chatListFragment = new ChatListFragment();
+            fragmentManager.beginTransaction().add(R.id.fragment_container_feed, chatListFragment).commit();
+        }
+
         //fetch location instantiation
         mLocator = new GPSLocator(this);
 
@@ -51,21 +67,39 @@ public class FeedActivity extends BaseActivity {
 
         Log.d(DEBUG_TAG, userId + userName + userEmail + displayName);
 
-        //Firebase events
-        DatabaseReference reference = mDatabase.getReference("users/Shourya/party");
 
-        ValueEventListener userListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Log.d(DEBUG_TAG, dataSnapshot.toString());
-            }
+    }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
+    @Override
+    public void startChat(User chatWith) {
+        Log.d(DEBUG_TAG, "Entered startChat Listener");
+        Log.d(DEBUG_TAG, "Friend name: " + chatWith.getDisplayName());
+        String urlProvider;
+        int sender_tag;
+        mChatBuddy = chatWith;
+        ChatFragment chatFragment = new ChatFragment();
+        String me = mUser.getUserId();
+        String friend = mChatBuddy.getUserId();
 
-            }
-        };
-        reference.addValueEventListener(userListener);
+        //forms chatID child
+        //storing messages as "0" and "1". The id which is alphabetically greater is set as "1"
+        if(me.compareTo(friend) > 0) {
+            urlProvider = me + "_" + friend;
+            sender_tag = 0;
+        }
+        else{
+            urlProvider = friend + "_" + me;
+            sender_tag = 1;
+        }
+        Log.d(DEBUG_TAG, "ChatId formed: " + urlProvider);
+        Bundle bundle = new Bundle();
+        bundle.putString("urlProvider", urlProvider);
+        bundle.putInt("sender_tag", sender_tag);
+        //wont be required. Required as using all Users for chat
+        bundle.putString("friend_name", mChatBuddy.getDisplayName());
+        chatFragment.setArguments(bundle);
+        Log.d(DEBUG_TAG, "Entering ChatFragment");
+        fragmentManager.beginTransaction().replace(R.id.fragment_container_feed, chatFragment).commit();
     }
 
     @Override
