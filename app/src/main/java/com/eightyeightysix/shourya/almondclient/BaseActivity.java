@@ -107,7 +107,7 @@ public class BaseActivity extends AppCompatActivity{
         return "";
     }
 
-    public void refresh() {
+    public void refreshGesture() {
         mDiaSecondary = INVALID_POINTER;
         mDiaPrimary = INVALID_POINTER;
         primary.set(INVALID_POINTER,INVALID_POINTER);

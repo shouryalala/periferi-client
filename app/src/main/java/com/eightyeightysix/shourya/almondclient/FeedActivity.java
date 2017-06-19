@@ -42,7 +42,7 @@ public class FeedActivity extends BaseActivity {
     }
 
     private void gestureInit() {
-        getScreenCenter();    //temp
+        //getScreenCenter();    //temp
         pinchView = (ZonePinchSurfaceView) findViewById(R.id.pinchView);
         pinchView.setZOrderOnTop(true);
 
@@ -78,8 +78,6 @@ public class FeedActivity extends BaseActivity {
 
         switch(action) {
             case MotionEvent.ACTION_DOWN: {
-                //primary.set(event.getRawX(), event.getRawY());
-                //pinchView.debug(primary);
                 mDiaPrimary = event.getPointerId(index);
                 primary.set(event.getX(index), event.getY(index));
                 Log.d(DEBUG_TAG, "ACTION_DOWN: " + primary.x + "," + primary.y);
@@ -90,7 +88,8 @@ public class FeedActivity extends BaseActivity {
                     mDiaSecondary = event.getPointerId(index);
                     secondary.set(event.getX(index), event.getY(index));
                     Log.d(DEBUG_TAG, "ACTION_POINTER_DOWN: \nPRIMARY: " + primary.x + "," + primary.y + "\nSECONDARY: " + secondary.x + "," + secondary.y);
-                    pinchView.setPinchRadius(primary, secondary);
+                    if(mDiaPrimary != INVALID_POINTER)
+                        pinchView.setPinchRadius(primary, secondary);
                 }
                 return true;
             }
@@ -110,14 +109,14 @@ public class FeedActivity extends BaseActivity {
             case MotionEvent.ACTION_POINTER_UP: {
                 int id = event.getPointerId(index);
                 if(id == mDiaSecondary || id == mDiaPrimary) {
-                    refresh();
+                    refreshGesture();
                     pinchView.exitPinch();
                 }
                 return true;
             }
             case MotionEvent.ACTION_UP: {
                 //int id = event.getPointerId(index);
-                refresh();
+                refreshGesture();
                 pinchView.exitPinch();
                 return true;
             }
