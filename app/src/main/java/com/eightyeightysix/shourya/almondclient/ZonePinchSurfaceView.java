@@ -103,6 +103,7 @@ public class ZonePinchSurfaceView extends SurfaceView implements Runnable, FeedA
             radii_display[j] = radii[j];
             radiiExpand[j] = radii[j] + (head/(2*zoneCount));
             //radii_temp[j] = radii[j];
+            //TODO figure out appropriate values for different screens.
             radii_expand_max[j] = (radii[j] + radiiExpand[j])/2 - 30;
         }
         selected_zone = zoneCount-1;
