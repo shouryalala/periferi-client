@@ -6,4 +6,7 @@
     <string name="get_chat">messages/{chatId}</string>
     <string name="add_user_online">onlineusers/{userID}</string>
     <string name="users_online">onlineusers</string>
+    <string name="all_broadcasts">broadcasts</string>
+    <string name="user_broadcasts">userbroadcasts/{userID}</string>
+
 </resources>

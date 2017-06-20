@@ -1,6 +1,7 @@
 package com.eightyeightysix.shourya.almondclient;
 
 import android.Manifest;
+import android.app.DialogFragment;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -32,8 +33,7 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+             createNewBroadCast();
             }
         });
 
@@ -46,7 +46,8 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
             fragmentManager = getSupportFragmentManager();
             Log.d(DEBUG_TAG, "Entering ChatListFragment");
             ChatListFragment chatListFragment = new ChatListFragment();
-            fragmentManager.beginTransaction().add(R.id.fragment_container_feed, chatListFragment).commit();
+            BroadCastFragment broadCastFragment = new BroadCastFragment();
+            fragmentManager.beginTransaction().add(R.id.fragment_container_feed, broadCastFragment).commit();
         }
 
         //fetch location instantiation
@@ -61,6 +62,11 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
         Log.d(DEBUG_TAG, userId + userName + userEmail + displayName);
 
 
+    }
+
+    public void createNewBroadCast() {
+        DialogFragment dialog = new NewBroadCastDialog();
+        dialog.show(getFragmentManager(), "NewBroadCastDialog");
     }
 
     @Override
