@@ -48,10 +48,10 @@ public class LoadingActivity extends BaseActivity {
                         preferences.getString("dob", UNAVAILABLE),
                         preferences.getString("gender", UNAVAILABLE));
 
-            Map<String, String> params = new HashMap<>();
-            params.put("userID", mUser.getUserId());
-            final String reference = substituteString(getResources().getString(R.string.user_chats), params);
-            loadChats = mDatabase.getReference(reference);
+            Map<String, String> paramsUser = new HashMap<String, String>();
+            paramsUser.put("userID", mUser.getUserId());
+            final String chatReference = substituteString(getResources().getString(R.string.user_chats), paramsUser);
+            loadChats = mDatabase.getReference(chatReference);
             loadChatListener = new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -74,6 +74,9 @@ public class LoadingActivity extends BaseActivity {
                 }
             };
             loadChats.addListenerForSingleValueEvent(loadChatListener);
+
+            //Add user to list of online users
+            userOnline();
 
             Intent feed = new Intent(LoadingActivity.this, FeedActivity.class);
             startActivity(feed);

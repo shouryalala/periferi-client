@@ -25,6 +25,7 @@ import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 /*
  * Created by shourya on 10/6/17.
@@ -75,19 +76,22 @@ public class ChatListFragment extends Fragment {
         progressDialog.show();
 
 
-        final String get_users = BaseActivity.substituteString(getResources().getString(R.string.users), new HashMap<String, String>());
+        final String get_users = BaseActivity.substituteString(getResources().getString(R.string.users_online), new HashMap<String, String>());
 
         fetch_users = BaseActivity.mDatabase.getReference(get_users);
         userFetchListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Log.d(DEBUG_TAG, dataSnapshot.toString());
+                temp_chat_name.clear();
+                listView.setVisibility(View.VISIBLE);
+                noUsers.setVisibility(View.INVISIBLE);
                 if(dataSnapshot.getValue() != null) {
                     for(DataSnapshot userSnapshot: dataSnapshot.getChildren()) {
                         String key = (String)userSnapshot.getKey();
                         if(!key.equals(BaseActivity.mUser.getUserId())) {
-                            userArrayList.add(userSnapshot.getValue(User.class));
-                            temp_chat_name.add((String) userSnapshot.child("mDisplayName").getValue());
+                            //userArrayList.add((String)userSnapshot.getValue());
+                            temp_chat_name.add(key);
                         }
                         Log.d(DEBUG_TAG, userSnapshot.getValue().toString());
                     }
@@ -107,12 +111,25 @@ public class ChatListFragment extends Fragment {
             public void onCancelled(DatabaseError databaseError) {
             }
         };
-        fetch_users.addListenerForSingleValueEvent(userFetchListener);
+        fetch_users.addValueEventListener(userFetchListener);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                chatListener.startChat(userArrayList.get(position));
+                Map<String, String> prms = new HashMap<String, String>();
+                prms.put("userID", temp_chat_name.get(position));
+                final String ref = BaseActivity.substituteString(getResources().getString(R.string.user_check), prms);
+                BaseActivity.mDatabase.getReference(ref).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        chatListener.startChat(dataSnapshot.getValue(User.class));
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
             }
         });
     }
@@ -123,4 +140,5 @@ public class ChatListFragment extends Fragment {
         Log.d(DEBUG_TAG, "View Destroy, Remove Event Listener");
         fetch_users.removeEventListener(userFetchListener);
     }
+
 }

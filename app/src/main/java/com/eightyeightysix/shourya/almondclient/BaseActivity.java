@@ -15,6 +15,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 /*
@@ -138,5 +139,19 @@ public class BaseActivity extends AppCompatActivity{
         }
         Log.d(DEBUG_TAG, "No user found!!");
         return null;
+    }
+
+    public void userOnline() {
+        Map<String, String> paramsOther = new HashMap<>();
+        paramsOther.put("userID", mUser.getUserId());
+        final String amOnlineReference = substituteString(getResources().getString(R.string.add_user_online), paramsOther);
+        mDatabase.getReference(amOnlineReference).setValue(true);
+    }
+
+    public void userOffline() {
+        Map<String, String> mParams = new HashMap<>();
+        mParams.put("userID", mUser.getUserId());
+        final String reference = substituteString(getString(R.string.add_user_online), mParams);
+        mDatabase.getReference(reference).removeValue();
     }
 }
