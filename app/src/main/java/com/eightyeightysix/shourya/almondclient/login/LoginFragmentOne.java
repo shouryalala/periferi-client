@@ -32,6 +32,7 @@ import com.facebook.ProfileTracker;
 import com.facebook.appevents.AppEventsLogger;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import com.google.firebase.auth.FirebaseAuth;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -56,7 +57,7 @@ public class LoginFragmentOne extends Fragment {
 
 
     public interface FragmentOneListener {
-        void fblistener(String id, String fname, String lname, String sname, String gender, String email, boolean emailAvailable, String dob, boolean dobAvailable);
+        void fblistener(String token, String id, String fname, String lname, String sname, String gender, String email, boolean emailAvailable, String dob, boolean dobAvailable);
     }
 
     private AccessTokenTracker accessTokenTracker;
@@ -68,8 +69,7 @@ public class LoginFragmentOne extends Fragment {
         public void onSuccess(LoginResult loginResult) {
 
             accessToken = loginResult.getAccessToken();
-            Log.d(DEBUG_TAG, "Access Token: " + accessToken.getUserId());
-            accessToken.getUserId();
+            Log.d(DEBUG_TAG, "UserID: " + accessToken.getUserId());
 
             GraphRequest request = GraphRequest.newMeRequest(
                 loginResult.getAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
@@ -115,7 +115,8 @@ public class LoginFragmentOne extends Fragment {
                         }catch(JSONException e) {
                             Log.d(DEBUG_TAG, "sname not received");
                         }
-                        mListener.fblistener(fb_id,fb_fname,fb_lname,fb_sname,fb_gender,fb_emailText,fb_email,fb_dobText,fb_dob);
+                        Log.d(DEBUG_TAG, "access token: " + accessToken.getToken());
+                        mListener.fblistener(accessToken.getToken(),fb_id,fb_fname,fb_lname,fb_sname,fb_gender,fb_emailText,fb_email,fb_dobText,fb_dob);
                     }
             });
             Bundle parameters = new Bundle();
@@ -139,6 +140,7 @@ public class LoginFragmentOne extends Fragment {
     @Override
     public void onCreate(Bundle savedInstances) {
         super.onCreate(savedInstances);
+
         callbackManager = CallbackManager.Factory.create();
         accessTokenTracker= new AccessTokenTracker() {
             @Override

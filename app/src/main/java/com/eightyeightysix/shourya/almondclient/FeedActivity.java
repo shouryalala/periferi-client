@@ -1,23 +1,37 @@
 package com.eightyeightysix.shourya.almondclient;
 
 import android.Manifest;
+import android.app.DialogFragment;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 
-public class FeedActivity extends BaseActivity {
-    //TODO Put location requests in the tutorial pages. For now keep in feed page
+import com.eightyeightysix.shourya.almondclient.data.User;
+import com.eightyeightysix.shourya.almondclient.gestureui.AlmondPagerSettings;
 
-    private final static String DEBUG_TAG = "AlmondLog:: " + BaseActivity.class.getSimpleName();
+
+public class FeedActivity extends BaseActivity implements ChatListFragment.StartChatListener{
+    //TODO Put location requests in the tutorial pages. For now keep in feed page
+    FragmentManager fragmentManager;
+    private static final int NUM_PAGES  = 2;
+    private final static String DEBUG_TAG = "AlmondLog:: " + FeedActivity.class.getSimpleName();
+    private AlmondPagerSettings mPager;
+    private PagerAdapter mPagerAdapter;
+    private View view1, view2;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,12 +43,22 @@ public class FeedActivity extends BaseActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+             createNewBroadCast();
             }
         });
 
-        //fetch location
+        mPager  = (AlmondPagerSettings)findViewById(R.id.feed_pager);
+        mPagerAdapter = new SwipeUpPagerAdapter(getSupportFragmentManager());
+        mPager.setAdapter(mPagerAdapter);
+
+        //initialise views
+        view1 = (View)findViewById(R.id.fragment_container_feed);
+        view2 = (View) findViewById(R.id.feed_pager);
+
+        //initialise fragment Manager
+        fragmentManager = getSupportFragmentManager();
+
+        //fetch location instantiation
         mLocator = new GPSLocator(this);
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
@@ -44,6 +68,53 @@ public class FeedActivity extends BaseActivity {
         }
 
         Log.d(DEBUG_TAG, userId + userName + userEmail + displayName);
+
+
+    }
+
+    public void createNewBroadCast() {
+        DialogFragment dialog = new NewBroadCastDialog();
+        dialog.show(getFragmentManager(), "NewBroadCastDialog");
+    }
+
+    @Override
+    public void startChat(User chatWith) {
+        Log.d(DEBUG_TAG, "Entered startChat Listener");
+        Log.d(DEBUG_TAG, "Friend name: " + chatWith.getDisplayName());
+        String urlProvider;
+        int sender_tag;
+        mChatBuddy = chatWith;
+        ChatFragment chatFragment = new ChatFragment();
+        String me = mUser.getUserId();
+        String friend = mChatBuddy.getUserId();
+
+        //forms chatID child
+        //storing messages as "0" and "1". The id which is alphabetically greater is set as "1"
+        if(me.compareTo(friend) > 0) {
+            urlProvider = me + "_" + friend;
+            sender_tag = 0;
+        }
+        else{
+            urlProvider = friend + "_" + me;
+            sender_tag = 1;
+        }
+        Log.d(DEBUG_TAG, "ChatId formed: " + urlProvider);
+        Bundle bundle = new Bundle();
+        bundle.putString("urlProvider", urlProvider);
+        bundle.putInt("sender_tag", sender_tag);
+        //wont be required. Required as using all Users for chat
+        bundle.putString("friend_name", mChatBuddy.getDisplayName());
+        chatFragment.setArguments(bundle);
+        Log.d(DEBUG_TAG, "Entering ChatFragment");
+        /*fragmentManager.beginTransaction().replace(R.id.fragment_container_feed, chatFragment).commit();*/
+        //TODO not the final model but made to present all elements configured till now
+
+        Log.d(DEBUG_TAG, "Entering ChatFragment");
+        fragmentManager.beginTransaction().add(R.id.fragment_container_feed, chatFragment)
+                                            .addToBackStack("chatFragment")
+                                            .commit();
+        view1.setVisibility(View.VISIBLE);
+        view2.setVisibility(View.GONE);
     }
 
     @Override
@@ -71,13 +142,64 @@ public class FeedActivity extends BaseActivity {
 
     @Override
     protected void onStart() {
-        mLocator.connectClient();
         super.onStart();
+        mLocator.connectClient();
+        userOnline();
     }
 
     @Override
     protected void onStop() {
-        mLocator.disconnectClient();
         super.onStop();
+        mLocator.disconnectClient();
+        userOffline();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.d(DEBUG_TAG, "onDestroyCalled");
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(fragmentManager.getBackStackEntryCount() == 0) {
+            Log.d(DEBUG_TAG, "Back pressed within pager");
+            if (mPager.getCurrentItem() == 0) {
+                finish();
+                Intent homeIntent = new Intent(Intent.ACTION_MAIN);
+                homeIntent.addCategory(Intent.CATEGORY_HOME);
+                homeIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(homeIntent);
+            } else {
+                // Otherwise, select the previous step.
+                mPager.setCurrentItem(mPager.getCurrentItem() - 1);
+            }
+        }
+        else {
+            Log.d(DEBUG_TAG, "Arrived back from Chat fragment");
+            fragmentManager.popBackStack();
+            view1.setVisibility(View.GONE);
+            view2.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private class SwipeUpPagerAdapter extends FragmentStatePagerAdapter {
+        public SwipeUpPagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            switch(position) {
+                case 0: return new ChatListFragment();
+                case 1: return new BroadCastFragment();
+                default: return new ChatListFragment();
+            }
+        }
+
+        @Override
+        public int getCount() {
+            return NUM_PAGES;
+        }
     }
 }

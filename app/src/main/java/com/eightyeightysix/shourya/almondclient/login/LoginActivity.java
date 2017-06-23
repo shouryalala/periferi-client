@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -19,6 +20,21 @@ import com.eightyeightysix.shourya.almondclient.BaseActivity;
 import com.eightyeightysix.shourya.almondclient.FeedActivity;
 import com.eightyeightysix.shourya.almondclient.LoadingActivity;
 import com.eightyeightysix.shourya.almondclient.R;
+import com.eightyeightysix.shourya.almondclient.data.User;
+import com.facebook.AccessToken;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FacebookAuthProvider;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /*
  * Created by shourya on 22/5/17.
@@ -34,8 +50,13 @@ public class LoginActivity extends BaseActivity implements
     private static final int NUM_PAGES = 2;
     private NonSwipeableViewPager nPager;
     private PagerAdapter mPagerAdapter;
-    private static String emailId, password, dob, uname, fname, lname;
-    private Context mContext;
+    public static String fUid;
+    Context mContext;
+    private static String tId, tFname, tLname, tGender, tSname, tEmail, tDob;
+    DatabaseReference create_user;
+    ValueEventListener userListener;
+    User temp_user;
+    Thread t = null;
 
     @Override
     protected void onCreate(Bundle savedInstances) {
@@ -60,34 +81,99 @@ public class LoginActivity extends BaseActivity implements
 
 
     @Override
-    public void fblistener(String id1, String fname1, String lname1, String sname1, String gender1, String email1, boolean emailAvailable, String dob1, boolean dobAvailable) {
+    public void fblistener(String token, String id1, String fname1, String lname1, String sname1,
+                           String gender1, String email1, boolean emailAvailable, String dob1,
+                           boolean dobAvailable) {
         Log.d(DEBUG_TAG, "fbListener Callback called");
-        if(emailAvailable) emailId = email1;
-        else{
+        if(!emailAvailable) {
             //TODO add email fragment
         }
-        if(dobAvailable) dob = dob1;
-        else {
+        if(!dobAvailable) {
             nPager.setCurrentItem(3);
         }
 
+        //set data to local variables
+        tId = id1;
+        tFname = fname1;
+        tLname = lname1;
+        tSname = sname1;
+        tGender = gender1;
+        tEmail = email1;
+        tDob = dob1;
+
+        //Firebase Auth
+        fireBaseAuthenticate(token);
+
+    }
+
+    private void fireBaseAuthenticate(String token) {
+        AuthCredential credential = FacebookAuthProvider.getCredential(token);
+        Log.d(DEBUG_TAG, "Firebase Credentials: " + credential.toString());
+        Log.d(DEBUG_TAG, "Firebase Auth Instance: " + mAuth.toString());
+      //  Log.d(DEBUG_TAG, "Firebase User Instance: " + mFireUser.toString());
+        //TODO Not getting called
+        mAuth.signInWithCredential(credential)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        Log.d(DEBUG_TAG, "Firebase CredentialSignup onComplete called");
+                        if (task.isSuccessful()) {
+                            Log.d(DEBUG_TAG, "signInWithCredential:success");
+                            fUid = mAuth.getCurrentUser().getUid();
+                            Log.d(DEBUG_TAG, "FirebaseAuth: " + fUid);
+                            initiateRegistration();
+                        } else {
+                            Log.d(DEBUG_TAG, "signInWithCredential:failure", task.getException());
+                        }
+                    }
+                });
+    }
+
+    private void initiateRegistration() {
+        //Register User::
+        final User userForm = new User(fUid, tFname, tLname, tSname, tEmail, tDob, tGender);
+
+        //TODO do in separate thread
         //set SharedPreferences Defaults
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         SharedPreferences.Editor editor = preferences.edit();
-        editor.putString("id", id1);
-        editor.putString("first_name", fname1);
-        editor.putString("last_name", lname1);
-        editor.putString("short_name", sname1);
-        editor.putString("gender", gender1);
-        if(emailAvailable)
-            editor.putString("email", email1);
-        if(dobAvailable)
-            editor.putString("dob", dob1);
+        editor.putString("id", fUid);
+        editor.putString("first_name", tFname);
+        editor.putString("last_name", tLname);
+        editor.putString("short_name", tSname);
+        editor.putString("gender", tGender);
+        editor.putString("email", tEmail);
+        editor.putString("dob", tDob);
         editor.apply();
 
-        //TODO send data to server
+        //reference String
+        Map<String, String> params = new HashMap<String, String>();
+        Log.d(DEBUG_TAG, "fireID: " + fUid);
+        params.put("userID", fUid);
+        final String reference = substituteString(getResources().getString(R.string.user_check), params);
 
-        setDefaults(id1,fname1,lname1,sname1,email1);
+        create_user = mDatabase.getReference(reference);
+        userListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Log.d(DEBUG_TAG, dataSnapshot.toString());
+                if(dataSnapshot.getValue() == null) {
+                    Log.d(DEBUG_TAG, "Creating a new User");
+                    create_user.setValue(userForm);
+                    mUser = userForm;
+                }
+                else {
+                    Log.d(DEBUG_TAG, "accessing stored user info");
+                    mUser = dataSnapshot.getValue(User.class);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+        create_user.addListenerForSingleValueEvent(userListener);
 
         Intent i = new Intent(LoginActivity.this, FeedActivity.class);
         startActivity(i);
@@ -116,6 +202,12 @@ public class LoginActivity extends BaseActivity implements
         public int getCount() {
             return NUM_PAGES;
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        create_user.removeEventListener(userListener);
     }
 }
 
