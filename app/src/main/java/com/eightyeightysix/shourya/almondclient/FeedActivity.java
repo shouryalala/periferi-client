@@ -6,8 +6,12 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
@@ -19,9 +23,12 @@ import com.eightyeightysix.shourya.almondclient.data.User;
 
 public class FeedActivity extends BaseActivity implements ChatListFragment.StartChatListener{
     //TODO Put location requests in the tutorial pages. For now keep in feed page
-
     FragmentManager fragmentManager;
+    private static final int NUM_PAGES  = 2;
     private final static String DEBUG_TAG = "AlmondLog:: " + BaseActivity.class.getSimpleName();
+    private ViewPager mPager;
+    private PagerAdapter mPagerAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,6 +43,11 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
              createNewBroadCast();
             }
         });
+
+        mPager  = (ViewPager)findViewById(R.id.feed_pager);
+        mPagerAdapter = new SwipeUpPagerAdapter(getSupportFragmentManager());
+        mPager.setAdapter(mPagerAdapter);
+
 
         if(findViewById(R.id.fragment_container_feed) != null) {
             if(savedInstanceState != null) {
@@ -145,6 +157,32 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
 
     @Override
     public void onBackPressed() {
-        finish();
+        if (mPager.getCurrentItem() == 0) {
+            finish();
+            System.exit(0);
+        } else {
+            // Otherwise, select the previous step.
+            mPager.setCurrentItem(mPager.getCurrentItem() - 1);
+        }
+    }
+
+    private class SwipeUpPagerAdapter extends FragmentStatePagerAdapter {
+        public SwipeUpPagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            switch(position) {
+                case 0: return new ChatListFragment();
+                case 1: return new BroadCastFragment();
+                default: return new ChatListFragment();
+            }
+        }
+
+        @Override
+        public int getCount() {
+            return NUM_PAGES;
+        }
     }
 }
