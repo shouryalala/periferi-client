@@ -58,9 +58,6 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
         //initialise fragment Manager
         fragmentManager = getSupportFragmentManager();
 
-        //fetch location instantiation
-        mLocator = new GPSLocator(this);
-
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
             mLocationRequestReturned = false;
@@ -143,13 +140,14 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
     @Override
     protected void onStart() {
         super.onStart();
-        mLocator.connectClient();
+        //mLocator.connectClient();
         userOnline();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
+        //TODO reconnect to client if user pauses the app. DO this is the onResume override
         mLocator.disconnectClient();
         userOffline();
     }

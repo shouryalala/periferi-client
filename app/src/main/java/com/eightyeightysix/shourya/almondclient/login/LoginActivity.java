@@ -3,6 +3,7 @@ package com.eightyeightysix.shourya.almondclient.login;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.location.Location;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
@@ -18,6 +19,7 @@ import android.widget.Toast;
 
 import com.eightyeightysix.shourya.almondclient.BaseActivity;
 import com.eightyeightysix.shourya.almondclient.FeedActivity;
+import com.eightyeightysix.shourya.almondclient.GPSLocator;
 import com.eightyeightysix.shourya.almondclient.LoadingActivity;
 import com.eightyeightysix.shourya.almondclient.R;
 import com.eightyeightysix.shourya.almondclient.data.User;
@@ -43,7 +45,6 @@ import java.util.Map;
 public class LoginActivity extends BaseActivity implements
         LoginFragmentOne.FragmentOneListener,
         LoginFragmentFour.FragmentFourListener{
-
 
     private final static String DEBUG_TAG = "AlmondLog:: " + LoginActivity.class.getSimpleName();
     private LoginFragmentOne firstFragment;
@@ -151,7 +152,7 @@ public class LoginActivity extends BaseActivity implements
         Log.d(DEBUG_TAG, "fireID: " + fUid);
         params.put("userID", fUid);
         final String reference = substituteString(getResources().getString(R.string.user_check), params);
-
+        //TODO redundant data: userID getting stored as the key and as one of the values as well
         create_user = mDatabase.getReference(reference);
         userListener = new ValueEventListener() {
             @Override

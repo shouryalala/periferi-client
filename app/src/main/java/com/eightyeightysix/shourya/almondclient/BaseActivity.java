@@ -80,9 +80,9 @@ public class BaseActivity extends AppCompatActivity{
                 }
                 else {
                     permissionLocation = false;
+                    toastit("Sorry, Almond cant function without Location");
                     //TODO tell the user that this functionality is a core necessity for the functioning of the application
                 }
-                locationListener(mLocator);
             }
         }
     }
@@ -107,17 +107,6 @@ public class BaseActivity extends AppCompatActivity{
         else
             displayName = fname;
         userEmail = email;
-    }
-
-    public void locationListener(GPSLocator locate) {
-        mLocationRequestReturned = true;
-        if(permissionLocation) {
-            locate.getLocation();
-            toastit("Latitude: " + locate.getLatitude() + "\nLongitude: " + locate.getLongitude());
-        }
-        else {
-            toastit("Almond cant function without Location");
-        }
     }
 
     public static String getChatID(String id1, String id2) {
