@@ -58,6 +58,7 @@ public class BaseActivity extends AppCompatActivity{
         }
     }
 
+
     public void toastit(String message) {
         Toast.makeText(this, message, Toast.LENGTH_LONG).show();
     }

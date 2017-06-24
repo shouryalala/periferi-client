@@ -1,8 +1,12 @@
 package com.eightyeightysix.shourya.almondclient;
 
 import android.graphics.Color;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -17,6 +21,7 @@ import com.google.android.gms.maps.model.Dash;
 import com.google.android.gms.maps.model.Dot;
 import com.google.android.gms.maps.model.Gap;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PatternItem;
@@ -29,11 +34,12 @@ import java.util.Iterator;
 import java.util.List;
 
 
-public class RequestZoneActivity extends FragmentActivity implements OnMapReadyCallback,
+public class RequestZoneActivity extends BaseActivity implements OnMapReadyCallback,
                                                                     GoogleMap.OnMapClickListener,
                                                                     GoogleMap.OnMapLongClickListener,
                                                                     GoogleMap.OnMarkerDragListener{
-    //TODO save instance so as to load it when there is a change in the screen orientation
+    //TODO save instance so as to load it when there is a change in the screen
+    private static final String DEBUG_TAG = "AlmondLog:: " + RequestZoneActivity.class.getSimpleName();
     private GoogleMap mMap;
     private static final double minLongitudeShift = 0.002;
     private static final double minLatitudeShift = -0.002;
@@ -59,7 +65,16 @@ public class RequestZoneActivity extends FragmentActivity implements OnMapReadyC
         mapFragment.getMapAsync(this);
 
         refresh = (Button) findViewById(R.id.button_refresh);
-        accept = (Button) findViewById(R.id.button_accept);
+        //accept = (Button) findViewById(R.id.button_accept);
+
+        //Floating Button
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.map_fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(getApplicationContext(), "You sexy bitch you:*", Toast.LENGTH_LONG).show();
+            }
+        });
 
         refresh.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -71,12 +86,6 @@ public class RequestZoneActivity extends FragmentActivity implements OnMapReadyC
             }
         });
 
-        accept.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(getApplicationContext(),"Request Sent out!",Toast.LENGTH_LONG).show();
-            }
-        });
     }
 
 
@@ -94,6 +103,14 @@ public class RequestZoneActivity extends FragmentActivity implements OnMapReadyC
         mMap.setOnMapLongClickListener(this);
         mMap.setOnMapClickListener(this);
         mMap.setOnMarkerDragListener(this);
+
+        boolean success = googleMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(
+                        this, R.raw.style_json));
+
+        if (!success) {
+            Log.e(DEBUG_TAG, "Style parsing failed.");
+        }
+
     }
 
     @Override
