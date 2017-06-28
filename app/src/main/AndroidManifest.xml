@@ -29,6 +29,10 @@
             </intent-filter>
         </service>
 
+        <service
+            android:name=".location.ReverseGeocodeIntentService"
+            android:exported="false"/>
+
         <activity
             android:name=".LoadingActivity"
             android:label="@string/app_name"

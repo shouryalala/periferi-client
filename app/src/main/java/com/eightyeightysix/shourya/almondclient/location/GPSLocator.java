@@ -1,25 +1,17 @@
-package com.eightyeightysix.shourya.almondclient;
+package com.eightyeightysix.shourya.almondclient.location;
 
 /*
  * Created by shourya on 31/5/17.
  */
 
-import android.Manifest;
 import android.app.Activity;
-import android.content.Context;
 import android.content.IntentSender;
-import android.content.pm.PackageManager;
 import android.location.Address;
-import android.location.Geocoder;
 import android.location.Location;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -36,9 +28,6 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-
-import java.io.IOException;
-import java.util.Locale;
 
 
 public class GPSLocator{
@@ -87,11 +76,17 @@ public class GPSLocator{
                 else{
                     Log.d(DEBUG_TAG, "Task Failed");
                     //TODO please improve this code
+                    //when the location is disabled on a device, the locationsettingsrequest is called which enables gps and calls this method.
+                    //But this does not immedietely enable the location an thus updateLocation's unsuccessful task gets called several times before execution
                     updateLocation();
                     canGetLocation = false;
                 }
             }
         });
+    }
+
+    public Location getUpdatedLocation() {
+        return mLastLocation;
     }
 
     public void refreshLocation() {

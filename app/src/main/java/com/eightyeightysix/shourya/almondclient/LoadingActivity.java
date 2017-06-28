@@ -1,32 +1,19 @@
 package com.eightyeightysix.shourya.almondclient;
 
-import android.app.Activity;
-import android.content.IntentSender;
-import android.location.Location;
 import android.os.Bundle;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Handler;
+import android.os.ResultReceiver;
 import android.preference.PreferenceManager;
-import android.provider.ContactsContract;
-import android.support.annotation.NonNull;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.eightyeightysix.shourya.almondclient.data.User;
+import com.eightyeightysix.shourya.almondclient.location.Constants;
+import com.eightyeightysix.shourya.almondclient.location.GPSLocator;
+import com.eightyeightysix.shourya.almondclient.location.ReverseGeocodeIntentService;
 import com.eightyeightysix.shourya.almondclient.login.LoginActivity;
-import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.common.api.CommonStatusCodes;
-import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.location.LocationSettingsRequest;
-import com.google.android.gms.location.LocationSettingsResponse;
-import com.google.android.gms.location.LocationSettingsStatusCodes;
-import com.google.android.gms.location.SettingsClient;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -34,9 +21,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 
@@ -53,6 +38,8 @@ public class LoadingActivity extends BaseActivity implements GPSLocator.location
     static boolean temp = false;
     private LocationRequest mLocationRequest;
     protected static final int REQUEST_CHECK_SETTINGS = 0x1;
+    private String mAddressOutput;
+    private AddressResultReceiver mResultReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +55,8 @@ public class LoadingActivity extends BaseActivity implements GPSLocator.location
         //refreshes location and places it in a callback
         mLocator = new GPSLocator(this);
         mLocator.refreshLocation();
+
+        mResultReceiver = new AddressResultReceiver(new Handler());
 
         if(mFireUser != null) {
             SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
@@ -118,12 +107,28 @@ public class LoadingActivity extends BaseActivity implements GPSLocator.location
         }
     }
 
+    //callback from GPSLocator
     @Override
     public void getCoordinates(double lat, double lng) {
         Log.d(DEBUG_TAG, "Location Callback called");
         toastit("Latitude: " + lat + "Longitude: " + lng);
-        Intent feed = new Intent(LoadingActivity.this, FeedActivity.class);
-        startActivity(feed);
+        //initiate reverse geocoding
+        startIntentService();
+    }
+
+    private void startIntentService() {
+        Intent intent = new Intent(this, ReverseGeocodeIntentService.class);
+
+        // Pass the result receiver as an extra to the service.
+        intent.putExtra(Constants.RECEIVER, mResultReceiver);
+
+        // Pass the location data as an extra to the service.
+        intent.putExtra(Constants.LOCATION_DATA_EXTRA, mLocator.getUpdatedLocation());
+
+        // Start the service. If the service isn't already running, it is instantiated and started
+        // (creating a process for it if needed); if it is running then it remains running. The
+        // service kills itself automatically once all intents are processed.
+        startService(intent);
     }
 
     public void inspectLocation() {
@@ -238,5 +243,27 @@ public class LoadingActivity extends BaseActivity implements GPSLocator.location
         Log.d(DEBUG_TAG, "onActivtyResult called");
         mLocator.onDialogResult(requestCode, resultCode);
 
+    }
+
+    private class AddressResultReceiver extends ResultReceiver {
+        AddressResultReceiver(Handler handler) {
+            super(handler);
+        }
+
+        /**
+         *  Receives data sent from ReverseGeocodeIntentService and updates the UI in MainActivity.
+         */
+        @Override
+        protected void onReceiveResult(int resultCode, Bundle resultData) {
+
+            // Display the address string or an error message sent from the intent service.
+            mAddressOutput = resultData.getString(Constants.RESULT_DATA_KEY);
+            toastit("Address: " + mAddressOutput);
+
+            // Show a toast message if an address was found.
+            if (resultCode == Constants.SUCCESS_RESULT) {
+                toastit("Address Received in Loading Activity");
+            }
+        }
     }
 }
