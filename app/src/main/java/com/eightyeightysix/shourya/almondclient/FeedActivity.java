@@ -58,11 +58,6 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
         //initialise fragment Manager
         fragmentManager = getSupportFragmentManager();
 
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-            mLocationRequestReturned = false;
-            requestAllPermissions(this);
-        }
 
         Log.d(DEBUG_TAG, userId + userName + userEmail + displayName);
 
@@ -148,7 +143,6 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
     protected void onStop() {
         super.onStop();
         //TODO reconnect to client if user pauses the app. DO this is the onResume override
-        mLocator.disconnectClient();
         userOffline();
     }
 

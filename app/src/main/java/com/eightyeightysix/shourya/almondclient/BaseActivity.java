@@ -49,7 +49,7 @@ public class BaseActivity extends AppCompatActivity{
 
     private final static String DEBUG_TAG = "AlmondLog:: " + BaseActivity.class.getSimpleName();
     private static final int MY_REQUEST_ACCESS_FINE_LOCATION = 69;
-    public static boolean permissionLocation = false;
+    public static boolean permissionLocation = true;
 
     //All user Details
     public static User mUser;

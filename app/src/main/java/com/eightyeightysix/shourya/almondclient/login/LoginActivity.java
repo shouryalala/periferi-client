@@ -1,8 +1,10 @@
 package com.eightyeightysix.shourya.almondclient.login;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -11,6 +13,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
@@ -69,6 +72,12 @@ public class LoginActivity extends BaseActivity implements
         if (findViewById(R.id.fragment_container) != null) {
                 mPagerAdapter = new LoginSlidePagerAdapter(getSupportFragmentManager());
                 nPager.setAdapter(mPagerAdapter);
+        }
+
+        //request Location permissions
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            requestAllPermissions(this);
         }
     }
     @Override
@@ -176,7 +185,7 @@ public class LoginActivity extends BaseActivity implements
         };
         create_user.addListenerForSingleValueEvent(userListener);
 
-        Intent i = new Intent(LoginActivity.this, FeedActivity.class);
+        Intent i = new Intent(LoginActivity.this, LoadingActivity.class);
         startActivity(i);
     }
 

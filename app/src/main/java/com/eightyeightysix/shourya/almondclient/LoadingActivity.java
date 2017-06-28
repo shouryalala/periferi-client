@@ -1,15 +1,32 @@
 package com.eightyeightysix.shourya.almondclient;
 
+import android.app.Activity;
+import android.content.IntentSender;
 import android.location.Location;
 import android.os.Bundle;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
+import android.support.annotation.NonNull;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.eightyeightysix.shourya.almondclient.data.User;
 import com.eightyeightysix.shourya.almondclient.login.LoginActivity;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.common.api.CommonStatusCodes;
+import com.google.android.gms.common.api.ResolvableApiException;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResponse;
+import com.google.android.gms.location.LocationSettingsStatusCodes;
+import com.google.android.gms.location.SettingsClient;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -19,38 +36,48 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
+
 
 /*
  * Created by shourya on 23/5/17.
  */
 
-public class LoadingActivity extends BaseActivity {
+public class LoadingActivity extends BaseActivity implements GPSLocator.locationFetchedCallback{
     private static final String DEBUG_TAG = "AlmondLog:: " + LoadingActivity.class.getSimpleName();
     DatabaseReference loadChats;
     ValueEventListener loadChatListener;
     String city_id;
     String country_id;
+    static boolean temp = false;
+    private LocationRequest mLocationRequest;
+    protected static final int REQUEST_CHECK_SETTINGS = 0x1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_loading);
+        //TODO get location permission before
+        //fetch location instantiation
         //Firebase auth getInstance
         mAuth = FirebaseAuth.getInstance();
         mFireUser = mAuth.getCurrentUser();
         //Get database Reference
         mDatabase = FirebaseDatabase.getInstance();
+        //refreshes location and places it in a callback
+        mLocator = new GPSLocator(this);
+        mLocator.refreshLocation();
 
         if(mFireUser != null) {
             SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
             mUser = new User(preferences.getString("id", UNAVAILABLE),
-                        preferences.getString("first_name", UNAVAILABLE),
-                        preferences.getString("last_name", UNAVAILABLE),
-                        preferences.getString("short_name", UNAVAILABLE),
-                        preferences.getString("email", UNAVAILABLE),
-                        preferences.getString("dob", UNAVAILABLE),
-                        preferences.getString("gender", UNAVAILABLE));
+                    preferences.getString("first_name", UNAVAILABLE),
+                    preferences.getString("last_name", UNAVAILABLE),
+                    preferences.getString("short_name", UNAVAILABLE),
+                    preferences.getString("email", UNAVAILABLE),
+                    preferences.getString("dob", UNAVAILABLE),
+                    preferences.getString("gender", UNAVAILABLE));
 
             Map<String, String> paramsUser = new HashMap<String, String>();
             paramsUser.put("userID", mUser.getUserId());
@@ -82,40 +109,26 @@ public class LoadingActivity extends BaseActivity {
             //Add user to list of online users
             userOnline();
 
-            //TODO get location permission before
-            //fetch location instantiation
-            mLocator = new GPSLocator(this);
+            //inspectLocation();
 
-            inspectLocation();
-
-            Intent feed = new Intent(LoadingActivity.this, FeedActivity.class);
-            startActivity(feed);
         }
         else {
-             Intent login = new Intent(LoadingActivity.this, LoginActivity.class);
-             startActivity(login);
+            Intent login = new Intent(LoadingActivity.this, LoginActivity.class);
+            startActivity(login);
         }
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-        mLocator.connectClient();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        //not going to disconnect the client here. Client remains active till the end of the entire app lifecycle
-    }
-
-    public void fetchAllZones() {
-
+    public void getCoordinates(double lat, double lng) {
+        Log.d(DEBUG_TAG, "Location Callback called");
+        toastit("Latitude: " + lat + "Longitude: " + lng);
+        Intent feed = new Intent(LoadingActivity.this, FeedActivity.class);
+        startActivity(feed);
     }
 
     public void inspectLocation() {
         //TODO all location coodinates and reverse geocoding has to be done through listeners. IMPORTANT
-        Location mCurrent = mLocator.updateLocation();
+        //Location mCurrent = mLocator.updateLocation();
         //Load saved location variables
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         String savedCityName = preferences.getString("city_name", UNAVAILABLE);
@@ -123,11 +136,11 @@ public class LoadingActivity extends BaseActivity {
         city_id = preferences.getString("city_ID", UNAVAILABLE);
         country_id = preferences.getString("city_ID", UNAVAILABLE);
 
-
+/*
         if(mCurrent == null) {
             Log.d(DEBUG_TAG, "Location not fetched");
-        }
-        mLocator.updateLocationAddress(mCurrent.getLatitude(), mCurrent.getLongitude());
+        }*/
+        //mLocator.updateLocationAddress(mCurrent.getLatitude(), mCurrent.getLongitude());
 
         String currentCityName = mLocator.getCityName();
         String currentCountryName = mLocator.getCountryName();
@@ -177,7 +190,7 @@ public class LoadingActivity extends BaseActivity {
                 }
                 if(!cExists) {
                     country_id = countryReference.push().getKey();
-                     countryReference.child(country_id).child("name").setValue(country);
+                    countryReference.child(country_id).child("name").setValue(country);
                 }
             }
 
@@ -219,4 +232,11 @@ public class LoadingActivity extends BaseActivity {
         });
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.d(DEBUG_TAG, "onActivtyResult called");
+        mLocator.onDialogResult(requestCode, resultCode);
+
+    }
 }
