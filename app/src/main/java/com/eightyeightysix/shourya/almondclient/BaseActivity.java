@@ -9,11 +9,13 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.eightyeightysix.shourya.almondclient.data.User;
+import com.eightyeightysix.shourya.almondclient.location.CurrentLocationDetails;
 import com.eightyeightysix.shourya.almondclient.location.GPSLocator;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -56,6 +58,10 @@ public class BaseActivity extends AppCompatActivity{
     //Current ChatUser - no need to take import all user data
     public static User mChatBuddy;
     public static Map<String, String> friendIds;        //Name, ID
+
+    public static CurrentLocationDetails locationDetails;   //stores current location
+
+    public static int currCircle;
 
     //location callback for later - tutorials
     interface permissionsListener{
@@ -134,6 +140,11 @@ public class BaseActivity extends AppCompatActivity{
         paramsOther.put("userID", mUser.getUserId());
         final String amOnlineReference = substituteString(getResources().getString(R.string.add_user_online), paramsOther);
         mDatabase.getReference(amOnlineReference).setValue(true);
+    }
+
+    public void userOnlineStatusRefresh(int circle) {
+        currCircle = circle;
+        toastit("Current Circle " + circle);
     }
 
     public void userOffline() {

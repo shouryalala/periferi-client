@@ -8,7 +8,7 @@
     <string name="users_online">onlineusers</string>
     <string name="all_broadcasts">broadcasts</string>
     <string name="user_broadcasts">userbroadcasts/{userID}</string>
-    <string name="all_countries">countrydesc</string>
-    <string name="get_country">countrydesc/{countryID}/cities</string>
-
+    <string name="all_countries">almondcountries</string>
+    <string name="get_city">almondcities/{countryID}</string>
+    <string name="get_zones">almondzones/{cityID}</string>
 </resources>

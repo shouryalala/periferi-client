@@ -14,6 +14,7 @@ import android.os.ResultReceiver;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.eightyeightysix.shourya.almondclient.BaseActivity;
 import com.eightyeightysix.shourya.almondclient.R;
 
 import java.io.IOException;
@@ -72,7 +73,7 @@ public class ReverseGeocodeIntentService extends IntentService {
         if (location == null) {
             errorMessage = getString(R.string.no_location_data_provided);
             Log.wtf(DEBUG_TAG, errorMessage);
-            deliverResultToReceiver(Constants.FAILURE_RESULT, errorMessage);
+            deliverResultToReceiver(Constants.FAILURE_RESULT);
             return;
         }
 
@@ -115,35 +116,24 @@ public class ReverseGeocodeIntentService extends IntentService {
             if (errorMessage.isEmpty()) {
                 errorMessage = getString(R.string.no_address_found);
             }
-            deliverResultToReceiver(Constants.FAILURE_RESULT, errorMessage);
+            deliverResultToReceiver(Constants.FAILURE_RESULT);
         } else {
             Address address = addresses.get(0);
             ArrayList<String> addressFragments = new ArrayList<>();
 
-            // Fetch the address lines using {@code getAddressLine},
-            // join them, and send them to the thread. The {@link android.location.address}
-            // class provides other options for fetching address details that you may prefer
-            // to use. Here are some examples:
-            // getLocality() ("Mountain View", for example)
-            // getAdminArea() ("CA", for example)
-            // getPostalCode() ("94043", for example)
-            // getCountryCode() ("US", for example)
-            // getCountryName() ("United States", for example)
-            for(int i = 0; i < address.getMaxAddressLineIndex(); i++) {
-                addressFragments.add(address.getAddressLine(i));
-            }
+            BaseActivity.locationDetails.setValues(address.getAdminArea(), address.getLocality(), address.getPostalCode(),
+                                    address.getCountryCode(), address.getCountryName(), address.getFeatureName(), address.getSubAdminArea());
+
             Log.d(DEBUG_TAG, "Address found!");
-            deliverResultToReceiver(Constants.SUCCESS_RESULT,
-                    TextUtils.join(System.getProperty("line.separator"), addressFragments));
+            deliverResultToReceiver(Constants.SUCCESS_RESULT);
         }
     }
 
     /**
      * Sends a resultCode and message to the receiver.
      */
-    private void deliverResultToReceiver(int resultCode, String message) {
+    private void deliverResultToReceiver(int resultCode) {
         Bundle bundle = new Bundle();
-        bundle.putString(Constants.RESULT_DATA_KEY, message);
         mReceiver.send(resultCode, bundle);
     }
 }

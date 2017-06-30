@@ -1,18 +1,13 @@
 package com.eightyeightysix.shourya.almondclient;
 
-import android.Manifest;
 import android.app.DialogFragment;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
@@ -22,6 +17,10 @@ import android.view.MenuItem;
 import com.eightyeightysix.shourya.almondclient.data.User;
 import com.eightyeightysix.shourya.almondclient.gestureui.AlmondPagerSettings;
 
+
+/*
+ * Created by shourya on 'we will never know'.
+ */
 
 public class FeedActivity extends BaseActivity implements ChatListFragment.StartChatListener{
     //TODO Put location requests in the tutorial pages. For now keep in feed page
@@ -58,9 +57,7 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
         //initialise fragment Manager
         fragmentManager = getSupportFragmentManager();
 
-
         Log.d(DEBUG_TAG, userId + userName + userEmail + displayName);
-
 
     }
 
@@ -193,5 +190,18 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
         public int getCount() {
             return NUM_PAGES;
         }
+    }
+
+    //temp functions
+    public void setCountryOnline(View v) {
+        userOnlineStatusRefresh(0);
+    }
+
+    public void setCityOnline(View v) {
+        userOnlineStatusRefresh(1);
+    }
+
+    public void setZoneOnline(View v) {
+        userOnlineStatusRefresh(2);
     }
 }

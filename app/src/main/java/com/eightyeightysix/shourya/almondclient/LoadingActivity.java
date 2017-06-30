@@ -9,7 +9,9 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.eightyeightysix.shourya.almondclient.data.User;
+import com.eightyeightysix.shourya.almondclient.data.ZonePerimeter;
 import com.eightyeightysix.shourya.almondclient.location.Constants;
+import com.eightyeightysix.shourya.almondclient.location.CurrentLocationDetails;
 import com.eightyeightysix.shourya.almondclient.location.GPSLocator;
 import com.eightyeightysix.shourya.almondclient.location.ReverseGeocodeIntentService;
 import com.eightyeightysix.shourya.almondclient.login.LoginActivity;
@@ -21,6 +23,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,33 +36,45 @@ public class LoadingActivity extends BaseActivity implements GPSLocator.location
     private static final String DEBUG_TAG = "AlmondLog:: " + LoadingActivity.class.getSimpleName();
     DatabaseReference loadChats;
     ValueEventListener loadChatListener;
-    String city_id;
-    String country_id;
+    protected String city_id;
+    protected String country_id;
     static boolean temp = false;
     private LocationRequest mLocationRequest;
     protected static final int REQUEST_CHECK_SETTINGS = 0x1;
     private String mAddressOutput;
     private AddressResultReceiver mResultReceiver;
+    private SharedPreferences preferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_loading);
         //TODO get location permission before
-        //fetch location instantiation
         //Firebase auth getInstance
         mAuth = FirebaseAuth.getInstance();
         mFireUser = mAuth.getCurrentUser();
-        //Get database Reference
         mDatabase = FirebaseDatabase.getInstance();
         //refreshes location and places it in a callback
         mLocator = new GPSLocator(this);
-        mLocator.refreshLocation();
-
+        //define SharedPreference location
+        preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        //class to store location details
+        locationDetails = new CurrentLocationDetails();
+        //callback class for ReverseGeocode
         mResultReceiver = new AddressResultReceiver(new Handler());
 
+        /*
+         * Initiate first page as city circle
+         * countryCircle = 0
+         * cityCircle = 1
+         * zoneCircles = 2, 3 sorted according to area
+        */
+        currCircle = 1;
+
         if(mFireUser != null) {
-            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+            //fetchLocation
+            mLocator.refreshLocation();
+
             mUser = new User(preferences.getString("id", UNAVAILABLE),
                     preferences.getString("first_name", UNAVAILABLE),
                     preferences.getString("last_name", UNAVAILABLE),
@@ -96,25 +111,23 @@ public class LoadingActivity extends BaseActivity implements GPSLocator.location
             loadChats.addListenerForSingleValueEvent(loadChatListener);
 
             //Add user to list of online users
-            userOnline();
-
-            //inspectLocation();
-
+            //userOnline();
         }
         else {
-            Intent login = new Intent(LoadingActivity.this, LoginActivity.class);
-            startActivity(login);
+            //login
+            startActivity(new Intent(LoadingActivity.this, LoginActivity.class));
         }
     }
 
     //callback from GPSLocator
     @Override
-    public void getCoordinates(double lat, double lng) {
+    public void onReceivingCoordinates() {
         Log.d(DEBUG_TAG, "Location Callback called");
-        toastit("Latitude: " + lat + "Longitude: " + lng);
+        //toastit("Latitude: " + lat + "Longitude: " + lng);
         //initiate reverse geocoding
         startIntentService();
     }
+
 
     private void startIntentService() {
         Intent intent = new Intent(this, ReverseGeocodeIntentService.class);
@@ -124,31 +137,19 @@ public class LoadingActivity extends BaseActivity implements GPSLocator.location
 
         // Pass the location data as an extra to the service.
         intent.putExtra(Constants.LOCATION_DATA_EXTRA, mLocator.getUpdatedLocation());
-
-        // Start the service. If the service isn't already running, it is instantiated and started
-        // (creating a process for it if needed); if it is running then it remains running. The
-        // service kills itself automatically once all intents are processed.
         startService(intent);
     }
 
     public void inspectLocation() {
         //TODO all location coodinates and reverse geocoding has to be done through listeners. IMPORTANT
-        //Location mCurrent = mLocator.updateLocation();
         //Load saved location variables
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         String savedCityName = preferences.getString("city_name", UNAVAILABLE);
         String savedCountryName = preferences.getString("country_name", UNAVAILABLE);
         city_id = preferences.getString("city_ID", UNAVAILABLE);
-        country_id = preferences.getString("city_ID", UNAVAILABLE);
+        country_id = preferences.getString("country_ID", UNAVAILABLE);
 
-/*
-        if(mCurrent == null) {
-            Log.d(DEBUG_TAG, "Location not fetched");
-        }*/
-        //mLocator.updateLocationAddress(mCurrent.getLatitude(), mCurrent.getLongitude());
-
-        String currentCityName = mLocator.getCityName();
-        String currentCountryName = mLocator.getCountryName();
+        String currentCityName = locationDetails.getAdminAreaName();
+        String currentCountryName = locationDetails.getCountryName();
 
         if(currentCityName == null) {
             Log.d(DEBUG_TAG, "City Name not fetched");
@@ -160,23 +161,35 @@ public class LoadingActivity extends BaseActivity implements GPSLocator.location
 
         if(!currentCountryName.equals(savedCountryName) || savedCountryName.equals(UNAVAILABLE)) {
             //either changed country(LOL) or entering app for first time
-            refreshCountry(currentCountryName);
-            Log.d(DEBUG_TAG,"Country Code is now:" + country_id);
-            refreshCity(currentCityName);
+            refreshCountryID(currentCountryName);
+            //Log.d(DEBUG_TAG,"City Code is now:" + city_id);
         }
 
-        else if(!currentCityName.equals(savedCityName) && currentCountryName.equals(savedCountryName)) {
+        else if(!currentCityName.equals(savedCityName)) {
             //changed cities
-            refreshCity(currentCityName);
+            refreshCityID(currentCityName);
+            //Log.d(DEBUG_TAG,"City Code is now:" + city_id);
         }
-
         else {
             //fetch zones from current city
-
+            refreshZonesList();
         }
+
+        //update preferences values;
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString("city_name", currentCityName);
+        editor.putString("country_name", currentCountryName);
+        editor.putString("city_ID", city_id);
+        editor.putString("country_ID", country_id);
+        editor.apply();
+
+        locationDetails.setCountryID(country_id);
+        locationDetails.setCityID(city_id);
+
+        startActivity(new Intent(LoadingActivity.this, FeedActivity.class));
     }
 
-    public void refreshCountry(final String country) {
+    public void refreshCountryID(final String country) {
         final String get_countries = substituteString(getResources().getString(R.string.all_countries), new HashMap<String, String>());
         final DatabaseReference countryReference = mDatabase.getReference(get_countries);
         countryReference.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -185,7 +198,7 @@ public class LoadingActivity extends BaseActivity implements GPSLocator.location
                 boolean cExists = false;
                 if(dataSnapshot.getValue() != null) {
                     for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                        String name = (String)ds.child("name").getValue();
+                        String name = (String)ds.getValue();
                         if(name.equals(country)){
                             country_id = ds.getKey();
                             Log.d(DEBUG_TAG, "Country ID: " + country_id);
@@ -195,8 +208,10 @@ public class LoadingActivity extends BaseActivity implements GPSLocator.location
                 }
                 if(!cExists) {
                     country_id = countryReference.push().getKey();
-                    countryReference.child(country_id).child("name").setValue(country);
+                    countryReference.child(country_id).setValue(country);
                 }
+                Log.d(DEBUG_TAG,"Country Code is now:" + country_id);
+                refreshCityID(locationDetails.getCountryName());
             }
 
             @Override
@@ -206,12 +221,12 @@ public class LoadingActivity extends BaseActivity implements GPSLocator.location
         });
     }
 
-    public void refreshCity(final String cityName) {
+    public void refreshCityID(final String cityName) {
         Map<String, String> params = new HashMap<>();
         params.put("countryID", country_id);
-        final String country_spec = substituteString(getResources().getString(R.string.get_country), params);
-        final DatabaseReference getCountry = mDatabase.getReference(country_spec);
-        getCountry.addListenerForSingleValueEvent(new ValueEventListener() {
+        final String get_city_spec = substituteString(getResources().getString(R.string.get_city), params);
+        final DatabaseReference getCityReference = mDatabase.getReference(get_city_spec);
+        getCityReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 boolean ctExists = false;
@@ -225,11 +240,48 @@ public class LoadingActivity extends BaseActivity implements GPSLocator.location
                     }
                 }
                 if(!ctExists) {
-                    city_id = getCountry.push().getKey();
-                    getCountry.child(city_id).setValue(cityName);
+                    city_id = getCityReference.push().getKey();
+                    getCityReference.child(city_id).setValue(cityName);
                 }
+                refreshZonesList();
             }
 
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    public void refreshZonesList() {
+        Map<String, String> params = new HashMap<>();
+        params.put("cityID", city_id);
+        final String get_zones_spec = substituteString(getResources().getString(R.string.get_zones), params);
+        final DatabaseReference getZoneReference = mDatabase.getReference(get_zones_spec);
+        getZoneReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.getValue() != null) {
+                    boolean flag = true;
+                    for(DataSnapshot ds: dataSnapshot.getChildren()) {
+                        ZonePerimeter zp = ds.getValue(ZonePerimeter.class);
+                        if(zp.insideZone(mLocator.getLatitude(), mLocator.getLongitude())){
+                            flag = false;
+                            locationDetails.zonesList.add(ds.getKey());
+                        }
+                    }
+                    if(!flag)locationDetails.setZonesAvailable();
+                }
+                else{
+                    Log.d(DEBUG_TAG, "No zones in this city yet");
+                }
+
+                Log.d(DEBUG_TAG,"Zones Found:" + locationDetails.getZonesStatus());
+                if(locationDetails.getZonesStatus()) {
+                    //set first page is innermost zoneCircle
+                    currCircle = 1 + locationDetails.zonesList.size();
+                }
+            }
             @Override
             public void onCancelled(DatabaseError databaseError) {
 
@@ -241,8 +293,8 @@ public class LoadingActivity extends BaseActivity implements GPSLocator.location
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         Log.d(DEBUG_TAG, "onActivtyResult called");
+        //called if location is currently disabled
         mLocator.onDialogResult(requestCode, resultCode);
-
     }
 
     private class AddressResultReceiver extends ResultReceiver {
@@ -254,15 +306,20 @@ public class LoadingActivity extends BaseActivity implements GPSLocator.location
          *  Receives data sent from ReverseGeocodeIntentService and updates the UI in MainActivity.
          */
         @Override
-        protected void onReceiveResult(int resultCode, Bundle resultData) {
+        protected void onReceiveResult(int resultCode, Bundle b) {
 
             // Display the address string or an error message sent from the intent service.
-            mAddressOutput = resultData.getString(Constants.RESULT_DATA_KEY);
-            toastit("Address: " + mAddressOutput);
+            //mAddressOutput = resultData.getString(Constants.RESULT_DATA_KEY);
+            //toastit("Address: " + mAddressOutput);
 
             // Show a toast message if an address was found.
             if (resultCode == Constants.SUCCESS_RESULT) {
-                toastit("Address Received in Loading Activity");
+                Log.d(DEBUG_TAG, "Address stored successfully");
+                //Location fetched, address fetched, now fetch zones
+                inspectLocation();
+            }
+            else {
+                Log.d(DEBUG_TAG,"Address not received, location inspection suspended");
             }
         }
     }

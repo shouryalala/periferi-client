@@ -75,7 +75,6 @@ public class ChatListFragment extends Fragment {
         progressDialog.setMessage("Loading..");
         progressDialog.show();
 
-
         final String get_users = BaseActivity.substituteString(getResources().getString(R.string.users_online), new HashMap<String, String>());
 
         fetch_users = BaseActivity.mDatabase.getReference(get_users);

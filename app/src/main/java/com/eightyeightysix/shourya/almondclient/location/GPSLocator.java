@@ -47,7 +47,7 @@ public class GPSLocator{
     private locationFetchedCallback callback;
 
     public interface locationFetchedCallback{
-        void getCoordinates(double lat, double lng);
+        void onReceivingCoordinates();
     }
 
     public GPSLocator(Activity activity) {
@@ -71,7 +71,7 @@ public class GPSLocator{
                     mLastLocation = task1.getResult();
                     canGetLocation = true;
                     Log.d(DEBUG_TAG, "Location received, callback called");
-                    callback.getCoordinates(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+                    callback.onReceivingCoordinates();
                 }
                 else{
                     Log.d(DEBUG_TAG, "Task Failed");
