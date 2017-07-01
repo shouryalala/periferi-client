@@ -22,6 +22,12 @@
 
     <include layout="@layout/content_feed" />
     <!--temp buttons to replicate gesture control -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="bottom|center"
+        android:layout_margin="10dp">
     <Button
         android:id="@+id/countryButton"
         android:layout_width="wrap_content"
@@ -42,6 +48,7 @@
         android:layout_height="wrap_content"
         android:onClick="setZoneOnline"
         android:text="Zone"/>
+    </LinearLayout>
     <!-- *********************************** -->
 
     <android.support.design.widget.FloatingActionButton

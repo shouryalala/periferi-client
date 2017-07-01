@@ -1,6 +1,7 @@
 package com.eightyeightysix.shourya.almondclient;
 
 import android.app.DialogFragment;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -56,6 +57,8 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
 
         //initialise fragment Manager
         fragmentManager = getSupportFragmentManager();
+
+        progressDialog = new ProgressDialog(this);
 
         Log.d(DEBUG_TAG, userId + userName + userEmail + displayName);
 
@@ -194,7 +197,10 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
 
     //temp functions
     public void setCountryOnline(View v) {
-        userOnlineStatusRefresh(0);
+        if(mPager.getCurrentItem() == 1) {
+            userOnlineStatusRefresh(0);
+
+        }
     }
 
     public void setCityOnline(View v) {

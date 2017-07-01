@@ -174,19 +174,6 @@ public class LoadingActivity extends BaseActivity implements GPSLocator.location
             //fetch zones from current city
             refreshZonesList();
         }
-
-        //update preferences values;
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putString("city_name", currentCityName);
-        editor.putString("country_name", currentCountryName);
-        editor.putString("city_ID", city_id);
-        editor.putString("country_ID", country_id);
-        editor.apply();
-
-        locationDetails.setCountryID(country_id);
-        locationDetails.setCityID(city_id);
-
-        startActivity(new Intent(LoadingActivity.this, FeedActivity.class));
     }
 
     public void refreshCountryID(final String country) {
@@ -211,7 +198,7 @@ public class LoadingActivity extends BaseActivity implements GPSLocator.location
                     countryReference.child(country_id).setValue(country);
                 }
                 Log.d(DEBUG_TAG,"Country Code is now:" + country_id);
-                refreshCityID(locationDetails.getCountryName());
+                refreshCityID(locationDetails.getAdminAreaName());
             }
 
             @Override
@@ -278,9 +265,24 @@ public class LoadingActivity extends BaseActivity implements GPSLocator.location
 
                 Log.d(DEBUG_TAG,"Zones Found:" + locationDetails.getZonesStatus());
                 if(locationDetails.getZonesStatus()) {
-                    //set first page is innermost zoneCircle
+                    //set first page as innermost zoneCircle
                     currCircle = 1 + locationDetails.zonesList.size();
                 }
+
+                //update preferences values;
+                /*
+                Extremely bothersome so removing for now
+                SharedPreferences.Editor editor = preferences.edit();
+                editor.putString("city_name", locationDetails.getAdminAreaName());
+                editor.putString("country_name", locationDetails.getCountryName());
+                editor.putString("city_ID", city_id);
+                editor.putString("country_ID", country_id);
+                editor.apply();
+                */
+                locationDetails.setCountryID(country_id);
+                locationDetails.setCityID(city_id);
+
+                startActivity(new Intent(LoadingActivity.this, FeedActivity.class));
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {

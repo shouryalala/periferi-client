@@ -56,9 +56,13 @@ public class CurrentLocationDetails {
         this.cityID = id;
     }
 
+    public String getCountryID() {return this.countryID; }
+
+    public String getCityID() {return this.cityID; }
+
     public void setZonesAvailable(){
         noZonesAvailable = false;
     }
 
-    public boolean getZonesStatus() {return !noZonesAvailable;}
+    public boolean getZonesStatus() {return !noZonesAvailable;}     //true if zones available
 }

@@ -1,6 +1,7 @@
 package com.eightyeightysix.shourya.almondclient;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.support.v4.app.ActivityCompat;
@@ -47,6 +48,8 @@ public class BaseActivity extends AppCompatActivity{
     private static final int DAYS = 24 * HOURS;
     private static final int MONTHS = 30 * DAYS;
     private static final int YEARS = 365 * DAYS;
+
+    public ProgressDialog progressDialog;
 
     private final static String DEBUG_TAG = "AlmondLog:: " + BaseActivity.class.getSimpleName();
     private static final int MY_REQUEST_ACCESS_FINE_LOCATION = 69;
@@ -136,10 +139,31 @@ public class BaseActivity extends AppCompatActivity{
     }
 
     public void userOnline() {
-        Map<String, String> paramsOther = new HashMap<>();
-        paramsOther.put("userID", mUser.getUserId());
-        final String amOnlineReference = substituteString(getResources().getString(R.string.add_user_online), paramsOther);
-        mDatabase.getReference(amOnlineReference).setValue(true);
+        String uID = mUser.getUserId();
+        Map<String, String> paramsCountry = new HashMap<>();
+        paramsCountry.put("countryID", locationDetails.getCountryID());
+        paramsCountry.put("userID", uID);
+
+        Map<String, String> paramsCity = new HashMap<>();
+        paramsCity.put("cityID", locationDetails.getCityID());
+        paramsCity.put("userID", uID);
+
+        final String onlineCountryRef = substituteString(getResources().getString(R.string.add_online_country), paramsCountry);
+        final String onlineCityRef = substituteString(getResources().getString(R.string.add_online_city), paramsCity);
+
+        mDatabase.getReference(onlineCountryRef).setValue(true);
+        mDatabase.getReference(onlineCityRef).setValue(true);
+
+        if(locationDetails.getZonesStatus()) {
+            Map<String, String> paramsZone = new HashMap<>();
+            for(String s: locationDetails.zonesList) {
+                paramsZone.clear();
+                paramsZone.put("zoneID", s);
+                paramsZone.put("userID", uID);
+                String ref = substituteString(getResources().getString(R.string.add_online_zone), paramsZone);
+                mDatabase.getReference(ref).setValue(true);
+            }
+        }
     }
 
     public void userOnlineStatusRefresh(int circle) {
@@ -148,9 +172,41 @@ public class BaseActivity extends AppCompatActivity{
     }
 
     public void userOffline() {
-        Map<String, String> mParams = new HashMap<>();
-        mParams.put("userID", mUser.getUserId());
-        final String reference = substituteString(getString(R.string.add_user_online), mParams);
-        mDatabase.getReference(reference).removeValue();
+        String uID = mUser.getUserId();
+        Map<String, String> paramsCountry = new HashMap<>();
+        paramsCountry.put("countryID", locationDetails.getCountryID());
+        paramsCountry.put("userID", uID);
+
+        Map<String, String> paramsCity = new HashMap<>();
+        paramsCity.put("cityID", locationDetails.getCityID());
+        paramsCity.put("userID", uID);
+
+        final String onlineCountryRef = substituteString(getResources().getString(R.string.add_online_country), paramsCountry);
+        final String onlineCityRef = substituteString(getResources().getString(R.string.add_online_city), paramsCity);
+
+        mDatabase.getReference(onlineCountryRef).removeValue();
+        mDatabase.getReference(onlineCityRef).removeValue();
+
+        if(locationDetails.getZonesStatus()) {
+            Map<String, String> paramsZone = new HashMap<>();
+            for(String s: locationDetails.zonesList) {
+                paramsZone.clear();
+                paramsZone.put("zoneID", s);
+                paramsZone.put("userID", uID);
+                String ref = substituteString(getResources().getString(R.string.add_online_zone), paramsZone);
+                mDatabase.getReference(ref).removeValue();
+            }
+        }
+
     }
+
+    public void showProgressDialog() {
+        progressDialog.setMessage("loading..");
+        progressDialog.show();
+    }
+
+    public void dismissProgressDialog() {
+        progressDialog.dismiss();
+    }
+
 }
