@@ -72,7 +72,7 @@ public class RequestZoneActivity extends BaseActivity implements OnMapReadyCallb
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getApplicationContext(), "You sexy bitch you:*", Toast.LENGTH_LONG).show();
+                submitRequest();
             }
         });
 
@@ -295,5 +295,14 @@ public class RequestZoneActivity extends BaseActivity implements OnMapReadyCallb
         double deltaLng = lng1 - lng2;
         double t = tan1 * tan2;
         return 2.0D * Math.atan2(t * Math.sin(deltaLng), 1.0D + t * Math.cos(deltaLng));
+    }
+
+    private void submitRequest() {
+        if(zonePolygon  == null || markers.isEmpty() || points.isEmpty()){
+            toastit("Please create a zone first");
+        }
+        else{
+            //check already created zones and requested zones
+        }
     }
 }
