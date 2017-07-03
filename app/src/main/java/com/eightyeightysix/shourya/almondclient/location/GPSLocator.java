@@ -70,7 +70,7 @@ public class GPSLocator{
                 if(task1.isSuccessful() && task1.getResult()!= null) {
                     mLastLocation = task1.getResult();
                     canGetLocation = true;
-                    Log.d(DEBUG_TAG, "Location received, callback called");
+                    Log.d(DEBUG_TAG, "Location received: " + mLastLocation.toString() + ", callback called");
                     callback.onReceivingCoordinates();
                 }
                 else{

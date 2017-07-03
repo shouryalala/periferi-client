@@ -29,8 +29,10 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
     private static final int NUM_PAGES  = 2;
     private final static String DEBUG_TAG = "AlmondLog:: " + FeedActivity.class.getSimpleName();
     private AlmondPagerSettings mPager;
-    private PagerAdapter mPagerAdapter;
+    private SwipeUpPagerAdapter mPagerAdapter;
     private View view1, view2;
+    protected ChatListFragment chatListFragment;
+    protected BroadCastFragment broadCastFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,7 +63,6 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
         progressDialog = new ProgressDialog(this);
 
         Log.d(DEBUG_TAG, userId + userName + userEmail + displayName);
-
     }
 
     public void createNewBroadCast() {
@@ -183,9 +184,17 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
         @Override
         public Fragment getItem(int position) {
             switch(position) {
-                case 0: return new ChatListFragment();
-                case 1: return new BroadCastFragment();
-                default: return new ChatListFragment();
+                case 0: {
+                    if (chatListFragment == null)
+                        chatListFragment = new ChatListFragment();
+                    return chatListFragment;
+                }
+                case 1:{
+                    if(broadCastFragment == null)
+                        broadCastFragment = new BroadCastFragment();
+                    return broadCastFragment;
+                }
+                default: return chatListFragment;
             }
         }
 
@@ -197,17 +206,29 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
 
     //temp functions
     public void setCountryOnline(View v) {
-        if(mPager.getCurrentItem() == 1) {
+        if(currCircle == 0)
+            toastit("Current Circle");
+        else if(mPager.getCurrentItem() == 0) {
             userOnlineStatusRefresh(0);
-
+            ((ChatListFragment)mPagerAdapter.getItem(0)).fetchOnlineUsers(0);
         }
     }
 
     public void setCityOnline(View v) {
-        userOnlineStatusRefresh(1);
+        if(currCircle == 1)
+            toastit("Current Circle");
+        else if(mPager.getCurrentItem() == 0) {
+            userOnlineStatusRefresh(1);
+            ((ChatListFragment)mPagerAdapter.getItem(0)).fetchOnlineUsers(1);
+        }
     }
 
     public void setZoneOnline(View v) {
-        userOnlineStatusRefresh(2);
+        if(!locationDetails.getZonesStatus())
+            toastit("No Zones Available");
+        else if(mPager.getCurrentItem() == 0) {
+            userOnlineStatusRefresh(2);
+            ((ChatListFragment)mPagerAdapter.getItem(0)).fetchOnlineUsers(2);
+        }
     }
 }

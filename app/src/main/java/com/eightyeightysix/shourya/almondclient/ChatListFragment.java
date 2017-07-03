@@ -94,16 +94,19 @@ public class ChatListFragment extends Fragment {
                 //country users
                 params.put("countryID", BaseActivity.locationDetails.getCountryID());
                 reference = BaseActivity.substituteString(getResources().getString(R.string.all_online_country), params);
+                break;
             }
             case 1:{
                 //city users
                 params.put("cityID", BaseActivity.locationDetails.getCityID());
                 reference = BaseActivity.substituteString(getResources().getString(R.string.all_online_city), params);
+                break;
             }
             default:{
                 //zone
-                params.put("zoneID", BaseActivity.locationDetails.zonesList.get(circle-2));
+                params.put("zoneID", BaseActivity.locationDetails.zonesList.get(circle - 2));
                 reference = BaseActivity.substituteString(getResources().getString(R.string.all_online_zone), params);
+                break;
             }
         }
         Log.d(DEBUG_TAG, "Switched to Circle: " + circle);
