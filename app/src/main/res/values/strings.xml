@@ -1,5 +1,26 @@
 <resources>
     <string name="app_name">Almondclient</string>
     <string name="action_settings">Settings</string>
+
     <string name="title_activity_request_zone">Map</string>
+    <string name="facebook_app_id">330012370764893</string>
+    <string name="facebook_error">An error occured while logging in.</string>
+    <string name="facebook_cancel">Action Cancelled</string>
+    <string name="button_continue">continue</string>
+    <string name="field_empty">Email field can\'t be empty</string>
+    <string name="invalid_email">Invalid Email address</string>
+    <string name="invalid_password">Password too small</string>
+    <string name="button_password">Next</string>
+    <string name="button_google">Continue with G+</string>
+    <string name="button_done">Done</string>
+    <string name="young_age">You arent eligible. Sorry</string>
+    <string name="invalid_uname">Username field can\'t be empty</string>
+    <string name="uname_space">Username field can\'t be empty</string>
+    <string name="no_chats">No Chats Yet</string>
+    <string name="message_hint">Let\'s make a friend!</string>
+    <string name="send_button_text">Send</string>
+    <string name="no_location_data_provided">Location values not present</string>
+    <string name="no_address_found">No address found for curent coordinates</string>
+
+
 </resources>
