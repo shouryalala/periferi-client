@@ -53,5 +53,5 @@ public class User {
     public String getDob() { return mDob; }
 
     @Exclude
-    public String getmGender() { return mGender; }
+    public String getGender() { return mGender; }
 }

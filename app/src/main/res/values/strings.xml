@@ -17,5 +17,7 @@
     <string name="no_chats">No Chats Yet</string>
     <string name="message_hint">Let\'s make a friend!</string>
     <string name="send_button_text">Send</string>
+    <string name="no_location_data_provided">Location values not present</string>
+    <string name="no_address_found">No address found for curent coordinates</string>
 
 </resources>

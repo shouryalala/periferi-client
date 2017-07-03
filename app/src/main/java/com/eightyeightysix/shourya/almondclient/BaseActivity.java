@@ -1,8 +1,8 @@
 package com.eightyeightysix.shourya.almondclient;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -10,6 +10,8 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.eightyeightysix.shourya.almondclient.data.User;
+import com.eightyeightysix.shourya.almondclient.location.CurrentLocationDetails;
+import com.eightyeightysix.shourya.almondclient.location.GPSLocator;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
@@ -47,9 +49,11 @@ public class BaseActivity extends AppCompatActivity{
     private static final int MONTHS = 30 * DAYS;
     private static final int YEARS = 365 * DAYS;
 
+    public ProgressDialog progressDialog;
+
     private final static String DEBUG_TAG = "AlmondLog:: " + BaseActivity.class.getSimpleName();
     private static final int MY_REQUEST_ACCESS_FINE_LOCATION = 69;
-    public static boolean permissionLocation = false;
+    public static boolean permissionLocation = true;
 
     //All user Details
     public static User mUser;
@@ -57,6 +61,10 @@ public class BaseActivity extends AppCompatActivity{
     //Current ChatUser - no need to take import all user data
     public static User mChatBuddy;
     public static Map<String, String> friendIds;        //Name, ID
+
+    public static CurrentLocationDetails locationDetails;   //stores current location
+
+    public static int currCircle;
 
     //location callback for later - tutorials
     interface permissionsListener{
@@ -80,9 +88,9 @@ public class BaseActivity extends AppCompatActivity{
                 }
                 else {
                     permissionLocation = false;
+                    toastit("Sorry, Almond cant function without Location");
                     //TODO tell the user that this functionality is a core necessity for the functioning of the application
                 }
-                locationListener(mLocator);
             }
         }
     }
@@ -109,17 +117,6 @@ public class BaseActivity extends AppCompatActivity{
         userEmail = email;
     }
 
-    public void locationListener(GPSLocator locate) {
-        mLocationRequestReturned = true;
-        if(permissionLocation) {
-            locate.getLocation();
-            toastit("Latitude: " + locate.getLatitude() + "\nLongitude: " + locate.getLongitude());
-        }
-        else {
-            toastit("Almond cant function without Location");
-        }
-    }
-
     public static String getChatID(String id1, String id2) {
         if(id1.compareTo(id2)>0){
             return (id1 + "_" + id2);
@@ -142,16 +139,74 @@ public class BaseActivity extends AppCompatActivity{
     }
 
     public void userOnline() {
-        Map<String, String> paramsOther = new HashMap<>();
-        paramsOther.put("userID", mUser.getUserId());
-        final String amOnlineReference = substituteString(getResources().getString(R.string.add_user_online), paramsOther);
-        mDatabase.getReference(amOnlineReference).setValue(true);
+        String uID = mUser.getUserId();
+        Map<String, String> paramsCountry = new HashMap<>();
+        paramsCountry.put("countryID", locationDetails.getCountryID());
+        paramsCountry.put("userID", uID);
+
+        Map<String, String> paramsCity = new HashMap<>();
+        paramsCity.put("cityID", locationDetails.getCityID());
+        paramsCity.put("userID", uID);
+
+        final String onlineCountryRef = substituteString(getResources().getString(R.string.add_online_country), paramsCountry);
+        final String onlineCityRef = substituteString(getResources().getString(R.string.add_online_city), paramsCity);
+
+        mDatabase.getReference(onlineCountryRef).setValue(true);
+        mDatabase.getReference(onlineCityRef).setValue(true);
+
+        if(locationDetails.getZonesStatus()) {
+            Map<String, String> paramsZone = new HashMap<>();
+            for(String s: locationDetails.zonesList) {
+                paramsZone.clear();
+                paramsZone.put("zoneID", s);
+                paramsZone.put("userID", uID);
+                String ref = substituteString(getResources().getString(R.string.add_online_zone), paramsZone);
+                mDatabase.getReference(ref).setValue(true);
+            }
+        }
+    }
+
+    public void userOnlineStatusRefresh(int circle) {
+        currCircle = circle;
+        toastit("Current Circle " + circle);
     }
 
     public void userOffline() {
-        Map<String, String> mParams = new HashMap<>();
-        mParams.put("userID", mUser.getUserId());
-        final String reference = substituteString(getString(R.string.add_user_online), mParams);
-        mDatabase.getReference(reference).removeValue();
+        String uID = mUser.getUserId();
+        Map<String, String> paramsCountry = new HashMap<>();
+        paramsCountry.put("countryID", locationDetails.getCountryID());
+        paramsCountry.put("userID", uID);
+
+        Map<String, String> paramsCity = new HashMap<>();
+        paramsCity.put("cityID", locationDetails.getCityID());
+        paramsCity.put("userID", uID);
+
+        final String onlineCountryRef = substituteString(getResources().getString(R.string.add_online_country), paramsCountry);
+        final String onlineCityRef = substituteString(getResources().getString(R.string.add_online_city), paramsCity);
+
+        mDatabase.getReference(onlineCountryRef).removeValue();
+        mDatabase.getReference(onlineCityRef).removeValue();
+
+        if(locationDetails.getZonesStatus()) {
+            Map<String, String> paramsZone = new HashMap<>();
+            for(String s: locationDetails.zonesList) {
+                paramsZone.clear();
+                paramsZone.put("zoneID", s);
+                paramsZone.put("userID", uID);
+                String ref = substituteString(getResources().getString(R.string.add_online_zone), paramsZone);
+                mDatabase.getReference(ref).removeValue();
+            }
+        }
+
     }
+
+    public void showProgressDialog() {
+        progressDialog.setMessage("loading..");
+        progressDialog.show();
+    }
+
+    public void dismissProgressDialog() {
+        progressDialog.dismiss();
+    }
+
 }

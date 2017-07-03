@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -42,6 +43,8 @@ public class ChatListFragment extends Fragment {
     ProgressDialog progressDialog;
     DatabaseReference fetch_users;
     ValueEventListener userFetchListener;
+    //temps
+    Button bCountry, bCity, bZone;
 
     public interface StartChatListener{
         void startChat(User chatWith);
@@ -72,21 +75,62 @@ public class ChatListFragment extends Fragment {
         temp_chat_name = new ArrayList<>(); //currently shows all users who signed up.
 
         progressDialog = new ProgressDialog(fContext);
+
+        fetchOnlineUsers(BaseActivity.currCircle);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        Log.d(DEBUG_TAG, "View Destroy, Remove Event Listener");
+        fetch_users.removeEventListener(userFetchListener);
+    }
+
+    public String formReference(int circle) {
+        Map<String, String> params = new HashMap<>();
+        String reference;
+        switch(circle) {
+            case 0: {
+                //country users
+                params.put("countryID", BaseActivity.locationDetails.getCountryID());
+                reference = BaseActivity.substituteString(getResources().getString(R.string.all_online_country), params);
+                break;
+            }
+            case 1:{
+                //city users
+                params.put("cityID", BaseActivity.locationDetails.getCityID());
+                reference = BaseActivity.substituteString(getResources().getString(R.string.all_online_city), params);
+                break;
+            }
+            default:{
+                //zone
+                params.put("zoneID", BaseActivity.locationDetails.zonesList.get(circle - 2));
+                reference = BaseActivity.substituteString(getResources().getString(R.string.all_online_zone), params);
+                break;
+            }
+        }
+        Log.d(DEBUG_TAG, "Switched to Circle: " + circle);
+        return reference;
+    }
+
+    public void fetchOnlineUsers(int circle) {
         progressDialog.setMessage("Loading..");
         progressDialog.show();
 
+        String ref = formReference(circle);
 
-        final String get_users = BaseActivity.substituteString(getResources().getString(R.string.users_online), new HashMap<String, String>());
-
-        fetch_users = BaseActivity.mDatabase.getReference(get_users);
-        userFetchListener = new ValueEventListener() {
+        if(fetch_users != null) {
+            fetch_users.removeEventListener(userFetchListener);
+        }
+        fetch_users = BaseActivity.mDatabase.getReference(ref);
+        userFetchListener = fetch_users.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Log.d(DEBUG_TAG, dataSnapshot.toString());
                 temp_chat_name.clear();
-                listView.setVisibility(View.VISIBLE);
-                noUsers.setVisibility(View.INVISIBLE);
                 if(dataSnapshot.getValue() != null) {
+                    listView.setVisibility(View.VISIBLE);
+                    noUsers.setVisibility(View.INVISIBLE);
                     for(DataSnapshot userSnapshot: dataSnapshot.getChildren()) {
                         String key = (String)userSnapshot.getKey();
                         if(!key.equals(BaseActivity.mUser.getUserId())) {
@@ -96,22 +140,20 @@ public class ChatListFragment extends Fragment {
                         Log.d(DEBUG_TAG, userSnapshot.getValue().toString());
                     }
                     listView.setAdapter(new ArrayAdapter<String>(fContext, android.R.layout.simple_list_item_1, temp_chat_name));
-                    progressDialog.dismiss();
                 }
                 else {
                     Log.d(DEBUG_TAG, "No users available");
                     listView.setVisibility(View.INVISIBLE);
                     noUsers.setVisibility(View.VISIBLE);
-                    progressDialog.dismiss();
                 }
-
+                progressDialog.dismiss();
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
+
             }
-        };
-        fetch_users.addValueEventListener(userFetchListener);
+        });
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -133,12 +175,4 @@ public class ChatListFragment extends Fragment {
             }
         });
     }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        Log.d(DEBUG_TAG, "View Destroy, Remove Event Listener");
-        fetch_users.removeEventListener(userFetchListener);
-    }
-
 }
