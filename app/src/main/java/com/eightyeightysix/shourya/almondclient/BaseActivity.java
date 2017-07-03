@@ -104,6 +104,7 @@ public class BaseActivity extends AppCompatActivity{
         return result;
     }
 
+
     public void toastit(String message) {
         Toast.makeText(this, message, Toast.LENGTH_LONG).show();
     }

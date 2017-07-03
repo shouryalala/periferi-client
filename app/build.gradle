@@ -44,6 +44,8 @@ dependencies {
     compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile 'com.android.support:design:25.3.1'
+    //maps   
+    compile 'com.google.android.gms:play-services-maps:11.0.0'
     //location services
     compile 'com.google.android.gms:play-services-location:11.0.0'
     //facebook login
@@ -54,7 +56,7 @@ dependencies {
     compile 'com.google.firebase:firebase-messaging:11.0.0'
     //firebase ui
     compile 'com.firebaseui:firebase-ui-database:1.2.0'
-
+    
     testCompile 'junit:junit:4.12'
 }
 
