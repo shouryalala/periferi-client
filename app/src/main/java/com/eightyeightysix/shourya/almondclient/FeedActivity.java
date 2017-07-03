@@ -66,8 +66,9 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
     }
 
     public void createNewBroadCast() {
-        DialogFragment dialog = new NewBroadCastDialog();
-        dialog.show(getFragmentManager(), "NewBroadCastDialog");
+        /*DialogFragment dialog = new NewBroadCastDialog();
+        dialog.show(getFragmentManager(), "NewBroadCastDialog");*/
+        startActivity(new Intent(FeedActivity.this, RequestZoneActivity.class));
     }
 
     @Override

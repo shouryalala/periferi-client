@@ -108,7 +108,7 @@ public class RequestZoneActivity extends BaseActivity implements OnMapReadyCallb
                         this, R.raw.style_json));
 
         if (!success) {
-            Log.e(DEBUG_TAG, "Style parsing failed.");
+            Log.d(DEBUG_TAG, "Style parsing failed.");
         }
 
     }
@@ -186,7 +186,7 @@ public class RequestZoneActivity extends BaseActivity implements OnMapReadyCallb
                 break;
             }
             default: {
-                Log.d("Almondlog", "Going to default");
+                Log.d(DEBUG_TAG, "Going to default");
             }
         }
         zoneUpdatePolygon.setPoints(points);
@@ -237,7 +237,7 @@ public class RequestZoneActivity extends BaseActivity implements OnMapReadyCallb
 
     @Override
     public void onMarkerDrag(Marker marker) {
-        Log.d("Almondlog","onMarkerDrag");
+        Log.d(DEBUG_TAG,"onMarkerDrag");
         updateShape(marker);
     }
 
