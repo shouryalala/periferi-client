@@ -4,6 +4,7 @@ package com.eightyeightysix.shourya.almondclient.location;
  * Created by shourya on 30/6/17.
  */
 
+
 import java.util.ArrayList;
 
 public class CurrentLocationDetails {
@@ -16,6 +17,9 @@ public class CurrentLocationDetails {
     private String subadminAreaName;
     private String countryID;
     private String cityID;
+    //coordinates
+    private double currLat;
+    private double currLng;
     //All current Zones
     public boolean noZonesAvailable;
     public ArrayList<String> zonesList;
@@ -44,6 +48,11 @@ public class CurrentLocationDetails {
         subadminAreaName = g;
     }
 
+    public void setCoordinates(double a, double b) {
+        currLat = a;
+        currLng = b;
+    }
+
     public String getAdminAreaName() {return adminAreaName;}
 
     public String getCountryName() {return countryName;}
@@ -65,4 +74,8 @@ public class CurrentLocationDetails {
     }
 
     public boolean getZonesStatus() {return !noZonesAvailable;}     //true if zones available
+
+    public double getCurrLatitutde() {return this.currLat;}
+
+    public double getCurrLongitude() {return this.currLng;}
 }

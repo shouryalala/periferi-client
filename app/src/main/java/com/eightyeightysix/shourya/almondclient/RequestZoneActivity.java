@@ -1,6 +1,7 @@
 package com.eightyeightysix.shourya.almondclient;
 
 import android.graphics.Color;
+import android.provider.ContactsContract;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentActivity;
@@ -12,6 +13,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.eightyeightysix.shourya.almondclient.data.Zone;
+import com.eightyeightysix.shourya.almondclient.data.ZonePerimeter;
+import com.eightyeightysix.shourya.almondclient.data.ZoneRequest;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -27,9 +31,14 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PatternItem;
 import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -50,10 +59,12 @@ public class RequestZoneActivity extends BaseActivity implements OnMapReadyCallb
     private Polygon zonePolygon, zoneUpdatePolygon;
     private boolean longClick = false;
     private Button refresh, accept;
+    private LatLng myLoc;
     //TODO figure out values for MAX and MIN
     private static final double MAX_ZONE_AREA= 9000000;
     private static final double MIN_ZONE_AREA= 10000;
     private static final int ZONE_EDGES = 4;
+    private boolean zoneAccepted = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,9 +94,11 @@ public class RequestZoneActivity extends BaseActivity implements OnMapReadyCallb
                 mMap.clear();
                 points.clear();
                 markers.clear();
+                mMap.addMarker(new MarkerOptions().position(myLoc).title("Current Location"));
             }
         });
 
+        myLoc = new LatLng(locationDetails.getCurrLatitutde(), locationDetails.getCurrLongitude());
     }
 
 
@@ -93,8 +106,8 @@ public class RequestZoneActivity extends BaseActivity implements OnMapReadyCallb
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         longClick = true;
-        LatLng dilli = new LatLng(28.613166, 77.208519);
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(dilli, 15));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLoc, 15));
+        mMap.addMarker(new MarkerOptions().position(myLoc).title("Current Location"));
 
         coordinates = new MarkerOptions[4];
         points = new ArrayList<>(4);
@@ -122,13 +135,15 @@ public class RequestZoneActivity extends BaseActivity implements OnMapReadyCallb
         PolygonOptions minRectangle = new PolygonOptions();
         PolygonOptions mintempRectangle = new PolygonOptions();
 
-        double originLat = coordinate.latitude;
-        double originLong = coordinate.longitude;
+        //double originLat = coordinate.latitude;
+        //double originLong = coordinate.longitude;
+        double originLat = myLoc.latitude - (minLatitudeShift/2);
+        double originLng = myLoc.longitude - (minLongitudeShift/2);
 
-        a = coordinate;
-        b = new LatLng(originLat, originLong + minLongitudeShift);
-        c = new LatLng(originLat + minLatitudeShift, originLong + minLongitudeShift);
-        d = new LatLng(originLat + minLatitudeShift, originLong);
+        a = new LatLng(originLat, originLng);
+        b = new LatLng(originLat, originLng + minLongitudeShift);
+        c = new LatLng(originLat + minLatitudeShift, originLng + minLongitudeShift);
+        d = new LatLng(originLat + minLatitudeShift, originLng);
 
         points.add(a);
         points.add(b);
@@ -254,11 +269,16 @@ public class RequestZoneActivity extends BaseActivity implements OnMapReadyCallb
     public void onMarkerDragEnd(Marker marker) {
         double area = computeZoneArea(points);
         if(area > MAX_ZONE_AREA){
-           Toast.makeText(getApplicationContext(), "Zone area too great", Toast.LENGTH_LONG).show();
+           toastit("Zone area too great");
             areaViolation();
         }
         else if(area < MIN_ZONE_AREA) {
-            Toast.makeText(getApplicationContext(), "Zone area too small", Toast.LENGTH_LONG).show();
+            toastit("Zone area too small");
+            areaViolation();
+        }
+        else if(points.get(0).latitude < myLoc.latitude || points.get(0).longitude > myLoc.longitude ||
+                points.get(2).latitude > myLoc.latitude || points.get(2).longitude < myLoc.longitude) {
+            toastit("You can only create a zone around your location");
             areaViolation();
         }
         else {
@@ -303,6 +323,26 @@ public class RequestZoneActivity extends BaseActivity implements OnMapReadyCallb
         }
         else{
             //check already created zones and requested zones
+            showProgressDialog();
+            HashMap<String, String> params = new HashMap<>();
+            params.put("cityID", locationDetails.getCityID());
+            //final String get_requests = substituteString(getResources().getString(R.string.all_zone_requests), params);
+            DatabaseReference req = mDatabase.getReference();
+            req.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if(dataSnapshot != null) {
+                        for(DataSnapshot ds : dataSnapshot.getChildren()) {
+                            ZoneRequest z = ds.getValue(ZoneRequest.class);
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
         }
     }
 }

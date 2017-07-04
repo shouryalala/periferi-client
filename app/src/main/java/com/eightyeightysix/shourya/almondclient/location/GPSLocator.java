@@ -12,6 +12,7 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.eightyeightysix.shourya.almondclient.BaseActivity;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -71,6 +72,7 @@ public class GPSLocator{
                     mLastLocation = task1.getResult();
                     canGetLocation = true;
                     Log.d(DEBUG_TAG, "Location received: " + mLastLocation.toString() + ", callback called");
+                    BaseActivity.locationDetails.setCoordinates(mLastLocation.getLatitude(), mLastLocation.getLongitude());
                     callback.onReceivingCoordinates();
                 }
                 else{
