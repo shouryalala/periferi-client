@@ -17,4 +17,5 @@
     <string name="all_online_country">onlinecountryusers/{countryID}</string>
     <string name="all_online_city">onlinecityusers/{cityID}</string>
     <string name="all_online_zone">onlinezoneusers/{zoneID}</string>
+    <string name="all_zone_requests">almondzonerequests/{cityID}</string>
 </resources>

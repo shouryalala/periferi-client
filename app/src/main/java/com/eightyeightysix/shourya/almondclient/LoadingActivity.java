@@ -62,6 +62,7 @@ public class LoadingActivity extends BaseActivity implements GPSLocator.location
         locationDetails = new CurrentLocationDetails();
         //callback class for ReverseGeocode
         mResultReceiver = new AddressResultReceiver(new Handler());
+        currZonePerimeter = new ArrayList<>();
 
         /*
          * Initiate first page as city circle
@@ -255,6 +256,7 @@ public class LoadingActivity extends BaseActivity implements GPSLocator.location
                         if(zp.insideZone(mLocator.getLatitude(), mLocator.getLongitude())){
                             flag = false;
                             locationDetails.zonesList.add(ds.getKey());
+                            currZonePerimeter.add(zp);
                         }
                     }
                     if(!flag)locationDetails.setZonesAvailable();

@@ -16,14 +16,16 @@ public class ZoneRequest {
     public double lngMin;
     public double lngMax;
     public String creator;
+    public String zName;
     public Map<String, Boolean> reqCount = new HashMap<>();
 
     public ZoneRequest() {
         //Firebase
     }
 
-    public ZoneRequest(String c, double lMin, double lMax, double gMin, double gMax){
+    public ZoneRequest(String c, String name, double lMin, double lMax, double gMin, double gMax){
         creator = c;
+        zName = name;
         latMin = lMin;
         latMax = lMax;
         lngMin = gMin;
@@ -33,6 +35,19 @@ public class ZoneRequest {
     @Exclude
     public double getFactor(double lMin, double lMax, double gMin, double gMax) {
         //think
-        return ((latMax/lMax)+(latMin/lMin)+(lngMax/gMax)+(lngMin/gMin));
+        double factor = ((double)10000/(double)3);
+        double a = Math.abs(latMax-lMax);
+        double b = Math.abs(latMin-lMin);
+        double c = Math.abs(lngMax-gMax);
+        double d = Math.abs(lngMin-gMin);
+        return (a+b+c+d)*factor;
     }
+
+    @Exclude
+    public boolean insideZone(double currLat, double currLng) {
+        return !(currLat > this.latMax || currLat < this.latMin || currLng > this.lngMax || currLng < this.lngMin);
+    }
+
+    @Exclude
+    public String getzName() {return zName;}
 }

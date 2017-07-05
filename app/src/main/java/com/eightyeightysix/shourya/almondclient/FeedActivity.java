@@ -60,8 +60,6 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
         //initialise fragment Manager
         fragmentManager = getSupportFragmentManager();
 
-        progressDialog = new ProgressDialog(this);
-
         Log.d(DEBUG_TAG, userId + userName + userEmail + displayName);
     }
 
