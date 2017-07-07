@@ -56,6 +56,10 @@ public class LoadingActivity extends BaseActivity implements GPSLocator.location
         mDatabase = FirebaseDatabase.getInstance();
         //refreshes location and places it in a callback
         mLocator = new GPSLocator(this);
+        //gesture
+        getScreenCenter();
+
+        //requestAllPermissions(this);        
         //define SharedPreference location
         preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         //class to store location details
@@ -119,6 +123,7 @@ public class LoadingActivity extends BaseActivity implements GPSLocator.location
             //login
             startActivity(new Intent(LoadingActivity.this, LoginActivity.class));
         }
+
     }
 
     //callback from GPSLocator
