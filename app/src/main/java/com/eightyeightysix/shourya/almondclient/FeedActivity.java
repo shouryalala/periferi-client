@@ -236,4 +236,6 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
             ((BroadCastFragment) mPagerAdapter.getItem(1)).fetchCircleBroadCasts(2);
         }
     }
+
+    //Gesture Implementation
 }
