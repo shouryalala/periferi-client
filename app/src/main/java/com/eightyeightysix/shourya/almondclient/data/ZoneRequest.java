@@ -34,7 +34,7 @@ public class ZoneRequest {
 
     @Exclude
     public double getFactor(double lMin, double lMax, double gMin, double gMax) {
-        //think
+        //TODO incorrect factor calculation
         double factor = ((double)10000/(double)3);
         double a = Math.abs(latMax-lMax);
         double b = Math.abs(latMin-lMin);
