@@ -1,6 +1,8 @@
 package com.eightyeightysix.shourya.almondclient;
 
+import android.app.DialogFragment;
 import android.graphics.Color;
+import android.provider.ContactsContract;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentActivity;
@@ -12,6 +14,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.eightyeightysix.shourya.almondclient.data.Zone;
+import com.eightyeightysix.shourya.almondclient.data.ZonePerimeter;
+import com.eightyeightysix.shourya.almondclient.data.ZoneRequest;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -27,9 +32,14 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PatternItem;
 import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -37,7 +47,8 @@ import java.util.List;
 public class RequestZoneActivity extends BaseActivity implements OnMapReadyCallback,
                                                                     GoogleMap.OnMapClickListener,
                                                                     GoogleMap.OnMapLongClickListener,
-                                                                    GoogleMap.OnMarkerDragListener{
+                                                                    GoogleMap.OnMarkerDragListener,
+                                                                    NewZoneRequestDialog.zoneRequestCallback{
     //TODO save instance so as to load it when there is a change in the screen
     private static final String DEBUG_TAG = "AlmondLog:: " + RequestZoneActivity.class.getSimpleName();
     private GoogleMap mMap;
@@ -50,10 +61,16 @@ public class RequestZoneActivity extends BaseActivity implements OnMapReadyCallb
     private Polygon zonePolygon, zoneUpdatePolygon;
     private boolean longClick = false;
     private Button refresh, accept;
+    private LatLng myLoc;
     //TODO figure out values for MAX and MIN
     private static final double MAX_ZONE_AREA= 9000000;
     private static final double MIN_ZONE_AREA= 10000;
     private static final int ZONE_EDGES = 4;
+    private static boolean zoneAcceptedByRequests = true;
+    private static boolean zoneAcceptedByZones = true;
+    private String zoneConflict = null;
+    private static double lMin, lMax, gMin, gMax;
+    private static DatabaseReference req;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,9 +100,18 @@ public class RequestZoneActivity extends BaseActivity implements OnMapReadyCallb
                 mMap.clear();
                 points.clear();
                 markers.clear();
+                mMap.addMarker(new MarkerOptions().position(myLoc).title("Current Location"));
             }
         });
 
+        //current location
+        myLoc = new LatLng(locationDetails.getCurrLatitutde(), locationDetails.getCurrLongitude());
+
+        //create almondzonerequests reference
+        HashMap<String, String> params = new HashMap<>();
+        params.put("cityID", locationDetails.getCityID());
+        final String get_requests = substituteString(getResources().getString(R.string.all_zone_requests), params);
+        req = mDatabase.getReference(get_requests);
     }
 
 
@@ -93,8 +119,8 @@ public class RequestZoneActivity extends BaseActivity implements OnMapReadyCallb
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         longClick = true;
-        LatLng dilli = new LatLng(28.613166, 77.208519);
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(dilli, 15));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLoc, 15));
+        mMap.addMarker(new MarkerOptions().position(myLoc).title("Current Location"));
 
         coordinates = new MarkerOptions[4];
         points = new ArrayList<>(4);
@@ -122,13 +148,15 @@ public class RequestZoneActivity extends BaseActivity implements OnMapReadyCallb
         PolygonOptions minRectangle = new PolygonOptions();
         PolygonOptions mintempRectangle = new PolygonOptions();
 
-        double originLat = coordinate.latitude;
-        double originLong = coordinate.longitude;
+        //double originLat = coordinate.latitude;
+        //double originLong = coordinate.longitude;
+        double originLat = myLoc.latitude - (minLatitudeShift/2);
+        double originLng = myLoc.longitude - (minLongitudeShift/2);
 
-        a = coordinate;
-        b = new LatLng(originLat, originLong + minLongitudeShift);
-        c = new LatLng(originLat + minLatitudeShift, originLong + minLongitudeShift);
-        d = new LatLng(originLat + minLatitudeShift, originLong);
+        a = new LatLng(originLat, originLng);
+        b = new LatLng(originLat, originLng + minLongitudeShift);
+        c = new LatLng(originLat + minLatitudeShift, originLng + minLongitudeShift);
+        d = new LatLng(originLat + minLatitudeShift, originLng);
 
         points.add(a);
         points.add(b);
@@ -254,11 +282,16 @@ public class RequestZoneActivity extends BaseActivity implements OnMapReadyCallb
     public void onMarkerDragEnd(Marker marker) {
         double area = computeZoneArea(points);
         if(area > MAX_ZONE_AREA){
-           Toast.makeText(getApplicationContext(), "Zone area too great", Toast.LENGTH_LONG).show();
+           toastit("Zone area too great");
             areaViolation();
         }
         else if(area < MIN_ZONE_AREA) {
-            Toast.makeText(getApplicationContext(), "Zone area too small", Toast.LENGTH_LONG).show();
+            toastit("Zone area too small");
+            areaViolation();
+        }
+        else if(points.get(0).latitude < myLoc.latitude || points.get(0).longitude > myLoc.longitude ||
+                points.get(2).latitude > myLoc.latitude || points.get(2).longitude < myLoc.longitude) {
+            toastit("You can only create a zone around your location");
             areaViolation();
         }
         else {
@@ -298,11 +331,74 @@ public class RequestZoneActivity extends BaseActivity implements OnMapReadyCallb
     }
 
     private void submitRequest() {
+        zoneAcceptedByRequests = true;
+        zoneAcceptedByZones = true;
         if(zonePolygon  == null || markers.isEmpty() || points.isEmpty()){
             toastit("Please create a zone first");
         }
         else{
             //check already created zones and requested zones
+            showProgressDialog("Checking for Conflicts", this);
+            lMin = points.get(2).latitude;
+            lMax = points.get(0).latitude;
+            gMin = points.get(0).longitude;
+            gMax = points.get(2).longitude;
+
+            req.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    Log.d(DEBUG_TAG, "Firebase Called");
+                    if(dataSnapshot != null) {
+                        for(DataSnapshot ds : dataSnapshot.getChildren()) {
+                            ZoneRequest z = ds.getValue(ZoneRequest.class);
+                            Log.d(DEBUG_TAG, "Zone Request Details: " + z.toString());
+                            Log.d(DEBUG_TAG, "Zone Factor:" + z.getFactor(lMin, lMax, gMin, gMax));
+                            if(z.insideZone(myLoc.latitude, myLoc.longitude) &&
+                                    z.getFactor(lMin, lMax, gMin, gMax) < 4.0){
+                                zoneAcceptedByRequests = false;
+                                Log.d(DEBUG_TAG, "Zone accepted: " + zoneAcceptedByRequests);
+                                zoneConflict = z.getzName();
+                                break;
+                            }
+                        }
+                    }
+                    onRequestFetchFinished();
+                }
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
         }
+    }
+
+    //callback on receiving data
+    public void onRequestFetchFinished() {
+        if(zoneAcceptedByRequests) {
+            for (ZonePerimeter zeus : currZonePerimeter) {
+                if(zeus.getFactor(lMin, lMax, gMin, gMax) < 4.0) {
+                    zoneAcceptedByZones = false;
+                    zoneConflict = zeus.zoneName;
+                }
+            }
+        }
+        Log.d(DEBUG_TAG, "ZoneAccepted: " + zoneAcceptedByRequests);
+        if(zoneAcceptedByRequests && zoneAcceptedByZones) {
+            //get zoneRequestname
+            DialogFragment dialog = new NewZoneRequestDialog();
+            dialog.show(getFragmentManager(), "NewZoneRequestDialog");
+        }
+        else{
+            toastit("A similar zone exists: " + zoneConflict);
+        }
+        dismissProgressDialog();
+    }
+
+    //callback from dialog
+    @Override
+    public void onSubmit(String name) {
+        ZoneRequest request = new ZoneRequest(mUser.getUserId(), name, lMin, lMax, gMin, gMax);
+        req.push().setValue(request);
+        toastit("Zone Request created!");
     }
 }

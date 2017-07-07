@@ -60,15 +60,12 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
         //initialise fragment Manager
         fragmentManager = getSupportFragmentManager();
 
-        progressDialog = new ProgressDialog(this);
-
         Log.d(DEBUG_TAG, userId + userName + userEmail + displayName);
     }
 
     public void createNewBroadCast() {
-        /*DialogFragment dialog = new NewBroadCastDialog();
-        dialog.show(getFragmentManager(), "NewBroadCastDialog");*/
-        startActivity(new Intent(FeedActivity.this, RequestZoneActivity.class));
+        DialogFragment dialog = new NewBroadCastDialog();
+        dialog.show(getFragmentManager(), "NewBroadCastDialog");
     }
 
     @Override
@@ -127,6 +124,10 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            return true;
+        }
+        else if(id == R.id.map_zones) {
+            startActivity(new Intent(FeedActivity.this, RequestZoneActivity.class));
             return true;
         }
 
@@ -209,27 +210,30 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
     public void setCountryOnline(View v) {
         if(currCircle == 0)
             toastit("Current Circle");
-        else if(mPager.getCurrentItem() == 0) {
+        else {
             userOnlineStatusRefresh(0);
-            ((ChatListFragment)mPagerAdapter.getItem(0)).fetchOnlineUsers(0);
+            ((ChatListFragment) mPagerAdapter.getItem(0)).fetchOnlineUsers(0);
+            ((BroadCastFragment) mPagerAdapter.getItem(1)).fetchCircleBroadCasts(0);
         }
     }
 
     public void setCityOnline(View v) {
         if(currCircle == 1)
             toastit("Current Circle");
-        else if(mPager.getCurrentItem() == 0) {
+        else {
             userOnlineStatusRefresh(1);
-            ((ChatListFragment)mPagerAdapter.getItem(0)).fetchOnlineUsers(1);
+            ((ChatListFragment) mPagerAdapter.getItem(0)).fetchOnlineUsers(1);
+            ((BroadCastFragment) mPagerAdapter.getItem(1)).fetchCircleBroadCasts(1);
         }
     }
 
     public void setZoneOnline(View v) {
         if(!locationDetails.getZonesStatus())
             toastit("No Zones Available");
-        else if(mPager.getCurrentItem() == 0) {
+        else {
             userOnlineStatusRefresh(2);
-            ((ChatListFragment)mPagerAdapter.getItem(0)).fetchOnlineUsers(2);
+            ((ChatListFragment) mPagerAdapter.getItem(0)).fetchOnlineUsers(2);
+            ((BroadCastFragment) mPagerAdapter.getItem(1)).fetchCircleBroadCasts(2);
         }
     }
 }

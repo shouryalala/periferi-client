@@ -21,6 +21,7 @@
     <string name="send_button_text">Send</string>
     <string name="no_location_data_provided">Location values not present</string>
     <string name="no_address_found">No address found for curent coordinates</string>
+    <string name="map_zones">Map Zones</string>
 
 
 </resources>

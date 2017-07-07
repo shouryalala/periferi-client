@@ -4,12 +4,15 @@ import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.eightyeightysix.shourya.almondclient.data.User;
+import com.eightyeightysix.shourya.almondclient.data.ZonePerimeter;
 import com.eightyeightysix.shourya.almondclient.location.CurrentLocationDetails;
 import com.eightyeightysix.shourya.almondclient.location.GPSLocator;
 import com.google.firebase.auth.FirebaseAuth;
@@ -49,7 +52,7 @@ public class BaseActivity extends AppCompatActivity{
     private static final int MONTHS = 30 * DAYS;
     private static final int YEARS = 365 * DAYS;
 
-    public ProgressDialog progressDialog;
+    private ProgressDialog progressDialog;
 
     private final static String DEBUG_TAG = "AlmondLog:: " + BaseActivity.class.getSimpleName();
     private static final int MY_REQUEST_ACCESS_FINE_LOCATION = 69;
@@ -62,7 +65,8 @@ public class BaseActivity extends AppCompatActivity{
     public static User mChatBuddy;
     public static Map<String, String> friendIds;        //Name, ID
 
-    public static CurrentLocationDetails locationDetails;   //stores current location
+    public static CurrentLocationDetails locationDetails;   //stores current location details
+    public static ArrayList<ZonePerimeter> currZonePerimeter;
 
     public static int currCircle;
 
@@ -201,8 +205,9 @@ public class BaseActivity extends AppCompatActivity{
 
     }
 
-    public void showProgressDialog() {
-        progressDialog.setMessage("loading..");
+    public void showProgressDialog(String message, Context context) {
+        progressDialog = new ProgressDialog(context);
+        progressDialog.setMessage(message);
         progressDialog.show();
     }
 
@@ -210,4 +215,12 @@ public class BaseActivity extends AppCompatActivity{
         progressDialog.dismiss();
     }
 
+    public boolean getConnectivityStatus() {
+        ConnectivityManager cm =
+                (ConnectivityManager)getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        return (activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting());
+    }
 }

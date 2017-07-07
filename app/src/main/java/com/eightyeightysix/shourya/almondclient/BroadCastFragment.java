@@ -4,6 +4,7 @@ package com.eightyeightysix.shourya.almondclient;
  * Created by shourya on 20/6/17.
  */
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 
@@ -26,6 +27,7 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.Transaction;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class BroadCastFragment extends Fragment{
     private static final String DEBUG_TAG = "AlmondLog:: " + BroadCastFragment.class.getSimpleName();
@@ -36,6 +38,8 @@ public class BroadCastFragment extends Fragment{
     private FirebaseRecyclerAdapter<BroadCast, BroadCastViewHolder> mAdapter;
     private RecyclerView mRecycler;
     private LinearLayoutManager mManager;
+
+    ProgressDialog progressDialog;
 
     public BroadCastFragment() {}
 
@@ -52,6 +56,7 @@ public class BroadCastFragment extends Fragment{
         mRecycler = (RecyclerView) rootView.findViewById(R.id.messages_list);
         mRecycler.setHasFixedSize(true);
 
+        progressDialog = new ProgressDialog(getContext());
         return rootView;
     }
 
@@ -65,9 +70,48 @@ public class BroadCastFragment extends Fragment{
         mManager.setStackFromEnd(true);
         mRecycler.setLayoutManager(mManager);
 
+        fetchCircleBroadCasts(BaseActivity.currCircle);
+    }
+
+    private String formReference(int circle) {
+        Map<String, String> params = new HashMap<>();
+        String reference;
+        switch(circle) {
+            case 0: {
+                //country users
+                params.put("countryID", BaseActivity.locationDetails.getCountryID());
+                reference = BaseActivity.substituteString(getResources().getString(R.string.all_broadcasts_country), params);
+                break;
+            }
+            case 1:{
+                //city users
+                params.put("cityID", BaseActivity.locationDetails.getCityID());
+                reference = BaseActivity.substituteString(getResources().getString(R.string.all_broadcasts_city), params);
+                break;
+            }
+            default:{
+                //zone
+                params.put("zoneID", BaseActivity.locationDetails.zonesList.get(circle - 2));
+                reference = BaseActivity.substituteString(getResources().getString(R.string.all_broadcasts_zone), params);
+                break;
+            }
+        }
+        Log.d(DEBUG_TAG, "Switched to Circle: " + circle);
+        return reference;
+    }
+
+    public void fetchCircleBroadCasts(int circle) {
+        progressDialog.setMessage("Populating broadcasts..");
+        progressDialog.show();
+        Log.d(DEBUG_TAG, "Refreshing broadcasts to circle: " + circle);
+        final String ref = formReference(circle);
+
+        if (mAdapter != null) {
+            mAdapter.cleanup();
+        }
+
         // Set up FirebaseRecyclerAdapter with the Query
-        final String postsReference = BaseActivity.substituteString(getResources().getString(R.string.all_broadcasts), new HashMap<String, String>());
-        final Query postsQuery = BaseActivity.mDatabase.getReference(postsReference);
+        final Query postsQuery = BaseActivity.mDatabase.getReference(ref);
 
         mAdapter = new FirebaseRecyclerAdapter<BroadCast, BroadCastViewHolder>(BroadCast.class, R.layout.item_post,
                 BroadCastViewHolder.class, postsQuery) {
@@ -81,7 +125,7 @@ public class BroadCastFragment extends Fragment{
                     @Override
                     public void onClick(View starView) {
                         // Need to write to both places the post is stored
-                        DatabaseReference globalPostRef = BaseActivity.mDatabase.getReference(postsReference).child(postRef.getKey());
+                        DatabaseReference globalPostRef = BaseActivity.mDatabase.getReference(ref).child(postRef.getKey());
                         //DatabaseReference userPostRef = mDatabase.child("user-posts").child(model.uid).child(postRef.getKey());
                         // Run two transactions
                         onStarClicked(globalPostRef);
@@ -91,6 +135,8 @@ public class BroadCastFragment extends Fragment{
             }
         };
         mRecycler.setAdapter(mAdapter);
+
+        progressDialog.dismiss();
     }
 
     private void onStarClicked(DatabaseReference postRef) {

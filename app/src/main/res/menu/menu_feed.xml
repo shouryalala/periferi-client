@@ -7,4 +7,9 @@
         android:orderInCategory="100"
         android:title="@string/action_settings"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/map_zones"
+        android:orderInCategory="200"
+        android:title="@string/map_zones"
+        app:showAsAction="never" />
 </menu>
