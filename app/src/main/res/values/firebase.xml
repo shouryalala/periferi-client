@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="user_check">users/{userID}</string>>
+    <string name="users">users</string>
+    <string name="user_chats">userchats/{userID}</string>
+    <string name="get_chat">messages/{chatId}</string>
+    <string name="add_user_online">onlineusers/{userID}</string>
+    <string name="users_online">onlineusers</string>
+    <string name="all_broadcasts">broadcasts</string>
+    <string name="user_broadcasts">userbroadcasts/{userID}</string>
+    <string name="all_countries">almondcountries</string>
+    <string name="get_city">almondcities/{countryID}</string>
+    <string name="get_zones">almondzones/{cityID}</string>
+    <string name="add_online_country">onlinecountryusers/{countryID}/{userID}</string>
+    <string name="add_online_city">onlinecityusers/{cityID}/{userID}</string>
+    <string name="add_online_zone">onlinezoneusers/{zoneID}/{userID}</string>
+    <string name="all_online_country">onlinecountryusers/{countryID}</string>
+    <string name="all_online_city">onlinecityusers/{cityID}</string>
+    <string name="all_online_zone">onlinezoneusers/{zoneID}</string>
+    <string name="all_zone_requests">almondzonerequests/{cityID}</string>
+    <string name="all_broadcasts_country">countrybroadcasts/{countryID}</string>
+    <string name="all_broadcasts_city">citybroadcasts/{cityID}</string>
+    <string name="all_broadcasts_zone">zonebroadcasts/{zoneID}</string>
+</resources>
