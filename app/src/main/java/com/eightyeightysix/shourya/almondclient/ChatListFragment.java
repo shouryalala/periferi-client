@@ -86,7 +86,7 @@ public class ChatListFragment extends Fragment {
         fetch_users.removeEventListener(userFetchListener);
     }
 
-    public String formReference(int circle) {
+    private String formReference(int circle) {
         Map<String, String> params = new HashMap<>();
         String reference;
         switch(circle) {

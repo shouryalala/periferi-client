@@ -71,6 +71,7 @@ public class LoadingActivity extends BaseActivity implements GPSLocator.location
          * zoneCircles = 2, 3 sorted according to area
         */
         currCircle = 1;
+        //TODO check internet and display message
 
         if(mFireUser != null) {
             //fetchLocation

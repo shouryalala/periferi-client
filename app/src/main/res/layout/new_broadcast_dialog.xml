@@ -4,15 +4,15 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <EditText
-        android:id="@+id/field_title"
+    <TextView
+        android:id="@+id/current_circle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="5dp"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         android:layout_marginTop="16dp"
-        android:hint="Title"
+        android:text="You're  in"
         android:maxLines="1" />
 
     <EditText
@@ -33,5 +33,5 @@
         android:id="@+id/broadcast_send"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="LOLWA"/>
+        android:text="BroadCast"/>
 </LinearLayout>
