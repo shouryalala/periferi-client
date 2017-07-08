@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import com.eightyeightysix.shourya.almondclient.BaseActivity;
 import com.eightyeightysix.shourya.almondclient.FeedActivity;
 import com.eightyeightysix.shourya.almondclient.view.AlmondLayout;
 
@@ -31,7 +32,7 @@ public class ZonePinchSurfaceView extends SurfaceView implements Runnable, Almon
     private PointF index, thumb;
     private float radius;
     private PointF center;
-    private static int zoneCount = -1;
+    private static int zoneCount = 2;
     private static float radii[];
     private static float radii_display[];
     private static float radiiExpand[];
@@ -87,7 +88,7 @@ public class ZonePinchSurfaceView extends SurfaceView implements Runnable, Almon
 
     private void getZoneCount(){
         //TODO Import number of zones from server
-        zoneCount = 4;   //temp;
+        zoneCount = BaseActivity.fetchCurrentCircleCount();
     }
 
     private void initRadii(float head) {
@@ -109,9 +110,9 @@ public class ZonePinchSurfaceView extends SurfaceView implements Runnable, Almon
             radii_expand_max[j] = (radii[j] + radiiExpand[j])/2 - 30;
         }
         selected_zone = zoneCount-1;
-        Log.d(DEBUG_TAG, "radii:"+ radii[2] + "," + radii[1] + "," + radii[0]);
-        Log.d(DEBUG_TAG, "radii_temp:"+ radii_display[2] + "," + radii_display[1] + "," + radii_display[0]);
-        Log.d(DEBUG_TAG, "radii_expand_max:"+ radii_expand_max[2] + "," + radii_expand_max[1] + "," + radii_expand_max[0]);
+//        Log.d(DEBUG_TAG, "radii:"+ radii[2] + "," + radii[1] + "," + radii[0]);
+//        Log.d(DEBUG_TAG, "radii_temp:"+ radii_display[2] + "," + radii_display[1] + "," + radii_display[0]);
+//        Log.d(DEBUG_TAG, "radii_expand_max:"+ radii_expand_max[2] + "," + radii_expand_max[1] + "," + radii_expand_max[0]);
     }
 
     @Override
@@ -270,6 +271,6 @@ public class ZonePinchSurfaceView extends SurfaceView implements Runnable, Almon
             canvas.drawColor(0, PorterDuff.Mode.CLEAR);
             holder.unlockCanvasAndPost(canvas);
         }
-
+        FeedActivity.refreshCircleContent(zoneCount - selected_zone - 1);
     }
 }

@@ -2,6 +2,7 @@ package com.eightyeightysix.shourya.almondclient;
 
 
 //gesture
+import android.content.Context;
 import android.graphics.PointF;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
@@ -25,6 +26,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.eightyeightysix.shourya.almondclient.data.User;
 import com.eightyeightysix.shourya.almondclient.gestureui.AlmondPagerSettings;
@@ -40,10 +42,11 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
     private static final int NUM_PAGES  = 2;
     private final static String DEBUG_TAG = "AlmondLog:: " + FeedActivity.class.getSimpleName();
     private AlmondPagerSettings mPager;
-    private SwipeUpPagerAdapter mPagerAdapter;
+    private static SwipeUpPagerAdapter mPagerAdapter;
     private View view1, view2;
     protected ChatListFragment chatListFragment;
     protected BroadCastFragment broadCastFragment;
+    private static Context mContext;
     //protected CoordinatorLayout mainView;
     ///gesture 
     //ZonePinchSurfaceView pinchView;
@@ -57,8 +60,7 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
         AlmondLayout mainView = (AlmondLayout)findViewById(R.id.feed_layout);
         mainView.gestureInit();
         //gestureInit();
-
-
+        mContext = getApplicationContext();
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -299,6 +301,18 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
             return NUM_PAGES;
         }
     }
+
+    //Callback from gesture
+    public static void refreshCircleContent(int id) {
+        if(currCircle == id)
+            Toast.makeText(mContext, "Current Circle", Toast.LENGTH_SHORT);
+        else {
+            currCircle = id;
+            ((ChatListFragment) mPagerAdapter.getItem(0)).fetchOnlineUsers(id);
+            ((BroadCastFragment) mPagerAdapter.getItem(1)).fetchCircleBroadCasts(id);
+        }
+    }
+
 
     //temp functions
     public void setCountryOnline(View v) {

@@ -201,6 +201,15 @@ public class BaseActivity extends AppCompatActivity{
         toastit("Current Circle " + circle);
     }
 
+
+    //for pinch circle initialization
+    public static int fetchCurrentCircleCount() {
+        if(locationDetails.getZonesStatus()){
+            return (2 + locationDetails.zonesList.size());
+        }
+        return 2;
+    }
+
     public void userOffline() {
         String uID = mUser.getUserId();
         Map<String, String> paramsCountry = new HashMap<>();
