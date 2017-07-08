@@ -57,7 +57,7 @@ public class LoadingActivity extends BaseActivity implements GPSLocator.location
         //refreshes location and places it in a callback
         mLocator = new GPSLocator(this);
         //gesture
-        getScreenCenter();
+        //getScreenCenter();
 
         //requestAllPermissions(this);        
         //define SharedPreference location

@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.eightyeightysix.shourya.almondclient.view.AlmondLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/feed_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.eightyeightysix.shourya.almondclient.FeedActivity">
 
-    <com.eightyeightysix.shourya.almondclient.ZonePinchSurfaceView
+
+    <com.eightyeightysix.shourya.almondclient.gestureui.ZonePinchSurfaceView
         android:id="@+id/pinchView"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
@@ -64,4 +66,4 @@
         android:layout_margin="@dimen/fab_margin"
         app:srcCompat="@android:drawable/ic_dialog_email" />
 
-</android.support.design.widget.CoordinatorLayout>
+</com.eightyeightysix.shourya.almondclient.view.AlmondLayout>

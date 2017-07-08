@@ -1,4 +1,4 @@
-package com.eightyeightysix.shourya.almondclient;
+package com.eightyeightysix.shourya.almondclient.gestureui;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -12,13 +12,15 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.widget.Toast;
+
+import com.eightyeightysix.shourya.almondclient.FeedActivity;
+import com.eightyeightysix.shourya.almondclient.view.AlmondLayout;
 
 /*
  * Created by shourya on 4/6/17.
  */
 
-public class ZonePinchSurfaceView extends SurfaceView implements Runnable, FeedActivity.pinchListener{
+public class ZonePinchSurfaceView extends SurfaceView implements Runnable, AlmondLayout.pinchListener {
     Thread t = null;
     SurfaceHolder holder;
     Paint paintRed, paintBlue;
