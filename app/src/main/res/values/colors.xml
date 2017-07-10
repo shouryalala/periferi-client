@@ -5,4 +5,7 @@
     <color name="colorAccent">#FF4081</color>
     <color name="opaque_red">#F00</color>
     <color name="translucent_red">#50FF0000</color>
+    <color name="tut_1_green">#009933</color>
+    <color name="tut_2_blue">#0066cc</color>
+    <color name="tut_3_purple">#660066</color>
 </resources>

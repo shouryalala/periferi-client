@@ -1,11 +1,14 @@
 package com.eightyeightysix.shourya.almondclient;
 
+import android.*;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.ResultReceiver;
 import android.preference.PreferenceManager;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
 import com.eightyeightysix.shourya.almondclient.data.User;
@@ -16,6 +19,7 @@ import com.eightyeightysix.shourya.almondclient.location.GPSLocator;
 import com.eightyeightysix.shourya.almondclient.location.ReverseGeocodeIntentService;
 import com.eightyeightysix.shourya.almondclient.login.LoginActivity;
 import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.SettingsApi;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -54,8 +58,7 @@ public class LoadingActivity extends BaseActivity implements GPSLocator.location
         mAuth = FirebaseAuth.getInstance();
         mFireUser = mAuth.getCurrentUser();
         mDatabase = FirebaseDatabase.getInstance();
-        //refreshes location and places it in a callback
-        mLocator = new GPSLocator(this);
+
         //gesture
         //getScreenCenter();
 
@@ -63,10 +66,10 @@ public class LoadingActivity extends BaseActivity implements GPSLocator.location
         //define SharedPreference location
         preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         //class to store location details
-        locationDetails = new CurrentLocationDetails();
-        //callback class for ReverseGeocode
-        mResultReceiver = new AddressResultReceiver(new Handler());
-        currZonePerimeter = new ArrayList<>();
+        /*if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            startActivity(new Intent(LoadingActivity.this, LoginActivity.class));
+        }*/
 
         /*
          * Initiate first page as city circle
@@ -77,9 +80,17 @@ public class LoadingActivity extends BaseActivity implements GPSLocator.location
         currCircle = 1;
         //TODO check internet and display message
 
-        if(mFireUser != null) {
+        if(!preferences.getString("id",UNAVAILABLE).equals(UNAVAILABLE)) {
             //fetchLocation
+            //refreshes location and places it in a callback
+            locationDetails = new CurrentLocationDetails();
+            //callback class for ReverseGeocode
+            mResultReceiver = new AddressResultReceiver(new Handler());
+            currZonePerimeter = new ArrayList<>();
+
+            mLocator = new GPSLocator(this);
             mLocator.refreshLocation();
+
 
             mUser = new User(preferences.getString("id", UNAVAILABLE),
                     preferences.getString("first_name", UNAVAILABLE),

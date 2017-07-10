@@ -1,6 +1,7 @@
 package com.eightyeightysix.shourya.almondclient.login;
 
 import android.Manifest;
+import android.animation.ArgbEvaluator;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -8,12 +9,20 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.TextView;
 
 import com.eightyeightysix.shourya.almondclient.BaseActivity;
 import com.eightyeightysix.shourya.almondclient.LoadingActivity;
@@ -42,8 +51,8 @@ public class LoginActivity extends BaseActivity implements
 
     private final static String DEBUG_TAG = "AlmondLog:: " + LoginActivity.class.getSimpleName();
     private LoginFragmentOne firstFragment;
-    private static final int NUM_PAGES = 2;
-    private NonSwipeableViewPager nPager;
+    private static final int NUM_PAGES = 3;
+    private ViewPager nPager;
     private PagerAdapter mPagerAdapter;
     public static String fUid;
     Context mContext;
@@ -52,13 +61,18 @@ public class LoginActivity extends BaseActivity implements
     ValueEventListener userListener;
     User temp_user;
     Thread t = null;
+    Integer[] colors = null;
+    ArgbEvaluator argbEvaluator = new ArgbEvaluator();
+    private static String tut_text[] = new String[2];
 
     @Override
     protected void onCreate(Bundle savedInstances) {
         super.onCreate(savedInstances);
         setContentView(R.layout.login_activity);
         mContext = getApplicationContext();
-        nPager = (NonSwipeableViewPager) findViewById(R.id.pager2);
+        //nPager = (NonSwipeableViewPager) findViewById(R.id.pager2);
+        nPager = (ViewPager)findViewById(R.id.pager);
+        nPager.addOnPageChangeListener(new AnimateColorTransition());
 
         if (findViewById(R.id.fragment_container) != null) {
                 mPagerAdapter = new LoginSlidePagerAdapter(getSupportFragmentManager());
@@ -70,6 +84,9 @@ public class LoginActivity extends BaseActivity implements
                 != PackageManager.PERMISSION_GRANTED) {
             requestAllPermissions(this);
         }
+        tut_text[0] = "Welcome to Almond. Meet friends on a platform centred around you";
+        tut_text[1] = "Decide the exclusivity of your network by pinching into the zone of your choice!";
+        setUpColors();
     }
     @Override
     public void onBackPressed() {
@@ -167,6 +184,9 @@ public class LoginActivity extends BaseActivity implements
                     Log.d(DEBUG_TAG, "accessing stored user info");
                     mUser = dataSnapshot.getValue(User.class);
                 }
+
+                Intent i = new Intent(LoginActivity.this, LoadingActivity.class);
+                startActivity(i);
             }
 
             @Override
@@ -176,14 +196,24 @@ public class LoginActivity extends BaseActivity implements
         };
         create_user.addListenerForSingleValueEvent(userListener);
 
-        Intent i = new Intent(LoginActivity.this, LoadingActivity.class);
-        startActivity(i);
+
     }
 
     @Override
     public void nameListener(String a, String b) {
 
     }
+
+    private void setUpColors(){
+
+        Integer color1 = ResourcesCompat.getColor(getResources(), R.color.tut_1_green, null);
+        Integer color2 = ResourcesCompat.getColor(getResources(), R.color.tut_2_blue, null);
+        Integer color3 = ResourcesCompat.getColor(getResources(), R.color.tut_3_purple, null);
+
+        Integer[] colors_temp = {color1, color2, color3};
+        colors = colors_temp;
+    }
+
 
     private class LoginSlidePagerAdapter extends FragmentStatePagerAdapter {
         public LoginSlidePagerAdapter(FragmentManager fm) {
@@ -192,10 +222,19 @@ public class LoginActivity extends BaseActivity implements
 
         @Override
         public Fragment getItem(int position) {
-            switch (position) {
+            /*switch (position) {
                 case 0: return new LoginFragmentOne();
                 case 3: return new LoginFragmentFour();
                 default: return new LoginFragmentOne();
+            }*/
+            if(position == 2)
+                return new LoginFragmentOne();
+            else{
+                Fragment fragment = new TutorialObjectFragment();
+                Bundle args = new Bundle();
+                args.putInt(TutorialObjectFragment.ARG_PAGE,position);
+                fragment.setArguments(args);
+                return fragment;
             }
         }
 
@@ -209,6 +248,50 @@ public class LoginActivity extends BaseActivity implements
     protected void onDestroy() {
         super.onDestroy();
         create_user.removeEventListener(userListener);
+    }
+
+    private class AnimateColorTransition implements ViewPager.OnPageChangeListener{
+        @Override
+        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            if(position < (mPagerAdapter.getCount() -1) && position < (colors.length - 1)) {
+
+                nPager.setBackgroundColor((Integer) argbEvaluator.evaluate(positionOffset, colors[position], colors[position + 1]));
+
+            } else {
+
+                // the last page color
+                nPager.setBackgroundColor(colors[colors.length - 1]);
+
+            }
+        }
+
+        @Override
+        public void onPageSelected(int position) {
+
+        }
+
+        @Override
+        public void onPageScrollStateChanged(int state) {
+
+        }
+    }
+
+    public static class TutorialObjectFragment extends Fragment{
+
+        public static final String ARG_PAGE = "obj";
+
+        @Nullable
+        @Override
+        public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
+                                 @Nullable Bundle savedInstanceState) {
+            View rootView = inflater.inflate(R.layout.welcome_tutorial,container,false);
+            Bundle args = getArguments();
+            int position = args.getInt(ARG_PAGE);
+
+            ((TextView) rootView.findViewById(R.id.welcome_text)).setText(tut_text[position]);
+            //((TextView) rootView.findViewById(R.id.textView1)).setText(Integer.toString(args.getInt(ARG_PAGE)));
+            return rootView;
+        }
     }
 }
 

@@ -3,10 +3,17 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
+    <TextView
+        android:id="@+id/welcome_text_fb"
+        android:text="@string/fb_welcome_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="25dp"/>
 
     <com.facebook.login.widget.LoginButton
         android:id="@+id/button_facebook"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="20dp"
+        android:layout_gravity="bottom"
         />
 </LinearLayout>
