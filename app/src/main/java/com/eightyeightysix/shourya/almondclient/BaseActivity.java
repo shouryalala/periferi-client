@@ -4,11 +4,21 @@ import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.pm.PackageManager;
+
+import android.graphics.Point;
+import android.graphics.PointF;
+
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.view.MotionEventCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+
+import android.view.Display;
+import android.view.MotionEvent;
+
 import android.widget.Toast;
 
 import com.eightyeightysix.shourya.almondclient.data.User;
@@ -56,7 +66,21 @@ public class BaseActivity extends AppCompatActivity{
 
     private final static String DEBUG_TAG = "AlmondLog:: " + BaseActivity.class.getSimpleName();
     private static final int MY_REQUEST_ACCESS_FINE_LOCATION = 69;
+
+    //gesture
+/*    public static final int INVALID_POINTER = -1;
+    public int mDiaPrimary = INVALID_POINTER;
+    public int mDiaSecondary = INVALID_POINTER;
+    public static Point SCREEN_CENTER;
+    public static int SCREEN_WIDTH;
+    public static int SCREEN_HEIGHT;
+
+    PointF primary;
+    PointF secondary;
+    ////////////
+*/
     public static boolean permissionLocation = true;
+
 
     //All user Details
     public static User mUser;
@@ -81,6 +105,7 @@ public class BaseActivity extends AppCompatActivity{
         //pListener = (permissionsListener) context;
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_REQUEST_ACCESS_FINE_LOCATION);
     }
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
@@ -176,6 +201,15 @@ public class BaseActivity extends AppCompatActivity{
         toastit("Current Circle " + circle);
     }
 
+
+    //for pinch circle initialization
+    public static int fetchCurrentCircleCount() {
+        if(locationDetails.getZonesStatus()){
+            return (2 + locationDetails.zonesList.size());
+        }
+        return 2;
+    }
+
     public void userOffline() {
         String uID = mUser.getUserId();
         Map<String, String> paramsCountry = new HashMap<>();
@@ -224,3 +258,4 @@ public class BaseActivity extends AppCompatActivity{
                 activeNetwork.isConnectedOrConnecting());
     }
 }
+

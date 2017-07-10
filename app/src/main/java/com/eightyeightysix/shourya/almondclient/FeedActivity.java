@@ -1,5 +1,16 @@
 package com.eightyeightysix.shourya.almondclient;
 
+
+//gesture
+import android.content.Context;
+import android.graphics.PointF;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
+import android.support.v4.view.MotionEventCompat;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.MotionEvent;
+
 import android.app.DialogFragment;
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -11,13 +22,15 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.eightyeightysix.shourya.almondclient.data.User;
 import com.eightyeightysix.shourya.almondclient.gestureui.AlmondPagerSettings;
-
+import com.eightyeightysix.shourya.almondclient.view.AlmondLayout;
 
 /*
  * Created by shourya on 'we will never know'.
@@ -29,10 +42,14 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
     private static final int NUM_PAGES  = 2;
     private final static String DEBUG_TAG = "AlmondLog:: " + FeedActivity.class.getSimpleName();
     private AlmondPagerSettings mPager;
-    private SwipeUpPagerAdapter mPagerAdapter;
+    private static SwipeUpPagerAdapter mPagerAdapter;
     private View view1, view2;
     protected ChatListFragment chatListFragment;
     protected BroadCastFragment broadCastFragment;
+    private static Context mContext;
+    //protected CoordinatorLayout mainView;
+    ///gesture 
+    //ZonePinchSurfaceView pinchView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +57,10 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
         setContentView(R.layout.activity_feed);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        AlmondLayout mainView = (AlmondLayout)findViewById(R.id.feed_layout);
+        mainView.gestureInit();
+        //gestureInit();
+        mContext = getApplicationContext();
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -67,6 +88,15 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
         DialogFragment dialog = new NewBroadCastDialog();
         dialog.show(getFragmentManager(), "NewBroadCastDialog");
     }
+    
+    ///gesture
+    /*
+    interface pinchListener{
+        void setPinchRadius(PointF index, PointF thumb);
+        void exitPinch();
+        //void debug(PointF index);
+    }*/
+    //////
 
     @Override
     public void startChat(User chatWith) {
@@ -107,6 +137,16 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
         view1.setVisibility(View.VISIBLE);
         view2.setVisibility(View.GONE);
     }
+    
+    ///gesture
+    /*private void gestureInit() {
+        //getScreenCenter();    //temp
+        pinchView = (ZonePinchSurfaceView) findViewById(R.id.pinchView);
+        pinchView.setZOrderOnTop(true);
+
+        primary = new PointF(INVALID_POINTER,INVALID_POINTER);
+        secondary = new PointF(INVALID_POINTER,INVALID_POINTER);
+    }*/
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -117,15 +157,11 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
-        }
+        }        
         else if(id == R.id.map_zones) {
             startActivity(new Intent(FeedActivity.this, RequestZoneActivity.class));
             return true;
@@ -135,6 +171,66 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
     }
 
 
+    ///gesture
+    /*
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        int action = MotionEventCompat.getActionMasked(event);
+        int index = MotionEventCompat.getActionIndex(event);
+
+        Log.d(DEBUG_TAG,"The action is " + actionToString(action));
+        Log.d(DEBUG_TAG,"The index is " + index);
+        Log.d(DEBUG_TAG,"The Pointer ID is " + event.getPointerId(index));
+
+        switch(action) {
+            case MotionEvent.ACTION_DOWN: {
+                mDiaPrimary = event.getPointerId(index);
+                primary.set(event.getX(index), event.getY(index));
+                Log.d(DEBUG_TAG, "ACTION_DOWN: " + primary.x + "," + primary.y);
+                return true;
+            }
+            case MotionEvent.ACTION_POINTER_DOWN: {
+                if(event.getPointerCount() < 3) {
+                    mDiaSecondary = event.getPointerId(index);
+                    secondary.set(event.getX(index), event.getY(index));
+                    Log.d(DEBUG_TAG, "ACTION_POINTER_DOWN: \nPRIMARY: " + primary.x + "," + primary.y + "\nSECONDARY: " + secondary.x + "," + secondary.y);
+                    if(mDiaPrimary != INVALID_POINTER)
+                        pinchView.setPinchRadius(primary, secondary);
+                }
+                return true;
+            }
+            case MotionEvent.ACTION_MOVE: {
+                if(mDiaPrimary != INVALID_POINTER) {
+                    int priIndex = event.findPointerIndex(mDiaPrimary);
+                    primary.set(event.getX(priIndex), event.getY(priIndex));
+                    if (event.getPointerCount() > 1 && mDiaSecondary != INVALID_POINTER) {
+                        int secIndex = event.findPointerIndex(mDiaSecondary);
+                        secondary.set(event.getX(secIndex), event.getY(secIndex));
+                        pinchView.setPinchRadius(primary, secondary);
+                    }
+                    Log.d(DEBUG_TAG, "ACTION_MOVE: \nPRIMARY: " + primary.x + "," + primary.y + "\nSECONDARY: " + secondary.x + "," + secondary.y);
+                }
+                return true;
+            }
+            case MotionEvent.ACTION_POINTER_UP: {
+                int id = event.getPointerId(index);
+                if(id == mDiaSecondary || id == mDiaPrimary) {
+                    refreshGesture();
+                    pinchView.exitPinch();
+                }
+                return true;
+            }
+            case MotionEvent.ACTION_UP: {
+                //int id = event.getPointerId(index);
+                refreshGesture();
+                pinchView.exitPinch();
+                return true;
+            }
+            default: return super.onTouchEvent(event);
+        }
+    }
+    //////
+*/
     @Override
     protected void onStart() {
         super.onStart();
@@ -206,6 +302,18 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
         }
     }
 
+    //Callback from gesture
+    public static void refreshCircleContent(int id) {
+        if(currCircle == id)
+            Toast.makeText(mContext, "Current Circle", Toast.LENGTH_SHORT);
+        else {
+            currCircle = id;
+            ((ChatListFragment) mPagerAdapter.getItem(0)).fetchOnlineUsers(id);
+            ((BroadCastFragment) mPagerAdapter.getItem(1)).fetchCircleBroadCasts(id);
+        }
+    }
+
+
     //temp functions
     public void setCountryOnline(View v) {
         if(currCircle == 0)
@@ -236,4 +344,6 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
             ((BroadCastFragment) mPagerAdapter.getItem(1)).fetchCircleBroadCasts(2);
         }
     }
+
+    //Gesture Implementation
 }
