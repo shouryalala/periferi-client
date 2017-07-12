@@ -41,17 +41,36 @@ public class RequestPagerView extends Fragment {
         Bundle args = getArguments();
         int position = args.getInt(ARG_PAGE);
         TextView header = (TextView)rootView.findViewById(R.id.request_name);
-        Button acc = (Button)rootView.findViewById(R.id.accept_request);
-        Button rej = (Button)rootView.findViewById(R.id.reject_request);
+        final Button acc = (Button)rootView.findViewById(R.id.accept_request);
+        final Button rej = (Button)rootView.findViewById(R.id.reject_request);
+        final TextView zoneStatus = (TextView)rootView.findViewById(R.id.needed_approvals);
 
         String requestName = getArguments().getString("name", "UNAVAILABLE");
+        final Boolean responded = getArguments().getBoolean("responded");
+        if(responded) {
+            acc.setVisibility(View.GONE);
+            rej.setVisibility(View.GONE);
+        }
+        final Integer remaining = getArguments().getInt("requestCount");
 
         header.setText(requestName);
-
+        zoneStatus.setText(remaining + "more approvals needed to create this Periferi");
         acc.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 callback.onRequestClick(true);
+                String updateText;
+                if(remaining == 1) {
+                    updateText = "Awesome! This zone shall be created shortly";
+                }
+                else {
+                    int a = remaining-1;
+                    updateText = a + "more approvals needed to create this Periferi";
+                }
+                zoneStatus.setText(updateText);
+
+                acc.setVisibility(View.GONE);
+                rej.setVisibility(View.GONE);
             }
         });
 
@@ -59,8 +78,12 @@ public class RequestPagerView extends Fragment {
             @Override
             public void onClick(View v) {
                 callback.onRequestClick(false);
+                acc.setVisibility(View.GONE);
+                rej.setVisibility(View.GONE);
             }
         });
+
+
 
         //((TextView) rootView.findViewById(R.id.textView1)).setText(Integer.toString(args.getInt(ARG_PAGE)));
         return rootView;

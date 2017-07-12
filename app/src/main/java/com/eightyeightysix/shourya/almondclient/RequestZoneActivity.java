@@ -384,7 +384,9 @@ public class RequestZoneActivity extends BaseActivity implements OnMapReadyCallb
 
         ZoneRequest request = new ZoneRequest(mUser.getUserId(), name, lMin, lMax, gMin, gMax);
         currZoneRequests.add(request);
-        req.push().setValue(request);
+        String key = req.push().getKey();
+        req.child(key).setValue(request);
+        currZoneRequestKeys.put(request, key);
         toastit("Zone Request created!");
     }
 }

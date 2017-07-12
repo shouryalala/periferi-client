@@ -28,12 +28,18 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PatternItem;
 import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.MutableData;
+import com.google.firebase.database.Transaction;
 
 import org.w3c.dom.Text;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 public class AllRequestsActivity extends BaseActivity implements OnMapReadyCallback,
@@ -47,6 +53,7 @@ public class AllRequestsActivity extends BaseActivity implements OnMapReadyCallb
     private List<LatLng> coordinates;
     private static boolean polygonCreated;
     private static final String DEBUG_TAG = "AlmondLog:: " + AllRequestsActivity.class.getSimpleName();
+    private static int NEEDED_REQUESTS = 5;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -60,10 +67,8 @@ public class AllRequestsActivity extends BaseActivity implements OnMapReadyCallb
         allZoneRequests = new ArrayList<>();
         coordinates = new ArrayList<>(4);
 
-        for(ZoneRequest zr : currZoneRequests) {
-            if(!zr.requests.containsKey(mUser.getUserId())){
-                allZoneRequests.add(zr);
-            }
+        for(ZoneRequest zr : currZoneRequests) {        //done as currZoneRequests can keep changing if other users create new zones
+            allZoneRequests.add(zr);
         }
 
         requestPager = (ViewPager)findViewById(R.id.request_pager);
@@ -132,7 +137,14 @@ public class AllRequestsActivity extends BaseActivity implements OnMapReadyCallb
         public Fragment getItem(int position) {
             RequestPagerView fragment = new RequestPagerView();
             Bundle b = new Bundle();
+            if(allZoneRequests.get(position).requests.containsKey(mUser.getUserId())) {
+                b.putBoolean("responded", true);
+            }
+            else{
+                b.putBoolean("responded", false);
+            }
             b.putString("name", allZoneRequests.get(position).zName);
+            b.putInt("requestCount", (NEEDED_REQUESTS - allZoneRequests.get(position).reqCount));
             fragment.setArguments(b);
             return fragment;
         }
@@ -143,10 +155,39 @@ public class AllRequestsActivity extends BaseActivity implements OnMapReadyCallb
         }
     }
 
+    //callback from onClick view
     @Override
     public void onRequestClick(boolean a) {
         Toast.makeText(getApplicationContext(), requestPager.getCurrentItem() + " " + a, Toast.LENGTH_SHORT).show();
+        final boolean response = a;
+        HashMap<String, String> params = new HashMap<>();
+        params.put("cityID", locationDetails.getCityID());
+        params.put("requestID", currZoneRequestKeys.get(allZoneRequests.get(requestPager.getCurrentItem())));
+        String ref = substituteString(getResources().getString(R.string.get_zone_request), params);
+        final DatabaseReference reference = mDatabase.getReference(ref);
+        reference.runTransaction(new Transaction.Handler() {
+            @Override
+            public Transaction.Result doTransaction(MutableData mutableData) {
+                ZoneRequest zUpdate = mutableData.getValue(ZoneRequest.class);
+                 if(zUpdate == null) {
+                     return Transaction.success(mutableData);
+                 }
+                 if(!zUpdate.requests.containsKey(mUser.getUserId())) {
+                     zUpdate.requests.put(mUser.getUserId(), response);
+                     if(response)zUpdate.reqCount++;
+                 }
+                 else{
+                     //shouldnt be called
+                 }
+                 mutableData.setValue(zUpdate);
+                return Transaction.success(mutableData);
+            }
 
+            @Override
+            public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
+
+            }
+        });
     }
 
 }

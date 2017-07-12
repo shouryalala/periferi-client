@@ -103,7 +103,7 @@ public class BaseActivity extends AppCompatActivity{
     public static CurrentLocationDetails locationDetails;   //stores current location details
     public static ArrayList<ZonePerimeter> currZonePerimeter;
     public static ArrayList<ZoneRequest> currZoneRequests;
-
+    public static HashMap<ZoneRequest, String> currZoneRequestKeys;
     public static boolean zoneRequestsPresent = false;
 
 
@@ -286,10 +286,10 @@ public class BaseActivity extends AppCompatActivity{
                 if(dataSnapshot != null) {
                     for(DataSnapshot ds : dataSnapshot.getChildren()) {
                         ZoneRequest z = ds.getValue(ZoneRequest.class);
-                        Log.d(DEBUG_TAG, "Zone Request Details: " + z.toString());
                         if(z.insideZone(mLocator.getLatitude(), mLocator.getLongitude())){
                             Log.d(DEBUG_TAG, "Found Zone Requests: " + z.toString());
                             currZoneRequests.add(z);
+                            currZoneRequestKeys.put(z,ds.getKey());
                             zoneRequestsPresent = true;
                         }
                     }

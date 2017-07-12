@@ -90,6 +90,7 @@ public class LoadingActivity extends BaseActivity implements GPSLocator.location
 
             currZonePerimeter = new ArrayList<>();
             currZoneRequests = new ArrayList<>();
+            currZoneRequestKeys = new HashMap<>();
 
             mLocator = new GPSLocator(this);
             mLocator.refreshLocation();
@@ -277,7 +278,7 @@ public class LoadingActivity extends BaseActivity implements GPSLocator.location
                         ZonePerimeter zp = ds.getValue(ZonePerimeter.class);
                         if(zp.insideZone(mLocator.getLatitude(), mLocator.getLongitude())){
                             flag = false;
-                            locationDetails.zonesList.add(ds.getKey());
+                            locationDetails.zonesList.add(ds.getKey());     //TODO weird: storing keys and values in different lists?
                             currZonePerimeter.add(zp);
                         }
                     }
