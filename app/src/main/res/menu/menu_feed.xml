@@ -12,4 +12,10 @@
         android:orderInCategory="200"
         android:title="@string/map_zones"
         app:showAsAction="never" />
+
+    <item
+        android:id="@+id/all_requests"
+        android:orderInCategory="300"
+        android:title="@string/zone_requests_title"
+        app:showAsAction="never" />
 </menu>

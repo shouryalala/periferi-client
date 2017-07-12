@@ -167,6 +167,11 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
             return true;
         }
 
+        else if(id == R.id.all_requests) {
+            startActivity(new Intent(FeedActivity.this, AllRequestsActivity.class));
+            return true;
+        }
+
         return super.onOptionsItemSelected(item);
     }
 

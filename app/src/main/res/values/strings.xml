@@ -2,7 +2,7 @@
     <string name="app_name">Almondclient</string>
     <string name="action_settings">Settings</string>
 
-    <string name="title_activity_request_zone">Map</string>
+    <string name="title_activity_request_zone">PeriFeri</string>
     <string name="facebook_app_id">330012370764893</string>
     <string name="facebook_error">An error occured while logging in.</string>
     <string name="facebook_cancel">Action Cancelled</string>
@@ -23,6 +23,6 @@
     <string name="no_address_found">No address found for curent coordinates</string>
     <string name="map_zones">Map Zones</string>
     <string name="fb_welcome_text">Welcome to Almond</string>
-
+    <string name="zone_requests_title">Requests</string>
 
 </resources>

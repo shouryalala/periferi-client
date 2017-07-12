@@ -40,8 +40,8 @@ public class LoadingActivity extends BaseActivity implements GPSLocator.location
     private static final String DEBUG_TAG = "AlmondLog:: " + LoadingActivity.class.getSimpleName();
     DatabaseReference loadChats;
     ValueEventListener loadChatListener;
-    protected String city_id;
-    protected String country_id;
+    protected static String city_id;
+    protected static String country_id;
     static boolean temp = false;
     private LocationRequest mLocationRequest;
     protected static final int REQUEST_CHECK_SETTINGS = 0x1;
@@ -195,6 +195,7 @@ public class LoadingActivity extends BaseActivity implements GPSLocator.location
     }
 
     public void refreshCountryID(final String country) {
+        Log.d(DEBUG_TAG, "Refreshing country List");
         final String get_countries = substituteString(getResources().getString(R.string.all_countries), new HashMap<String, String>());
         final DatabaseReference countryReference = mDatabase.getReference(get_countries);
         countryReference.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -227,6 +228,7 @@ public class LoadingActivity extends BaseActivity implements GPSLocator.location
     }
 
     public void refreshCityID(final String cityName) {
+        Log.d(DEBUG_TAG, "Refreshing City List");
         Map<String, String> params = new HashMap<>();
         params.put("countryID", country_id);
         final String get_city_spec = substituteString(getResources().getString(R.string.get_city), params);
@@ -289,15 +291,13 @@ public class LoadingActivity extends BaseActivity implements GPSLocator.location
                 }
 
                 //update preferences values;
-                /*
-                Extremely bothersome so removing for now
                 SharedPreferences.Editor editor = preferences.edit();
                 editor.putString("city_name", locationDetails.getAdminAreaName());
                 editor.putString("country_name", locationDetails.getCountryName());
                 editor.putString("city_ID", city_id);
                 editor.putString("country_ID", country_id);
                 editor.apply();
-                */
+
                 locationDetails.setCountryID(country_id);
                 locationDetails.setCityID(city_id);
 
