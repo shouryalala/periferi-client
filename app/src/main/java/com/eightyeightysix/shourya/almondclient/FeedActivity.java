@@ -237,39 +237,6 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
         }
     }
 
-
-    //temp functions
-    public void setCountryOnline(View v) {
-        if(currCircle == 0)
-            toastit("Current Circle");
-        else {
-            userOnlineStatusRefresh(0);
-            ((ChatListFragment) mPagerAdapter.getItem(0)).fetchOnlineUsers(0);
-            ((BroadCastFragment) mPagerAdapter.getItem(1)).fetchCircleBroadCasts(0);
-        }
-    }
-
-    public void setCityOnline(View v) {
-        if(currCircle == 1)
-            toastit("Current Circle");
-        else {
-            userOnlineStatusRefresh(1);
-            ((ChatListFragment) mPagerAdapter.getItem(0)).fetchOnlineUsers(1);
-            ((BroadCastFragment) mPagerAdapter.getItem(1)).fetchCircleBroadCasts(1);
-        }
-    }
-
-    public void setZoneOnline(View v) {
-        if(!locationDetails.getZonesStatus())
-            toastit("No Zones Available");
-        else {
-            userOnlineStatusRefresh(2);
-            ((ChatListFragment) mPagerAdapter.getItem(0)).fetchOnlineUsers(2);
-            ((BroadCastFragment) mPagerAdapter.getItem(1)).fetchCircleBroadCasts(2);
-        }
-    }
-
-
     @Override
     protected void onStart() {
         super.onStart();
