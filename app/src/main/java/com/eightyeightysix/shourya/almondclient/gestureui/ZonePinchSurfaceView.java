@@ -43,7 +43,7 @@ public class ZonePinchSurfaceView extends SurfaceView implements Runnable, Almon
     boolean pinched = false;
     boolean isRunning = false;
 
-    private static final String DEBUG_TAG = "AlmondLog::" + ZonePinchSurfaceView.class.getSimpleName();
+    private static final String DEBUG_TAG = "AlmondGestureLog:: " + ZonePinchSurfaceView.class.getSimpleName();
     //private Bitmap bmpIcon;
 
     public ZonePinchSurfaceView(Context context) {

@@ -70,7 +70,6 @@ public class RequestZoneActivity extends BaseActivity implements OnMapReadyCallb
     private static boolean zoneAcceptedByZones = true;
     private String zoneConflict = null;
     private static double lMin, lMax, gMin, gMax;
-    private static DatabaseReference req;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,12 +105,6 @@ public class RequestZoneActivity extends BaseActivity implements OnMapReadyCallb
 
         //current location
         myLoc = new LatLng(locationDetails.getCurrLatitutde(), locationDetails.getCurrLongitude());
-
-        //create almondzonerequests reference
-        HashMap<String, String> params = new HashMap<>();
-        params.put("cityID", locationDetails.getCityID());
-        final String get_requests = substituteString(getResources().getString(R.string.all_zone_requests), params);
-        req = mDatabase.getReference(get_requests);
     }
 
 
@@ -344,45 +337,32 @@ public class RequestZoneActivity extends BaseActivity implements OnMapReadyCallb
             gMin = points.get(0).longitude;
             gMax = points.get(2).longitude;
 
-            req.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    Log.d(DEBUG_TAG, "Firebase Called");
-                    if(dataSnapshot != null) {
-                        for(DataSnapshot ds : dataSnapshot.getChildren()) {
-                            ZoneRequest z = ds.getValue(ZoneRequest.class);
-                            Log.d(DEBUG_TAG, "Zone Request Details: " + z.toString());
-                            Log.d(DEBUG_TAG, "Zone Factor:" + z.getFactor(lMin, lMax, gMin, gMax));
-                            if(z.insideZone(myLoc.latitude, myLoc.longitude) &&
-                                    z.getFactor(lMin, lMax, gMin, gMax) < 4.0){
-                                zoneAcceptedByRequests = false;
-                                Log.d(DEBUG_TAG, "Zone accepted: " + zoneAcceptedByRequests);
-                                zoneConflict = z.getzName();
-                                break;
-                            }
-                        }
-                    }
-                    onRequestFetchFinished();
-                }
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-
-                }
-            });
+            checkForConflicts();
         }
     }
 
     //callback on receiving data
-    public void onRequestFetchFinished() {
+    public void checkForConflicts() {
+        //first check already created Requests
+        for(ZoneRequest zr : currZoneRequests) {
+            if(zr.getFactor(lMin, lMax, gMin, gMax) < 4.0) {
+                zoneAcceptedByRequests = false;
+                zoneConflict = zr.getzName();
+                break;
+            }
+        }
+
+        //if no conflict, check existing zones
         if(zoneAcceptedByRequests) {
             for (ZonePerimeter zeus : currZonePerimeter) {
                 if(zeus.getFactor(lMin, lMax, gMin, gMax) < 4.0) {
                     zoneAcceptedByZones = false;
-                    zoneConflict = zeus.zoneName;
+                    zoneConflict = zeus.getZoneName();
                 }
             }
         }
-        Log.d(DEBUG_TAG, "ZoneAccepted: " + zoneAcceptedByRequests);
+        Log.d(DEBUG_TAG, "ZoneAcceptedByRequests: " + zoneAcceptedByRequests +
+        "ZoneAcceptedByZones: " + zoneAcceptedByZones);
         if(zoneAcceptedByRequests && zoneAcceptedByZones) {
             //get zoneRequestname
             DialogFragment dialog = new NewZoneRequestDialog();
@@ -397,7 +377,13 @@ public class RequestZoneActivity extends BaseActivity implements OnMapReadyCallb
     //callback from dialog
     @Override
     public void onSubmit(String name) {
+        HashMap<String, String> params = new HashMap<>();
+        params.put("cityID", locationDetails.getCityID());
+        final String get_requests = substituteString(getResources().getString(R.string.all_zone_requests), params);
+        final DatabaseReference req = mDatabase.getReference(get_requests);
+
         ZoneRequest request = new ZoneRequest(mUser.getUserId(), name, lMin, lMax, gMin, gMax);
+        currZoneRequests.add(request);
         req.push().setValue(request);
         toastit("Zone Request created!");
     }

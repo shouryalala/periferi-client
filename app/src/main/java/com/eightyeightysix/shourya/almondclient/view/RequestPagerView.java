@@ -44,7 +44,9 @@ public class RequestPagerView extends Fragment {
         Button acc = (Button)rootView.findViewById(R.id.accept_request);
         Button rej = (Button)rootView.findViewById(R.id.reject_request);
 
-        header.setText("Position: " + position);
+        String requestName = getArguments().getString("name", "UNAVAILABLE");
+
+        header.setText(requestName);
 
         acc.setOnClickListener(new View.OnClickListener() {
             @Override

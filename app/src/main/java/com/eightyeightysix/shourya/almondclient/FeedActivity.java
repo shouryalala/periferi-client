@@ -175,87 +175,6 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
         return super.onOptionsItemSelected(item);
     }
 
-
-    ///gesture
-    /*
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        int action = MotionEventCompat.getActionMasked(event);
-        int index = MotionEventCompat.getActionIndex(event);
-
-        Log.d(DEBUG_TAG,"The action is " + actionToString(action));
-        Log.d(DEBUG_TAG,"The index is " + index);
-        Log.d(DEBUG_TAG,"The Pointer ID is " + event.getPointerId(index));
-
-        switch(action) {
-            case MotionEvent.ACTION_DOWN: {
-                mDiaPrimary = event.getPointerId(index);
-                primary.set(event.getX(index), event.getY(index));
-                Log.d(DEBUG_TAG, "ACTION_DOWN: " + primary.x + "," + primary.y);
-                return true;
-            }
-            case MotionEvent.ACTION_POINTER_DOWN: {
-                if(event.getPointerCount() < 3) {
-                    mDiaSecondary = event.getPointerId(index);
-                    secondary.set(event.getX(index), event.getY(index));
-                    Log.d(DEBUG_TAG, "ACTION_POINTER_DOWN: \nPRIMARY: " + primary.x + "," + primary.y + "\nSECONDARY: " + secondary.x + "," + secondary.y);
-                    if(mDiaPrimary != INVALID_POINTER)
-                        pinchView.setPinchRadius(primary, secondary);
-                }
-                return true;
-            }
-            case MotionEvent.ACTION_MOVE: {
-                if(mDiaPrimary != INVALID_POINTER) {
-                    int priIndex = event.findPointerIndex(mDiaPrimary);
-                    primary.set(event.getX(priIndex), event.getY(priIndex));
-                    if (event.getPointerCount() > 1 && mDiaSecondary != INVALID_POINTER) {
-                        int secIndex = event.findPointerIndex(mDiaSecondary);
-                        secondary.set(event.getX(secIndex), event.getY(secIndex));
-                        pinchView.setPinchRadius(primary, secondary);
-                    }
-                    Log.d(DEBUG_TAG, "ACTION_MOVE: \nPRIMARY: " + primary.x + "," + primary.y + "\nSECONDARY: " + secondary.x + "," + secondary.y);
-                }
-                return true;
-            }
-            case MotionEvent.ACTION_POINTER_UP: {
-                int id = event.getPointerId(index);
-                if(id == mDiaSecondary || id == mDiaPrimary) {
-                    refreshGesture();
-                    pinchView.exitPinch();
-                }
-                return true;
-            }
-            case MotionEvent.ACTION_UP: {
-                //int id = event.getPointerId(index);
-                refreshGesture();
-                pinchView.exitPinch();
-                return true;
-            }
-            default: return super.onTouchEvent(event);
-        }
-    }
-    //////
-*/
-    @Override
-    protected void onStart() {
-        super.onStart();
-        //mLocator.connectClient();
-        userOnline();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        //TODO reconnect to client if user pauses the app. DO this is the onResume override
-        userOffline();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        Log.d(DEBUG_TAG, "onDestroyCalled");
-    }
-
     @Override
     public void onBackPressed() {
         if(fragmentManager.getBackStackEntryCount() == 0) {
@@ -350,5 +269,25 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
         }
     }
 
-    //Gesture Implementation
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        userOnline();
+        Log.d(DEBUG_TAG, "OnStart Called");
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.d(DEBUG_TAG, "OnStop Called");
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        userOffline();
+        removeRequestsRefresher();
+        Log.d(DEBUG_TAG, "onDestroyCalled");
+    }
 }

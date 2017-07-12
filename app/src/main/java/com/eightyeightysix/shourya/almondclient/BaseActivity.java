@@ -3,6 +3,7 @@ package com.eightyeightysix.shourya.almondclient;
 import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 
 import android.graphics.Point;
@@ -11,6 +12,8 @@ import android.graphics.PointF;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
+import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.MotionEventCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -23,11 +26,16 @@ import android.widget.Toast;
 
 import com.eightyeightysix.shourya.almondclient.data.User;
 import com.eightyeightysix.shourya.almondclient.data.ZonePerimeter;
+import com.eightyeightysix.shourya.almondclient.data.ZoneRequest;
 import com.eightyeightysix.shourya.almondclient.location.CurrentLocationDetails;
 import com.eightyeightysix.shourya.almondclient.location.GPSLocator;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -49,6 +57,9 @@ public class BaseActivity extends AppCompatActivity{
     public static FirebaseAuth mAuth;
     public static FirebaseUser mFireUser;
     public static FirebaseDatabase mDatabase;
+
+    public static DatabaseReference almondRequests;
+    public static ValueEventListener requestsRefresh;
 
     private static final int SECOND_MILLIS = 1000;
     private static final int MINUTE_MILLIS = 60 * SECOND_MILLIS;
@@ -91,6 +102,10 @@ public class BaseActivity extends AppCompatActivity{
 
     public static CurrentLocationDetails locationDetails;   //stores current location details
     public static ArrayList<ZonePerimeter> currZonePerimeter;
+    public static ArrayList<ZoneRequest> currZoneRequests;
+
+    public static boolean zoneRequestsPresent = false;
+
 
     public static int currCircle;
 
@@ -183,7 +198,7 @@ public class BaseActivity extends AppCompatActivity{
 
         mDatabase.getReference(onlineCountryRef).setValue(true);
         mDatabase.getReference(onlineCityRef).setValue(true);
-
+        Log.d(DEBUG_TAG, "Added User Online");
         if(locationDetails.getZonesStatus()) {
             Map<String, String> paramsZone = new HashMap<>();
             for(String s: locationDetails.zonesList) {
@@ -257,5 +272,42 @@ public class BaseActivity extends AppCompatActivity{
         return (activeNetwork != null &&
                 activeNetwork.isConnectedOrConnecting());
     }
+
+    public void backgroundRefreshRequestsList() {
+        //create almondzonerequests reference
+        HashMap<String, String> params = new HashMap<>();
+        params.put("cityID", locationDetails.getCityID());
+        final String get_requests = substituteString(getResources().getString(R.string.all_zone_requests), params);
+        almondRequests = mDatabase.getReference(get_requests);
+        requestsRefresh = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Log.d(DEBUG_TAG, "Fetching Requests");
+                if(dataSnapshot != null) {
+                    for(DataSnapshot ds : dataSnapshot.getChildren()) {
+                        ZoneRequest z = ds.getValue(ZoneRequest.class);
+                        Log.d(DEBUG_TAG, "Zone Request Details: " + z.toString());
+                        if(z.insideZone(mLocator.getLatitude(), mLocator.getLongitude())){
+                            Log.d(DEBUG_TAG, "Found Zone Requests: " + z.toString());
+                            currZoneRequests.add(z);
+                            zoneRequestsPresent = true;
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+
+        almondRequests.addValueEventListener(requestsRefresh);
+    }
+
+    public static void removeRequestsRefresher() {
+        almondRequests.removeEventListener(requestsRefresh);
+    }
+
 }
 

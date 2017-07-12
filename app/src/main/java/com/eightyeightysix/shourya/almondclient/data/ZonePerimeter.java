@@ -49,4 +49,7 @@ public class ZonePerimeter {
         double d = Math.abs(lngMin-gMin);
         return (a+b+c+d)*factor;
     }
+
+    @Exclude
+    public String getZoneName() {return this.zoneName;}
 }

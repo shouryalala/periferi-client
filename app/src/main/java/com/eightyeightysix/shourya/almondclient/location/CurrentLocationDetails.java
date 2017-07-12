@@ -23,6 +23,7 @@ public class CurrentLocationDetails {
     //All current Zones
     public boolean noZonesAvailable;
     public ArrayList<String> zonesList;
+    public ArrayList<String> zoneRequestList;
 
     public CurrentLocationDetails(){
         adminAreaName = null;
@@ -36,6 +37,7 @@ public class CurrentLocationDetails {
         cityID = null;
         noZonesAvailable = true;
         zonesList = new ArrayList<>();
+        zoneRequestList = new ArrayList<>();
     }
 
     public void setValues(String a, String b, String c, String d, String e, String f, String g){
@@ -78,4 +80,5 @@ public class CurrentLocationDetails {
     public double getCurrLatitutde() {return this.currLat;}
 
     public double getCurrLongitude() {return this.currLng;}
+
 }

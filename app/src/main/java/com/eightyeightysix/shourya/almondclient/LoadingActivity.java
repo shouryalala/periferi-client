@@ -13,6 +13,7 @@ import android.util.Log;
 
 import com.eightyeightysix.shourya.almondclient.data.User;
 import com.eightyeightysix.shourya.almondclient.data.ZonePerimeter;
+import com.eightyeightysix.shourya.almondclient.data.ZoneRequest;
 import com.eightyeightysix.shourya.almondclient.location.Constants;
 import com.eightyeightysix.shourya.almondclient.location.CurrentLocationDetails;
 import com.eightyeightysix.shourya.almondclient.location.GPSLocator;
@@ -86,7 +87,9 @@ public class LoadingActivity extends BaseActivity implements GPSLocator.location
             locationDetails = new CurrentLocationDetails();
             //callback class for ReverseGeocode
             mResultReceiver = new AddressResultReceiver(new Handler());
+
             currZonePerimeter = new ArrayList<>();
+            currZoneRequests = new ArrayList<>();
 
             mLocator = new GPSLocator(this);
             mLocator.refreshLocation();
@@ -278,7 +281,7 @@ public class LoadingActivity extends BaseActivity implements GPSLocator.location
                             currZonePerimeter.add(zp);
                         }
                     }
-                    if(!flag)locationDetails.setZonesAvailable();
+                    if(!flag)locationDetails.setZonesAvailable();       //Zones available
                 }
                 else{
                     Log.d(DEBUG_TAG, "No zones in this city yet");
@@ -301,6 +304,8 @@ public class LoadingActivity extends BaseActivity implements GPSLocator.location
                 locationDetails.setCountryID(country_id);
                 locationDetails.setCityID(city_id);
 
+                backgroundRefreshRequestsList();        //refreshes RequestList in the background and updates on addition
+
                 startActivity(new Intent(LoadingActivity.this, FeedActivity.class));
             }
             @Override
@@ -309,6 +314,7 @@ public class LoadingActivity extends BaseActivity implements GPSLocator.location
             }
         });
     }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
