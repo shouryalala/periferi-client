@@ -4,9 +4,11 @@ package com.eightyeightysix.shourya.almondclient;
 //gesture
 import android.content.Context;
 import android.graphics.PointF;
+import android.os.Build;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.MotionEventCompat;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MotionEvent;
@@ -50,13 +52,22 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
     //protected CoordinatorLayout mainView;
     ///gesture 
     //ZonePinchSurfaceView pinchView;
+    private Toolbar almondToolbar;
+
+    //TODO add stuff to onStart
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_feed);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        //setup toolbar
+        almondToolbar = (Toolbar)findViewById(R.id.almond_bar);
+        setSupportActionBar(almondToolbar);
+        almondToolbar.setTitle(null);
+        if(Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
+            almondToolbar.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+        }
+
         AlmondLayout mainView = (AlmondLayout)findViewById(R.id.feed_layout);
         mainView.gestureInit();
         //gestureInit();
@@ -80,6 +91,7 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
 
         //initialise fragment Manager
         fragmentManager = getSupportFragmentManager();
+
 
         Log.d(DEBUG_TAG, userId + userName + userEmail + displayName);
     }

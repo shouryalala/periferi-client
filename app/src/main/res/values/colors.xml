@@ -8,4 +8,8 @@
     <color name="tut_1_green">#009933</color>
     <color name="tut_2_blue">#0066cc</color>
     <color name="tut_3_purple">#660066</color>
+    <color name="colorPrimaryRed">#FFEBEE</color>
+    <color name="colorPrimarySilver">#F5F5F5</color>
+    <color name="colorPrimaryRedAccent">#D32F2F</color>
+    <color name="coloredAccent">#D32F2F</color>
 </resources>

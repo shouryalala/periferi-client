@@ -5,11 +5,15 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -49,6 +53,7 @@ public class NewBroadCastDialog extends DialogFragment{
         super.onAttach(context);
     }
 
+    /*
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -67,8 +72,29 @@ public class NewBroadCastDialog extends DialogFragment{
             }
         });
 
+        getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
         builder.setView(inf2);
         return builder.create();
+    }*/
+
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.new_broadcast_dialog, container, false);
+        cCircle = (TextView) view.findViewById(R.id.current_circle);
+        currentCircle = getCircleText();
+        cCircle.setText(currentCircle);
+        fBody = (EditText) view.findViewById(R.id.field_body);
+        submit = (Button) view.findViewById(R.id.broadcast_send);
+        submit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                pushBroadCast();
+            }
+        });
+        getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        return view;
     }
 
     private String getCircleText() {
