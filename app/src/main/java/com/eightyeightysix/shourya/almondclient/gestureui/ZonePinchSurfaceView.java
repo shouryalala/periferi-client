@@ -1,6 +1,7 @@
 package com.eightyeightysix.shourya.almondclient.gestureui;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -17,6 +18,8 @@ import com.eightyeightysix.shourya.almondclient.BaseActivity;
 import com.eightyeightysix.shourya.almondclient.FeedActivity;
 import com.eightyeightysix.shourya.almondclient.view.AlmondLayout;
 
+import java.util.HashMap;
+
 /*
  * Created by shourya on 4/6/17.
  */
@@ -25,6 +28,7 @@ public class ZonePinchSurfaceView extends SurfaceView implements Runnable, Almon
     Thread t = null;
     SurfaceHolder holder;
     Paint paintRed, paintBlue;
+    Paint paintText;
     Canvas canvas;
     Vibrator v;
 //    boolean debug = false;
@@ -38,6 +42,7 @@ public class ZonePinchSurfaceView extends SurfaceView implements Runnable, Almon
     private static float radiiExpand[];
     private static float radii_expand_max[];
     private static int selected_zone;
+    private static HashMap<Integer, String> zoneNames;
     private boolean needVibration = false;
 
     boolean pinched = false;
@@ -83,12 +88,17 @@ public class ZonePinchSurfaceView extends SurfaceView implements Runnable, Almon
         paintBlue.setStyle(Paint.Style.STROKE);
         paintBlue.setStrokeWidth(7);
 
-        getZoneCount();
+        paintText = new Paint(Paint.ANTI_ALIAS_FLAG);
+        paintText.setTextSize(100f);
+        paintText.setTextAlign(Paint.Align.CENTER);
+        paintText.setColor(Color.BLUE);
+        getZoneDetails();
     }
 
-    private void getZoneCount(){
+    private void getZoneDetails(){
         //TODO Import number of zones from server
         zoneCount = BaseActivity.fetchCurrentCircleCount();
+        zoneNames = BaseActivity.getZoneNames();
     }
 
     private void initRadii(float head) {
@@ -130,6 +140,7 @@ public class ZonePinchSurfaceView extends SurfaceView implements Runnable, Almon
                 if(j == selected_zone){
                     canvas.drawCircle(center.x, center.y, radii_display[j], paintBlue);
                 }
+                canvas.drawText(zoneNames.get(j), center.x, center.y+radii_display[j], paintText);
                 /*if(j != zoneCount-1){
                     canvas.drawCircle(center.x,center.y, radiiExpand[j], paintBlue);
                 }*/
@@ -271,6 +282,6 @@ public class ZonePinchSurfaceView extends SurfaceView implements Runnable, Almon
             canvas.drawColor(0, PorterDuff.Mode.CLEAR);
             holder.unlockCanvasAndPost(canvas);
         }
-        FeedActivity.refreshCircleContent(zoneCount - selected_zone - 1);
+        FeedActivity.refreshCircleContent(selected_zone);
     }
 }

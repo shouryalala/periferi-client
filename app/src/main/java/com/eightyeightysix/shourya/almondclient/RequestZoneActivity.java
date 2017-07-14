@@ -354,7 +354,8 @@ public class RequestZoneActivity extends BaseActivity implements OnMapReadyCallb
 
         //if no conflict, check existing zones
         if(zoneAcceptedByRequests) {
-            for (ZonePerimeter zeus : currZonePerimeter) {
+            for (Zone z : locationDetails.zonesList) {
+                ZonePerimeter zeus = z.zoneBounds;
                 if(zeus.getFactor(lMin, lMax, gMin, gMax) < 4.0) {
                     zoneAcceptedByZones = false;
                     zoneConflict = zeus.getZoneName();

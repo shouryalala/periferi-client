@@ -12,6 +12,7 @@ import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
 import com.eightyeightysix.shourya.almondclient.data.User;
+import com.eightyeightysix.shourya.almondclient.data.Zone;
 import com.eightyeightysix.shourya.almondclient.data.ZonePerimeter;
 import com.eightyeightysix.shourya.almondclient.data.ZoneRequest;
 import com.eightyeightysix.shourya.almondclient.location.Constants;
@@ -78,7 +79,7 @@ public class LoadingActivity extends BaseActivity implements GPSLocator.location
          * cityCircle = 1
          * zoneCircles = 2, 3 sorted according to area
         */
-        currCircle = 1;
+        currCircle = CITY_INDEX;
         //TODO check internet and display message
 
         if(!preferences.getString("id",UNAVAILABLE).equals(UNAVAILABLE)) {
@@ -88,7 +89,6 @@ public class LoadingActivity extends BaseActivity implements GPSLocator.location
             //callback class for ReverseGeocode
             mResultReceiver = new AddressResultReceiver(new Handler());
 
-            currZonePerimeter = new ArrayList<>();
             currZoneRequests = new ArrayList<>();
             currZoneRequestKeys = new HashMap<>();
 
@@ -278,8 +278,8 @@ public class LoadingActivity extends BaseActivity implements GPSLocator.location
                         ZonePerimeter zp = ds.getValue(ZonePerimeter.class);
                         if(zp.insideZone(mLocator.getLatitude(), mLocator.getLongitude())){
                             flag = false;
-                            locationDetails.zonesList.add(ds.getKey());     //TODO weird: storing keys and values in different lists?
-                            currZonePerimeter.add(zp);
+                            Zone newZone = new Zone(ds.getKey(), zp);
+                            locationDetails.zonesList.add(newZone);
                         }
                     }
                     if(!flag)locationDetails.setZonesAvailable();       //Zones available
@@ -291,7 +291,8 @@ public class LoadingActivity extends BaseActivity implements GPSLocator.location
                 Log.d(DEBUG_TAG,"Zones Found:" + locationDetails.getZonesStatus());
                 if(locationDetails.getZonesStatus()) {
                     //set first page as innermost zoneCircle
-                    currCircle = 1 + locationDetails.zonesList.size();
+                    currCircle = 0;
+                    sortZoneListByArea();
                 }
 
                 //update preferences values;

@@ -14,6 +14,7 @@ import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.eightyeightysix.shourya.almondclient.data.ZonePerimeter;
 import com.eightyeightysix.shourya.almondclient.data.ZoneRequest;
 import com.eightyeightysix.shourya.almondclient.view.RequestPagerView;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -53,7 +54,10 @@ public class AllRequestsActivity extends BaseActivity implements OnMapReadyCallb
     private List<LatLng> coordinates;
     private static boolean polygonCreated;
     private static final String DEBUG_TAG = "AlmondLog:: " + AllRequestsActivity.class.getSimpleName();
-    private static int NEEDED_REQUESTS = 5;
+    private static int NEEDED_REQUESTS = 2;
+
+    protected static boolean flag = false;
+    protected static ZoneRequest deleteNode = null;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -160,9 +164,10 @@ public class AllRequestsActivity extends BaseActivity implements OnMapReadyCallb
     public void onRequestClick(boolean a) {
         Toast.makeText(getApplicationContext(), requestPager.getCurrentItem() + " " + a, Toast.LENGTH_SHORT).show();
         final boolean response = a;
+        final String key = currZoneRequestKeys.get(allZoneRequests.get(requestPager.getCurrentItem()));
         HashMap<String, String> params = new HashMap<>();
         params.put("cityID", locationDetails.getCityID());
-        params.put("requestID", currZoneRequestKeys.get(allZoneRequests.get(requestPager.getCurrentItem())));
+        params.put("requestID", key);
         String ref = substituteString(getResources().getString(R.string.get_zone_request), params);
         final DatabaseReference reference = mDatabase.getReference(ref);
         reference.runTransaction(new Transaction.Handler() {
@@ -174,12 +179,24 @@ public class AllRequestsActivity extends BaseActivity implements OnMapReadyCallb
                  }
                  if(!zUpdate.requests.containsKey(mUser.getUserId())) {
                      zUpdate.requests.put(mUser.getUserId(), response);
-                     if(response)zUpdate.reqCount++;
+                     if(response){
+                         zUpdate.reqCount++;
+                         Log.d(DEBUG_TAG, "Request Count: " + zUpdate.reqCount);
+                         if(zUpdate.reqCount == NEEDED_REQUESTS){
+                             flag = true;
+                             deleteNode = zUpdate;
+                             Log.d(DEBUG_TAG, "Create Zone");
+                         }
+                     }
                  }
                  else{
                      //shouldnt be called
                  }
                  mutableData.setValue(zUpdate);
+                Log.d(DEBUG_TAG, "Flag Value: " + flag);
+                if(flag) {
+                    createZone(deleteNode, key);
+                }
                 return Transaction.success(mutableData);
             }
 
@@ -190,4 +207,21 @@ public class AllRequestsActivity extends BaseActivity implements OnMapReadyCallb
         });
     }
 
+    public void createZone(ZoneRequest zr, String requestKey) {
+        Log.d(DEBUG_TAG, "Create Zone Called");
+        Log.d(DEBUG_TAG, "Request Key to be Deleted: " + requestKey);
+        ZonePerimeter newZone = new ZonePerimeter(zr.latMin, zr.latMax, zr.lngMin, zr.lngMax, zr.getzName());
+
+        HashMap<String, String> params = new HashMap<>();
+        params.put("cityID", locationDetails.getCityID());
+        String s = substituteString(getResources().getString(R.string.get_zones), params);
+        String t = substituteString(getResources().getString(R.string.all_zone_requests),params);
+
+        final DatabaseReference createZone = mDatabase.getReference(s);
+        final DatabaseReference deleteRequest = mDatabase.getReference(t);
+
+        createZone.push().setValue(newZone);
+        deleteRequest.child(requestKey).removeValue();
+        Log.d(DEBUG_TAG, "Removed request and added zone");
+    }
 }

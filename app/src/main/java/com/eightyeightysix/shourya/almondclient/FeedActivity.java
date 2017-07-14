@@ -226,8 +226,21 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
         }
     }
 
+    public static int decideCircleIndex(int c) {
+        /*
+        * circle indices are in increasing order from innermost circle to outermost circle
+        * outermost circle represents the country perferi and the nest largest is the city circle
+        * these aren't present in the zone list data structure thus they have been given special indices to avoid mixup
+        * */
+        if(c > locationDetails.zonesList.size()-1) {
+            return (c == locationDetails.zonesList.size())?CITY_INDEX:COUNTRY_INDEX;
+        }
+        return c;
+    }
+
     //Callback from gesture
     public static void refreshCircleContent(int id) {
+        id = decideCircleIndex(id);
         if(currCircle == id)
             Toast.makeText(mContext, "Current Circle", Toast.LENGTH_SHORT);
         else {

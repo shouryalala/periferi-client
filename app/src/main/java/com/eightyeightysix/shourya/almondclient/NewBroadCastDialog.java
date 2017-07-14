@@ -30,12 +30,16 @@ import java.util.Map;
 public class NewBroadCastDialog extends DialogFragment{
     private static final String DEBUG_TAG = "AlmondLog:: " + NewBroadCastDialog.class.getSimpleName();
     private static final String REQUIRED = "Required";
+    private static final String UNAVAILABLE = "Unavailable";
     //EditText fTitle;
     TextView cCircle;
     EditText fBody;
     Button submit;
     DatabaseReference userPosts, allPosts;
     private String currentCircle;
+    public static final int CITY_INDEX = 69;
+    public static final int COUNTRY_INDEX = 420;
+
     public NewBroadCastDialog() {
 
     }
@@ -68,15 +72,16 @@ public class NewBroadCastDialog extends DialogFragment{
     }
 
     private String getCircleText() {
-        if(BaseActivity.currCircle == 0) {
+        if(BaseActivity.currCircle == COUNTRY_INDEX) {
              return BaseActivity.locationDetails.getCountryName();
         }
-        else if(BaseActivity.currCircle == 1){
+        else if(BaseActivity.currCircle == CITY_INDEX){
             return BaseActivity.locationDetails.getAdminAreaName();
         }
         else{
             //temp
-            return ("Zone name");
+            int x = BaseActivity.currCircle;
+            return BaseActivity.locationDetails.zonesList.get(x).zoneBounds.getZoneName();
         }
     }
 
@@ -98,7 +103,7 @@ public class NewBroadCastDialog extends DialogFragment{
             }
             default:{
                 //zone
-                params.put("zoneID", BaseActivity.locationDetails.zonesList.get(circle - 2));
+                params.put("zoneID", BaseActivity.locationDetails.zonesList.get(circle - 2).getZoneKey());
                 reference = BaseActivity.substituteString(getResources().getString(R.string.all_broadcasts_zone), params);
                 break;
             }

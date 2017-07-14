@@ -5,6 +5,8 @@ package com.eightyeightysix.shourya.almondclient.location;
  */
 
 
+import com.eightyeightysix.shourya.almondclient.data.Zone;
+
 import java.util.ArrayList;
 
 public class CurrentLocationDetails {
@@ -22,7 +24,7 @@ public class CurrentLocationDetails {
     private double currLng;
     //All current Zones
     public boolean noZonesAvailable;
-    public ArrayList<String> zonesList;
+    public ArrayList<Zone> zonesList;
     public ArrayList<String> zoneRequestList;
 
     public CurrentLocationDetails(){

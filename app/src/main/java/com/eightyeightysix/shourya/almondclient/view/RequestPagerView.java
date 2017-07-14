@@ -54,7 +54,12 @@ public class RequestPagerView extends Fragment {
         final Integer remaining = getArguments().getInt("requestCount");
 
         header.setText(requestName);
-        zoneStatus.setText(remaining + "more approvals needed to create this Periferi");
+        if(remaining != 0) {
+            zoneStatus.setText(remaining + "more approvals needed to create this Periferi");
+        }
+        else {
+            zoneStatus.setText("This Periferi shall soon be created!");
+        }
         acc.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
