@@ -1,6 +1,8 @@
 package com.eightyeightysix.shourya.almondclient.view;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -44,6 +46,9 @@ public class RequestPagerView extends Fragment {
         final Button acc = (Button)rootView.findViewById(R.id.accept_request);
         final Button rej = (Button)rootView.findViewById(R.id.reject_request);
         final TextView zoneStatus = (TextView)rootView.findViewById(R.id.needed_approvals);
+
+        //.setBackground(new ColorDrawable(Color.TRANSPARENT));
+        //rootView.setSystemUiVisibility(Color.TRANSPARENT);
 
         String requestName = getArguments().getString("name", "UNAVAILABLE");
         final Boolean responded = getArguments().getBoolean("responded");

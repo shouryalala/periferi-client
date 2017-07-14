@@ -14,6 +14,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -38,7 +40,8 @@ public class NewBroadCastDialog extends DialogFragment{
     //EditText fTitle;
     TextView cCircle;
     EditText fBody;
-    Button submit;
+    TextView submit;
+    public View inf2;
     DatabaseReference userPosts, allPosts;
     private String currentCircle;
     public static final int CITY_INDEX = 69;
@@ -53,48 +56,35 @@ public class NewBroadCastDialog extends DialogFragment{
         super.onAttach(context);
     }
 
-    /*
+
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        final View inf2 = inflater.inflate(R.layout.new_broadcast_dialog, null);
-        //fTitle = (EditText) inf2.findViewById(R.id.field_title);
+        inf2 = inflater.inflate(R.layout.new_broadcast_dialog, null);
         cCircle = (TextView) inf2.findViewById(R.id.current_circle);
         currentCircle = getCircleText();
         cCircle.setText(currentCircle);
         fBody = (EditText) inf2.findViewById(R.id.field_body);
-        submit = (Button) inf2.findViewById(R.id.broadcast_send);
+        submit = (TextView) inf2.findViewById(R.id.broadcast_send);
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 pushBroadCast();
             }
         });
-
-        getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-
         builder.setView(inf2);
         return builder.create();
-    }*/
+    }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.new_broadcast_dialog, container, false);
-        cCircle = (TextView) view.findViewById(R.id.current_circle);
-        currentCircle = getCircleText();
-        cCircle.setText(currentCircle);
-        fBody = (EditText) view.findViewById(R.id.field_body);
-        submit = (Button) view.findViewById(R.id.broadcast_send);
-        submit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                pushBroadCast();
-            }
-        });
+        //return super.onCreateView(inflater, container, savedInstanceState);
+        //View view = inflater.inflate(R.layout.new_broadcast_dialog, container, false);
+
         getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        return view;
+        return super.onCreateView(inflater, container, savedInstanceState);
     }
 
     private String getCircleText() {
@@ -115,13 +105,13 @@ public class NewBroadCastDialog extends DialogFragment{
         Map<String, String> params = new HashMap<>();
         String reference;
         switch(circle) {
-            case 0: {
+            case COUNTRY_INDEX: {
                 //country users
                 params.put("countryID", BaseActivity.locationDetails.getCountryID());
                 reference = BaseActivity.substituteString(getResources().getString(R.string.all_broadcasts_country), params);
                 break;
             }
-            case 1:{
+            case CITY_INDEX:{
                 //city users
                 params.put("cityID", BaseActivity.locationDetails.getCityID());
                 reference = BaseActivity.substituteString(getResources().getString(R.string.all_broadcasts_city), params);
@@ -129,7 +119,7 @@ public class NewBroadCastDialog extends DialogFragment{
             }
             default:{
                 //zone
-                params.put("zoneID", BaseActivity.locationDetails.zonesList.get(circle - 2).getZoneKey());
+                params.put("zoneID", BaseActivity.locationDetails.zonesList.get(circle).getZoneKey());
                 reference = BaseActivity.substituteString(getResources().getString(R.string.all_broadcasts_zone), params);
                 break;
             }
