@@ -10,6 +10,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.widget.Toast;
@@ -21,10 +22,12 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.Dash;
 import com.google.android.gms.maps.model.Dot;
 import com.google.android.gms.maps.model.Gap;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PatternItem;
 import com.google.android.gms.maps.model.Polygon;
@@ -97,13 +100,22 @@ public class AllRequestsActivity extends BaseActivity implements OnMapReadyCallb
         coordinates.add(new LatLng(currView.latMin, currView.lngMax));
         coordinates.add(new LatLng(currView.latMin, currView.lngMin));
 
+        gMap.getUiSettings().setMapToolbarEnabled(false);
 
         PolygonOptions minRectangle = new PolygonOptions();
         minRectangle.add(coordinates.get(0), coordinates.get(1), coordinates.get(2), coordinates.get(3));
-        minRectangle.strokeColor(Color.BLUE);// getResources().getColor(R.color.opaque_red));
-        minRectangle.fillColor(Color.CYAN);//getResources().getColor(R.color.translucent_red));
+        minRectangle.strokeColor(ContextCompat.getColor(this, R.color.mapOutlineColor));// getResources().getColor(R.color.opaque_red));
+        minRectangle.fillColor(ContextCompat.getColor(this, R.color.mapBoxColor));//getResources().getColor(R.color.translucent_red));
         minRectangle.strokeWidth(12);
         mapRequestShape = gMap.addPolygon(minRectangle);
+
+        boolean success = googleMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(
+                this, R.raw.style_json));
+
+        if (!success) {
+            Log.d(DEBUG_TAG, "Style parsing failed.");
+        }
+
     }
 
     private class SwapMapPolygon implements ViewPager.OnPageChangeListener{

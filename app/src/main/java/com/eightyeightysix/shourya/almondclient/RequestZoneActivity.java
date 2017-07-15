@@ -7,6 +7,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -112,6 +113,7 @@ public class RequestZoneActivity extends BaseActivity implements OnMapReadyCallb
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         longClick = true;
+        LatLng temp = new LatLng(13.352326, 74.792772);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLoc, 15));
         mMap.addMarker(new MarkerOptions().position(myLoc).title("Current Location"));
 
@@ -129,6 +131,8 @@ public class RequestZoneActivity extends BaseActivity implements OnMapReadyCallb
         if (!success) {
             Log.d(DEBUG_TAG, "Style parsing failed.");
         }
+
+        mMap.getUiSettings().setMapToolbarEnabled(false);
 
     }
 
@@ -163,12 +167,12 @@ public class RequestZoneActivity extends BaseActivity implements OnMapReadyCallb
 
         minRectangle.add(a,b,c,d);
         //TODO use new method
-        minRectangle.strokeColor(Color.BLUE);// getResources().getColor(R.color.opaque_red));
-        minRectangle.fillColor(Color.CYAN);//getResources().getColor(R.color.translucent_red));
+        minRectangle.strokeColor(ContextCompat.getColor(this, R.color.mapOutlineColor));// getResources().getColor(R.color.opaque_red));
+        minRectangle.fillColor(ContextCompat.getColor(this, R.color.mapBoxColor));//getResources().getColor(R.color.translucent_red));
         minRectangle.strokeWidth(12);
 
         mintempRectangle.add(a,b,c,d);
-        mintempRectangle.strokeColor(Color.BLUE);// getResources().getColor(R.color.opaque_red));
+        mintempRectangle.strokeColor(ContextCompat.getColor(this, R.color.mapBoxColor));
         //mintempRectangle.fillColor(Color.CYAN);//getResources().getColor(R.color.translucent_red));
         mintempRectangle.strokeWidth(10);
         List<PatternItem> pattern = Arrays.<PatternItem>asList(
