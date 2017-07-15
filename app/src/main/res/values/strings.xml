@@ -24,5 +24,6 @@
     <string name="map_zones">Create PeriFeri</string>
     <string name="fb_welcome_text">Welcome to Almond</string>
     <string name="zone_requests_title">Requests</string>
+    <string name="create_periferi_text">Create a PeriFeri</string>
 
 </resources>

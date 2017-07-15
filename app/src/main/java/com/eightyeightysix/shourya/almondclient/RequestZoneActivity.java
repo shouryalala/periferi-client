@@ -114,7 +114,7 @@ public class RequestZoneActivity extends BaseActivity implements OnMapReadyCallb
         mMap = googleMap;
         longClick = true;
         LatLng temp = new LatLng(13.352326, 74.792772);
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLoc, 15));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLoc, 17));
         mMap.addMarker(new MarkerOptions().position(myLoc).title("Current Location"));
 
         coordinates = new MarkerOptions[4];
@@ -169,12 +169,12 @@ public class RequestZoneActivity extends BaseActivity implements OnMapReadyCallb
         //TODO use new method
         minRectangle.strokeColor(ContextCompat.getColor(this, R.color.mapOutlineColor));// getResources().getColor(R.color.opaque_red));
         minRectangle.fillColor(ContextCompat.getColor(this, R.color.mapBoxColor));//getResources().getColor(R.color.translucent_red));
-        minRectangle.strokeWidth(12);
+        minRectangle.strokeWidth(8);
 
         mintempRectangle.add(a,b,c,d);
         mintempRectangle.strokeColor(ContextCompat.getColor(this, R.color.mapBoxColor));
         //mintempRectangle.fillColor(Color.CYAN);//getResources().getColor(R.color.translucent_red));
-        mintempRectangle.strokeWidth(10);
+        mintempRectangle.strokeWidth(8);
         List<PatternItem> pattern = Arrays.<PatternItem>asList(
                 new Dot(), new Gap(20), new Dash(30), new Gap(20));
         mintempRectangle.strokePattern(pattern);
