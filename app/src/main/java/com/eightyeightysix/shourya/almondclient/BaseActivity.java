@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 
+import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.graphics.PointF;
 
@@ -84,6 +85,7 @@ public class BaseActivity extends AppCompatActivity{
     public static final int CITY_INDEX = 69;
     public static final int COUNTRY_INDEX = 420;
 
+    public static Bitmap userProfilePic;
     private ProgressDialog progressDialog;
 
     private final static String DEBUG_TAG = "AlmondLog:: " + BaseActivity.class.getSimpleName();

@@ -10,6 +10,7 @@ import android.os.ResultReceiver;
 import android.preference.PreferenceManager;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.widget.ImageView;
 
 import com.eightyeightysix.shourya.almondclient.data.User;
 import com.eightyeightysix.shourya.almondclient.data.Zone;
@@ -131,6 +132,9 @@ public class LoadingActivity extends BaseActivity implements GPSLocator.location
             };
             loadChats.addListenerForSingleValueEvent(loadChatListener);
 
+
+            ImageView temp = (ImageView)findViewById(R.id.pofile_pic);
+            temp.setImageBitmap(userProfilePic);
             //Add user to list of online users
             //userOnline();
         }

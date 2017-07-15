@@ -6,6 +6,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
@@ -38,6 +41,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -63,6 +69,7 @@ public class LoginActivity extends BaseActivity implements
     Thread t = null;
     Integer[] colors = null;
     ArgbEvaluator argbEvaluator = new ArgbEvaluator();
+    private static String fb_token;
     private static String tut_text[] = new String[2];
 
     @Override
@@ -99,7 +106,7 @@ public class LoginActivity extends BaseActivity implements
 
 
     @Override
-    public void fblistener(String token, String id1, String fname1, String lname1, String sname1,
+    public void fblistener(String token, String id1, URL profile_picture, String fname1, String lname1, String sname1,
                            String gender1, String email1, boolean emailAvailable, String dob1,
                            boolean dobAvailable) {
         Log.d(DEBUG_TAG, "fbListener Callback called");
@@ -120,12 +127,13 @@ public class LoginActivity extends BaseActivity implements
         tDob = dob1;
 
         //Firebase Auth
-        fireBaseAuthenticate(token);
-
+        new DownloadImageTask().execute(profile_picture);
+        fb_token = token;
+        //fireBaseAuthenticate(token);
     }
 
-    private void fireBaseAuthenticate(String token) {
-        AuthCredential credential = FacebookAuthProvider.getCredential(token);
+    private void fireBaseAuthenticate() {
+        AuthCredential credential = FacebookAuthProvider.getCredential(fb_token);
         Log.d(DEBUG_TAG, "Firebase Credentials: " + credential.toString());
         Log.d(DEBUG_TAG, "Firebase Auth Instance: " + mAuth.toString());
       //  Log.d(DEBUG_TAG, "Firebase User Instance: " + mFireUser.toString());
@@ -291,6 +299,39 @@ public class LoginActivity extends BaseActivity implements
             ((TextView) rootView.findViewById(R.id.welcome_text)).setText(tut_text[position]);
             //((TextView) rootView.findViewById(R.id.textView1)).setText(Integer.toString(args.getInt(ARG_PAGE)));
             return rootView;
+        }
+    }
+
+    private class DownloadImageTask extends AsyncTask<URL, Void, Bitmap> {
+
+        public DownloadImageTask() {
+            //this.bmImage = bmImage;
+        }
+
+        protected void onPreExecute() {
+            //mDialog = ProgressDialog.show(ChartActivity.this,"Please wait...", "Retrieving data ...", true);
+        }
+
+        protected Bitmap doInBackground(URL...urls) {
+            Log.d(DEBUG_TAG, "Fetching image");
+            URL a = urls[0];
+            Bitmap mIcon11 = null;
+            try {
+                InputStream in = a.openStream();
+                mIcon11 = BitmapFactory.decodeStream(in);
+            } catch (Exception e) {
+                Log.e("Error", "image download error");
+                Log.e("Error", e.getMessage());
+                e.printStackTrace();
+            }
+            return mIcon11;
+        }
+
+        protected void onPostExecute(Bitmap result) {
+            //set image of your imageview
+            userProfilePic = result;
+            Log.d(DEBUG_TAG, "Image fetched, authenticating token");
+            fireBaseAuthenticate();
         }
     }
 }
