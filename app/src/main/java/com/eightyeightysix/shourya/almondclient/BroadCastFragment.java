@@ -118,7 +118,7 @@ public class BroadCastFragment extends Fragment{
         mAdapter = new FirebaseRecyclerAdapter<BroadCast, BroadCastViewHolder>(BroadCast.class, R.layout.item_post,
                 BroadCastViewHolder.class, postsQuery) {
             @Override
-            protected void populateViewHolder(BroadCastViewHolder viewHolder, BroadCast model, int position) {
+            protected void populateViewHolder(final BroadCastViewHolder viewHolder, BroadCast model, int position) {
 
                 final DatabaseReference postRef = getRef(position);
                 //add shit
@@ -134,6 +134,12 @@ public class BroadCastFragment extends Fragment{
                         //onStarClicked(userPostRef);
                     }
                 });
+                if(model.stars.containsKey(getUid())) {
+                    viewHolder.starView.setImageResource(R.drawable.like_icon);
+                }
+                else{
+                    viewHolder.starView.setImageResource(R.drawable.unlike_icon);
+                }
             }
         };
         mRecycler.setAdapter(mAdapter);

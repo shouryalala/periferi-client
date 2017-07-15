@@ -14,4 +14,6 @@
     <color name="coloredAccent">#D32F2F</color>
     <color name="mapBoxColor">#FFEBEE</color>
     <color name="mapOutlineColor">#D32F2F</color>
+    <color name="colorPrimarySilverDark">#9E9E9E</color>
+    <color name="colorPrimaryBlack">#424242</color>
 </resources>

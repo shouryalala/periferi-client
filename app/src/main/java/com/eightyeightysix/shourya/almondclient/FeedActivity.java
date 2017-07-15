@@ -61,12 +61,7 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_feed);
         //setup toolbar
-        almondToolbar = (Toolbar)findViewById(R.id.almond_bar);
-        setSupportActionBar(almondToolbar);
-        almondToolbar.setTitle(null);
-        if(Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
-            almondToolbar.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
-        }
+        setupAppBar();
 
         AlmondLayout mainView = (AlmondLayout)findViewById(R.id.feed_layout);
         mainView.gestureInit();
@@ -99,6 +94,17 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
     public void createNewBroadCast() {
         DialogFragment dialog = new NewBroadCastDialog();
         dialog.show(getFragmentManager(), "NewBroadCastDialog");
+    }
+
+    public void setupAppBar() {
+        almondToolbar = (Toolbar)findViewById(R.id.almond_bar);
+        setSupportActionBar(almondToolbar);
+        almondToolbar.setTitle(null);
+        if(Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
+            almondToolbar.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+        }
+        almondToolbar.setTitle("");
+
     }
     
     ///gesture
@@ -171,10 +177,8 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }        
-        else if(id == R.id.map_zones) {
+
+        if(id == R.id.map_zones) {
             startActivity(new Intent(FeedActivity.this, RequestZoneActivity.class));
             return true;
         }

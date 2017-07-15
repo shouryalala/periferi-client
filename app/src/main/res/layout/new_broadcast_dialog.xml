@@ -13,7 +13,6 @@
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
             android:layout_marginTop="16dp"
-            android:text="You're  in"
             android:textSize="30sp"
             android:maxLines="1" />
 
@@ -36,9 +35,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
-            android:textSize="20sp"
-            android:layout_marginBottom="5dp"
+            android:textSize="23sp"
+            android:layout_marginBottom="10dp"
             android:textColor="@color/colorPrimaryRedAccent"
-            android:text="BroadCast"/>
+            android:text="Broadcast"/>
 
 </LinearLayout>

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Almondclient</string>
+    <string name="app_name">PeriFeri</string>
     <string name="action_settings">Settings</string>
 
     <string name="title_activity_request_zone">PeriFeri</string>
@@ -21,7 +21,7 @@
     <string name="send_button_text">Send</string>
     <string name="no_location_data_provided">Location values not present</string>
     <string name="no_address_found">No address found for curent coordinates</string>
-    <string name="map_zones">Map Zones</string>
+    <string name="map_zones">Create PeriFeri</string>
     <string name="fb_welcome_text">Welcome to Almond</string>
     <string name="zone_requests_title">Requests</string>
 
