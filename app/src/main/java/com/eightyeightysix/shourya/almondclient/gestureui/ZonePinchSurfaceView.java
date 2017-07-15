@@ -9,13 +9,16 @@ import android.graphics.PixelFormat;
 import android.graphics.PointF;
 import android.graphics.PorterDuff;
 import android.os.Vibrator;
+import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.widget.TextView;
 
 import com.eightyeightysix.shourya.almondclient.BaseActivity;
 import com.eightyeightysix.shourya.almondclient.FeedActivity;
+import com.eightyeightysix.shourya.almondclient.R;
 import com.eightyeightysix.shourya.almondclient.view.AlmondLayout;
 
 import java.util.HashMap;
@@ -27,7 +30,7 @@ import java.util.HashMap;
 public class ZonePinchSurfaceView extends SurfaceView implements Runnable, AlmondLayout.pinchListener {
     Thread t = null;
     SurfaceHolder holder;
-    Paint paintRed, paintBlue;
+    Paint paintRed, paintBlue,paintTransparency;
     Paint paintText;
     Canvas canvas;
     Vibrator v;
@@ -43,6 +46,7 @@ public class ZonePinchSurfaceView extends SurfaceView implements Runnable, Almon
     private static float radii_expand_max[];
     private static int selected_zone;
     private static HashMap<Integer, String> zoneNames;
+    private static final float textPosition = (float)1.41421;
     private boolean needVibration = false;
 
     boolean pinched = false;
@@ -72,26 +76,35 @@ public class ZonePinchSurfaceView extends SurfaceView implements Runnable, Almon
 
     private void pinchInit() {
         holder = getHolder();
-        holder.setFormat(PixelFormat.TRANSLUCENT);
+        holder.setFormat(PixelFormat.TRANSPARENT);
 
         index = new PointF(-1,-1);
         thumb = new PointF(-1,-1);
         center = new PointF(-1,-1);
 
         paintRed = new Paint(Paint.ANTI_ALIAS_FLAG);
-        paintRed.setColor(Color.GRAY);
+        paintRed.setColor(ContextCompat.getColor(getContext(), R.color.colorPrimarySilverDark));
         paintRed.setStyle(Paint.Style.STROKE);
         paintRed.setStrokeWidth(8);
 
+        paintTransparency = new Paint(Paint.ANTI_ALIAS_FLAG);
+        paintTransparency.setColor(Color.WHITE);
+        paintTransparency.setStyle(Paint.Style.FILL);
+        paintTransparency.setAlpha(200);
+
         paintBlue = new Paint(Paint.ANTI_ALIAS_FLAG);
-        paintBlue.setColor(Color.BLUE);
+        //paintBlue.setColor(Color.BLUE);
+        paintBlue.setColor(ContextCompat.getColor(getContext(), R.color.colorPrimaryRedAccent));
         paintBlue.setStyle(Paint.Style.STROKE);
         paintBlue.setStrokeWidth(7);
 
         paintText = new Paint(Paint.ANTI_ALIAS_FLAG);
-        paintText.setTextSize(100f);
+        TextView txtview = new TextView(getContext());
+        txtview.setTextAppearance(getContext(), android.R.style.TextAppearance_DeviceDefault_Large);
+        paintText.setTextSize(txtview.getTextSize());
+        paintText.setTypeface(txtview.getTypeface());
         paintText.setTextAlign(Paint.Align.CENTER);
-        paintText.setColor(Color.BLUE);
+        paintText.setColor(ContextCompat.getColor(getContext(), R.color.colorPrimaryRedAccent));
         getZoneDetails();
     }
 
@@ -133,6 +146,7 @@ public class ZonePinchSurfaceView extends SurfaceView implements Runnable, Almon
             }
             canvas = holder.lockCanvas();
             canvas.drawColor(0, PorterDuff.Mode.CLEAR);
+            canvas.drawRect(0,0,getRight(),getBottom(),paintTransparency);
             canvas.drawColor(Color.argb(75,255,255,255));
             for(int j=0; j< zoneCount; j++) {
                 //Log.d(DEBUG_TAG, "Radii: "+radii[0] + "," + radii[1] + "," + radii[2]);
@@ -140,7 +154,8 @@ public class ZonePinchSurfaceView extends SurfaceView implements Runnable, Almon
                 if(j == selected_zone){
                     canvas.drawCircle(center.x, center.y, radii_display[j], paintBlue);
                 }
-                canvas.drawText(zoneNames.get(j), center.x, center.y+radii_display[j], paintText);
+
+                canvas.drawText(zoneNames.get(j), center.x, center.y-radii_display[j], paintText);
                 /*if(j != zoneCount-1){
                     canvas.drawCircle(center.x,center.y, radiiExpand[j], paintBlue);
                 }*/

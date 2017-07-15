@@ -53,7 +53,7 @@
 
             <TextView
                 android:id="@+id/post_body"
-                style="@style/Base.TextAppearance.AppCompat.Display1"
+                style="@style/Base.TextAppearance.AppCompat.Headline"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"

@@ -8,16 +8,24 @@
         android:id="@+id/zone_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/field_title"
         android:layout_marginBottom="5dp"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
-        android:layout_marginTop="16dp"
-        android:hint="16th Block"
-        android:maxLines="1" />
+        android:layout_marginTop="5dp"
+        android:hint="Deetee"
+        android:inputType="textMultiLine"
+        android:maxLines="10"
+        android:scrollHorizontally="false" />
 
     <Button
         android:id="@+id/request_zone"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="LOLWA"/>
+        android:gravity="center_horizontal"
+        android:textSize="23sp"
+        android:layout_marginBottom="10dp"
+        android:textColor="@color/colorPrimaryRedAccent"
+        android:text="Submit"/>
+
 </LinearLayout>

@@ -75,6 +75,7 @@ public class AllRequestsActivity extends BaseActivity implements OnMapReadyCallb
         coordinates = new ArrayList<>(4);
 
         for(ZoneRequest zr : currZoneRequests) {        //done as currZoneRequests can keep changing if other users create new zones
+            Log.d(DEBUG_TAG, "temp request array content added: " + zr.zName);
             allZoneRequests.add(zr);
         }
 

@@ -184,7 +184,11 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
         }
 
         else if(id == R.id.all_requests) {
-            startActivity(new Intent(FeedActivity.this, AllRequestsActivity.class));
+            if(currZoneRequestKeys.isEmpty())
+                toastit("There are currently no active requests");
+            else {
+                startActivity(new Intent(FeedActivity.this, AllRequestsActivity.class));
+            }
             return true;
         }
 
@@ -222,12 +226,12 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
         @Override
         public Fragment getItem(int position) {
             switch(position) {
-                case 0: {
+                case 1: {
                     if (chatListFragment == null)
                         chatListFragment = new ChatListFragment();
                     return chatListFragment;
                 }
-                case 1:{
+                case 0:{
                     if(broadCastFragment == null)
                         broadCastFragment = new BroadCastFragment();
                     return broadCastFragment;
@@ -261,8 +265,8 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
             Toast.makeText(mContext, "Current Circle", Toast.LENGTH_SHORT);
         else {
             currCircle = id;
-            ((ChatListFragment) mPagerAdapter.getItem(0)).fetchOnlineUsers(id);
-            ((BroadCastFragment) mPagerAdapter.getItem(1)).fetchCircleBroadCasts(id);
+            ((ChatListFragment) mPagerAdapter.getItem(1)).fetchOnlineUsers(id);
+            ((BroadCastFragment) mPagerAdapter.getItem(0)).fetchCircleBroadCasts(id);
         }
     }
 

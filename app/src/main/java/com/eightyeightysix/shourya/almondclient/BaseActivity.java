@@ -333,6 +333,8 @@ public class BaseActivity extends AppCompatActivity{
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Log.d(DEBUG_TAG, "Fetching Requests");
+                currZoneRequests.clear();
+                currZoneRequestKeys.clear();
                 if(dataSnapshot != null) {
                     for(DataSnapshot ds : dataSnapshot.getChildren()) {
                         ZoneRequest z = ds.getValue(ZoneRequest.class);
@@ -354,6 +356,35 @@ public class BaseActivity extends AppCompatActivity{
 
         almondRequests.addValueEventListener(requestsRefresh);
     }
+    //TODO incorrect/jugad code. should use child event listener and callback to this array when temp array is updated
+    /*
+      requestsRefresh = new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                Log.d(DEBUG_TAG, "Fetching Requests");
+                if(dataSnapshot != null) {
+                    //for(DataSnapshot ds : dataSnapshot.getChildren()) {
+                        ZoneRequest z = dataSnapshot.getValue(ZoneRequest.class);
+                        if(z.insideZone(mLocator.getLatitude(), mLocator.getLongitude())){
+                            Log.d(DEBUG_TAG, "Found Zone Requests: " + z.toString());
+                            currZoneRequests.add(z);
+                            currZoneRequestKeys.put(z,dataSnapshot.getKey());
+                            zoneRequestsPresent = true;
+                        }
+                    //}
+                }
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                ZoneRequest z = dataSnapshot.getValue(ZoneRequest.class);
+
+            }
+
+        };
+        almondRequests.addChildEventListener(requestsRefresh);
+
+     */
 
     public static void removeRequestsRefresher() {
         almondRequests.removeEventListener(requestsRefresh);
