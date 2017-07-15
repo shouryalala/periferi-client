@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <TextView
+        android:id="@+id/request_name"
+        style="@style/Base.TextAppearance.AppCompat.Display1"
+        android:textColor="@color/colorPrimaryBlack"
+        android:layout_marginStart="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal"
+        android:layout_marginBottom="10dp">
+        <TextView
+            android:id="@+id/accept_request"
+            android:clickable="true"
+            android:gravity="start"
+            android:layout_marginStart="10dp"
+            style="@style/Base.TextAppearance.AppCompat.Headline"
+            android:textColor="@color/colorPrimaryRedAccent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Accept"/>
+
+        <TextView
+            android:id="@+id/reject_request"
+            android:clickable="true"
+            android:gravity="end"
+            android:layout_marginEnd="10dp"
+            android:layout_marginStart="20dp"
+            style="@style/Base.TextAppearance.AppCompat.Headline"
+            android:textColor="@color/colorPrimaryRedAccent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Reject"/>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/needed_approvals"
+        android:textColor="@color/colorPrimaryBlack"
+        style="@style/Base.TextAppearance.AppCompat.Body1"
+        android:layout_width="match_parent"
+        android:gravity="center_horizontal"
+        android:layout_height="wrap_content" />
+</LinearLayout>

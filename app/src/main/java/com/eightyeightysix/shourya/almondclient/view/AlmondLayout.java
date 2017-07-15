@@ -30,7 +30,7 @@ public class AlmondLayout extends CoordinatorLayout {
     private static PointF secondary;
 
 
-    private static final String DEBUG_TAG = "AlmondLog:: " + AlmondLayout.class.getSimpleName();
+    private static final String DEBUG_TAG = "AlmondGestureLog:: " + AlmondLayout.class.getSimpleName();
     public AlmondLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
         //gestureInit();

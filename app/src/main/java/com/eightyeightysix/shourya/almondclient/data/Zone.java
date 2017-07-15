@@ -5,21 +5,15 @@ package com.eightyeightysix.shourya.almondclient.data;
  */
 
 public class Zone {
-    public String zName;
-    public double uLat;
-    public double uLng;
-    public double lLat;
-    public double lLng;
+    public String zoneKey;
+    public ZonePerimeter zoneBounds;
 
-    public Zone() {
-        //required for firebase
+    public Zone(String key, ZonePerimeter zp) {
+        this.zoneKey = key;
+        this.zoneBounds = zp;
     }
 
-    public Zone(String zName, double uLat, double uLng, double lLat, double lLng) {
-        this.zName =  zName;
-        this.uLat = uLat;
-        this.uLng = uLng;
-        this.lLat = lLat;
-        this.lLng = lLng;
-    }
+    public ZonePerimeter getZonePerimeter() {return this.zoneBounds;}
+
+    public String getZoneKey() {return this.zoneKey;}
 }

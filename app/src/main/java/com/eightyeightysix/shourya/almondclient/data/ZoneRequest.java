@@ -17,7 +17,8 @@ public class ZoneRequest {
     public double lngMax;
     public String creator;
     public String zName;
-    public Map<String, Boolean> reqCount = new HashMap<>();
+    public int reqCount = 0;
+    public Map<String, Boolean> requests = new HashMap<>();
 
     public ZoneRequest() {
         //Firebase

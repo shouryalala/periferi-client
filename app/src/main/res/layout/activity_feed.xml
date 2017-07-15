@@ -18,45 +18,12 @@
         android:layout_height="wrap_content"
         android:theme="@style/AppTheme.AppBarOverlay">
 
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            app:popupTheme="@style/AppTheme.PopupOverlay" />
+        <include layout="@layout/almond_bar"
+                 android:id="@+id/almond_bar"/>
 
     </android.support.design.widget.AppBarLayout>
 
     <include layout="@layout/content_feed" />
-    <!--temp buttons to replicate gesture control -->
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_gravity="bottom|center"
-        android:layout_margin="10dp">
-    <Button
-        android:id="@+id/countryButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="setCountryOnline"
-        android:text="Country"/>
-
-    <Button
-        android:id="@+id/cityButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="setCityOnline"
-        android:text="City"/>
-
-    <Button
-        android:id="@+id/zoneButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="setZoneOnline"
-        android:text="Zone"/>
-    </LinearLayout>
-    <!-- *********************************** -->
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
@@ -64,6 +31,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
-        app:srcCompat="@android:drawable/ic_dialog_email" />
+        android:src="@drawable/broadcast_icon" />
 
 </com.eightyeightysix.shourya.almondclient.view.AlmondLayout>

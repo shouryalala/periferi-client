@@ -1,37 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
+    android:layout_width="500sp"
     android:layout_height="match_parent"
+    android:background="@drawable/layout_rounded_corners"
     android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/current_circle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="5dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginTop="16dp"
-        android:text="You're  in"
-        android:maxLines="1" />
+        <TextView
+            android:id="@+id/current_circle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginTop="16dp"
+            android:textSize="30sp"
+            android:maxLines="1" />
 
-    <EditText
-        android:id="@+id/field_body"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/field_title"
-        android:layout_marginBottom="5dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginTop="5dp"
-        android:hint="Write your post..."
-        android:inputType="textMultiLine"
-        android:maxLines="10"
-        android:scrollHorizontally="false" />
+        <EditText
+            android:id="@+id/field_body"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/field_title"
+            android:layout_marginBottom="5dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginTop="5dp"
+            android:hint="Write your post..."
+            android:inputType="textMultiLine"
+            android:maxLines="10"
+            android:scrollHorizontally="false" />
 
-    <Button
-        android:id="@+id/broadcast_send"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="BroadCast"/>
+        <TextView
+            android:id="@+id/broadcast_send"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:textSize="23sp"
+            android:layout_marginBottom="10dp"
+            android:textColor="@color/colorPrimaryRedAccent"
+            android:text="Broadcast"/>
+
 </LinearLayout>

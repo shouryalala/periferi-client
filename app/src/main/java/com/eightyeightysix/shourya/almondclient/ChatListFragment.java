@@ -43,8 +43,9 @@ public class ChatListFragment extends Fragment {
     ProgressDialog progressDialog;
     DatabaseReference fetch_users;
     ValueEventListener userFetchListener;
+    private static final int CITY_INDEX = 69;
+    private static final int COUNTRY_INDEX = 420;
     //temps
-    Button bCountry, bCity, bZone;
 
     public interface StartChatListener{
         void startChat(User chatWith);
@@ -90,13 +91,13 @@ public class ChatListFragment extends Fragment {
         Map<String, String> params = new HashMap<>();
         String reference;
         switch(circle) {
-            case 0: {
+            case COUNTRY_INDEX: {
                 //country users
                 params.put("countryID", BaseActivity.locationDetails.getCountryID());
                 reference = BaseActivity.substituteString(getResources().getString(R.string.all_online_country), params);
                 break;
             }
-            case 1:{
+            case CITY_INDEX:{
                 //city users
                 params.put("cityID", BaseActivity.locationDetails.getCityID());
                 reference = BaseActivity.substituteString(getResources().getString(R.string.all_online_city), params);
@@ -104,7 +105,7 @@ public class ChatListFragment extends Fragment {
             }
             default:{
                 //zone
-                params.put("zoneID", BaseActivity.locationDetails.zonesList.get(circle - 2));
+                params.put("zoneID", BaseActivity.locationDetails.zonesList.get(circle).getZoneKey());
                 reference = BaseActivity.substituteString(getResources().getString(R.string.all_online_zone), params);
                 break;
             }

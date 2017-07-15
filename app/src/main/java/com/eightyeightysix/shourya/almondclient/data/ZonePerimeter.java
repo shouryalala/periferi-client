@@ -4,10 +4,13 @@ package com.eightyeightysix.shourya.almondclient.data;
  * Created by shourya on 30/6/17.
  */
 
+import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.database.Exclude;
 import com.google.firebase.database.IgnoreExtraProperties;
 
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 @IgnoreExtraProperties
@@ -49,4 +52,8 @@ public class ZonePerimeter {
         double d = Math.abs(lngMin-gMin);
         return (a+b+c+d)*factor;
     }
+
+    @Exclude
+    public String getZoneName() {return this.zoneName;}
+
 }

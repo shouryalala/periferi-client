@@ -31,6 +31,8 @@ import java.util.Map;
 
 public class BroadCastFragment extends Fragment{
     private static final String DEBUG_TAG = "AlmondLog:: " + BroadCastFragment.class.getSimpleName();
+    private static final int CITY_INDEX = 69;
+    private static final int COUNTRY_INDEX = 420;
 
     private DatabaseReference mDatabase;
     // [END define_database_reference]
@@ -77,13 +79,13 @@ public class BroadCastFragment extends Fragment{
         Map<String, String> params = new HashMap<>();
         String reference;
         switch(circle) {
-            case 0: {
+            case COUNTRY_INDEX: {
                 //country users
                 params.put("countryID", BaseActivity.locationDetails.getCountryID());
                 reference = BaseActivity.substituteString(getResources().getString(R.string.all_broadcasts_country), params);
                 break;
             }
-            case 1:{
+            case CITY_INDEX:{
                 //city users
                 params.put("cityID", BaseActivity.locationDetails.getCityID());
                 reference = BaseActivity.substituteString(getResources().getString(R.string.all_broadcasts_city), params);
@@ -91,7 +93,7 @@ public class BroadCastFragment extends Fragment{
             }
             default:{
                 //zone
-                params.put("zoneID", BaseActivity.locationDetails.zonesList.get(circle - 2));
+                params.put("zoneID", BaseActivity.locationDetails.zonesList.get(circle).getZoneKey());
                 reference = BaseActivity.substituteString(getResources().getString(R.string.all_broadcasts_zone), params);
                 break;
             }
@@ -116,7 +118,7 @@ public class BroadCastFragment extends Fragment{
         mAdapter = new FirebaseRecyclerAdapter<BroadCast, BroadCastViewHolder>(BroadCast.class, R.layout.item_post,
                 BroadCastViewHolder.class, postsQuery) {
             @Override
-            protected void populateViewHolder(BroadCastViewHolder viewHolder, BroadCast model, int position) {
+            protected void populateViewHolder(final BroadCastViewHolder viewHolder, BroadCast model, int position) {
 
                 final DatabaseReference postRef = getRef(position);
                 //add shit
@@ -132,6 +134,12 @@ public class BroadCastFragment extends Fragment{
                         //onStarClicked(userPostRef);
                     }
                 });
+                if(model.stars.containsKey(getUid())) {
+                    viewHolder.starView.setImageResource(R.drawable.like_icon);
+                }
+                else{
+                    viewHolder.starView.setImageResource(R.drawable.unlike_icon);
+                }
             }
         };
         mRecycler.setAdapter(mAdapter);
