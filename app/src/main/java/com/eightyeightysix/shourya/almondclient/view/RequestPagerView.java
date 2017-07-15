@@ -43,8 +43,8 @@ public class RequestPagerView extends Fragment {
         Bundle args = getArguments();
         int position = args.getInt(ARG_PAGE);
         TextView header = (TextView)rootView.findViewById(R.id.request_name);
-        final Button acc = (Button)rootView.findViewById(R.id.accept_request);
-        final Button rej = (Button)rootView.findViewById(R.id.reject_request);
+        final TextView acc = (TextView) rootView.findViewById(R.id.accept_request);
+        final TextView rej = (TextView)rootView.findViewById(R.id.reject_request);
         final TextView zoneStatus = (TextView)rootView.findViewById(R.id.needed_approvals);
 
         //.setBackground(new ColorDrawable(Color.TRANSPARENT));
@@ -60,7 +60,10 @@ public class RequestPagerView extends Fragment {
 
         header.setText(requestName);
         if(remaining != 0) {
-            zoneStatus.setText(remaining + "more approvals needed to create this Periferi");
+            zoneStatus.setText(remaining + " more approvals needed to create this Periferi");
+        }
+        else if(remaining == 1) {
+            zoneStatus.setText("1 more approval needed to create this Periferi");
         }
         else {
             zoneStatus.setText("This Periferi shall soon be created!");
@@ -75,7 +78,7 @@ public class RequestPagerView extends Fragment {
                 }
                 else {
                     int a = remaining-1;
-                    updateText = a + "more approvals needed to create this Periferi";
+                    updateText = a + " more approvals needed to create this Periferi";
                 }
                 zoneStatus.setText(updateText);
 

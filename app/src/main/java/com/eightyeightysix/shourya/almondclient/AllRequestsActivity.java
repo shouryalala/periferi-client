@@ -106,7 +106,7 @@ public class AllRequestsActivity extends BaseActivity implements OnMapReadyCallb
         minRectangle.add(coordinates.get(0), coordinates.get(1), coordinates.get(2), coordinates.get(3));
         minRectangle.strokeColor(ContextCompat.getColor(this, R.color.mapOutlineColor));// getResources().getColor(R.color.opaque_red));
         minRectangle.fillColor(ContextCompat.getColor(this, R.color.mapBoxColor));//getResources().getColor(R.color.translucent_red));
-        minRectangle.strokeWidth(12);
+        minRectangle.strokeWidth(8);
         mapRequestShape = gMap.addPolygon(minRectangle);
 
         boolean success = googleMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(
