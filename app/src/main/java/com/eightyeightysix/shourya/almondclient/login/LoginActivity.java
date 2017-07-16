@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -32,6 +33,8 @@ import com.eightyeightysix.shourya.almondclient.LoadingActivity;
 import com.eightyeightysix.shourya.almondclient.R;
 import com.eightyeightysix.shourya.almondclient.data.User;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
@@ -40,7 +43,11 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -58,13 +65,18 @@ public class LoginActivity extends BaseActivity implements
     private final static String DEBUG_TAG = "AlmondLog:: " + LoginActivity.class.getSimpleName();
     private LoginFragmentOne firstFragment;
     private static final int NUM_PAGES = 3;
+
     private ViewPager nPager;
     private PagerAdapter mPagerAdapter;
+
     public static String fUid;
     Context mContext;
     private static String tId, tFname, tLname, tGender, tSname, tEmail, tDob;
-    DatabaseReference create_user;
-    ValueEventListener userListener;
+    //firebase
+    private DatabaseReference create_user;
+    private ValueEventListener userListener;
+    private StorageReference store_profile_picture;
+
     User temp_user;
     Thread t = null;
     Integer[] colors = null;
@@ -85,6 +97,8 @@ public class LoginActivity extends BaseActivity implements
                 mPagerAdapter = new LoginSlidePagerAdapter(getSupportFragmentManager());
                 nPager.setAdapter(mPagerAdapter);
         }
+
+        store_profile_picture = FirebaseStorage.getInstance().getReference().child("profilepictures");
 
         //request Location permissions
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
@@ -147,7 +161,8 @@ public class LoginActivity extends BaseActivity implements
                             Log.d(DEBUG_TAG, "signInWithCredential:success");
                             fUid = mAuth.getCurrentUser().getUid();
                             Log.d(DEBUG_TAG, "FirebaseAuth: " + fUid);
-                            initiateRegistration();
+                            //initiateRegistration();
+                            uploadProfilePicToFirebase(fUid);
                         } else {
                             Log.d(DEBUG_TAG, "signInWithCredential:failure", task.getException());
                         }
@@ -155,9 +170,9 @@ public class LoginActivity extends BaseActivity implements
                 });
     }
 
-    private void initiateRegistration() {
+    private void initiateRegistration(String imgUrl) {
         //Register User::
-        final User userForm = new User(fUid, tFname, tLname, tSname, tEmail, tDob, tGender);
+        final User userForm = new User(fUid, tFname, tLname, tSname, tEmail, tDob, tGender, imgUrl);
 
         //TODO do in separate thread
         //set SharedPreferences Defaults
@@ -170,6 +185,7 @@ public class LoginActivity extends BaseActivity implements
         editor.putString("gender", tGender);
         editor.putString("email", tEmail);
         editor.putString("dob", tDob);
+        editor.putString("profileUrl", imgUrl);
         editor.apply();
 
         //reference String
@@ -203,7 +219,6 @@ public class LoginActivity extends BaseActivity implements
             }
         };
         create_user.addListenerForSingleValueEvent(userListener);
-
 
     }
 
@@ -266,10 +281,8 @@ public class LoginActivity extends BaseActivity implements
                 nPager.setBackgroundColor((Integer) argbEvaluator.evaluate(positionOffset, colors[position], colors[position + 1]));
 
             } else {
-
                 // the last page color
                 nPager.setBackgroundColor(colors[colors.length - 1]);
-
             }
         }
 
@@ -300,6 +313,43 @@ public class LoginActivity extends BaseActivity implements
             //((TextView) rootView.findViewById(R.id.textView1)).setText(Integer.toString(args.getInt(ARG_PAGE)));
             return rootView;
         }
+    }
+
+    private void uploadProfilePicToFirebase(String userId) {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        if(userProfilePic != null) {
+            userProfilePic.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
+            byte[] data = outputStream.toByteArray();
+            final StorageReference uploadRef = store_profile_picture.child(userId+".jpeg");
+            UploadTask uploadTask = uploadRef.putBytes(data);
+            uploadTask.addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Log.d(DEBUG_TAG, "Failed to upload to firebase");
+                }
+            }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    Log.d(DEBUG_TAG,"Uploaded File successfully");
+                    fetchStorageUri(uploadRef);
+                }
+            });
+        }
+        else{
+            Log.d(DEBUG_TAG, "Profile picture not received in inputstream");
+        }
+
+    }
+
+    private void fetchStorageUri(StorageReference ref) {
+        ref.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                initiateRegistration(uri.toString());
+                Log.d(DEBUG_TAG, "Profile_picture rl: "+ uri);
+            }
+        });
+
     }
 
     private class DownloadImageTask extends AsyncTask<URL, Void, Bitmap> {

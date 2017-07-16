@@ -10,6 +10,14 @@
         android:layout_height="wrap_content"
         android:padding="10dp">
 
+        <ImageView
+            android:id="@+id/profile_picture"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+
+            android:src="@mipmap/ic_launcher_round"
+            />
+
         <LinearLayout
             android:id="@+id/star_layout"
             android:layout_width="wrap_content"
@@ -39,6 +47,8 @@
 
         <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:tools="http://schemas.android.com/tools"
+            android:id="@+id/post_layout"
+            android:layout_toRightOf="@+id/profile_picture"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">

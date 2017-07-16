@@ -103,7 +103,8 @@ public class LoadingActivity extends BaseActivity implements GPSLocator.location
                     preferences.getString("short_name", UNAVAILABLE),
                     preferences.getString("email", UNAVAILABLE),
                     preferences.getString("dob", UNAVAILABLE),
-                    preferences.getString("gender", UNAVAILABLE));
+                    preferences.getString("gender", UNAVAILABLE),
+                    preferences.getString("profileUrl", UNAVAILABLE));
 
             Map<String, String> paramsUser = new HashMap<String, String>();
             paramsUser.put("userID", mUser.getUserId());
@@ -133,8 +134,6 @@ public class LoadingActivity extends BaseActivity implements GPSLocator.location
             loadChats.addListenerForSingleValueEvent(loadChatListener);
 
 
-            ImageView temp = (ImageView)findViewById(R.id.pofile_pic);
-            temp.setImageBitmap(userProfilePic);
             //Add user to list of online users
             //userOnline();
         }

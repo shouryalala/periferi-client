@@ -19,18 +19,20 @@ public class BroadCast {
     public String circle;
     public String body;
     public int starCount = 0;
+    public String userImage;
     public Map<String, Boolean> stars = new HashMap<>();
 
     public BroadCast() {
         // Default constructor required for calls to DataSnapshot.getValue(Post.class)
     }
 
-    public BroadCast(String bId, String author, String circle, String body) {
+    public BroadCast(String bId, String author, String circle, String body, String userImage) {
         this.bId = bId;
         this.author = author;
         //this.title = title;
         this.circle = circle;
         this.body = body;
+        this.userImage = userImage;
     }
 
     @Exclude
@@ -43,7 +45,7 @@ public class BroadCast {
         result.put("body", body);
         result.put("starCount", starCount);
         result.put("stars", stars);
-
+        result.put("userImage", userImage);
         return result;
     }
 

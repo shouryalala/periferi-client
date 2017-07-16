@@ -154,7 +154,7 @@ public class NewBroadCastDialog extends DialogFragment{
         allPosts = BaseActivity.mDatabase.getReference(bReference);
         String key = allPosts.push().getKey();
 
-        BroadCast new_bc = new BroadCast(params.get("userID"), BaseActivity.mUser.getDisplayName(), currentCircle, body);
+        BroadCast new_bc = new BroadCast(params.get("userID"), BaseActivity.mUser.getDisplayName(), currentCircle, body, BaseActivity.mUser.getImgUrl());
         Map<String, Object> postValues = new_bc.toMap();
 
         Map<String, Object> childUpdates = new HashMap<>();

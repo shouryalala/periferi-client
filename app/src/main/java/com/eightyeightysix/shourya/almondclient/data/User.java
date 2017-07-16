@@ -18,13 +18,14 @@ public class User {
     public String mUserEmail;
     public String mDob;
     public String mGender;
+    public String mUserProfileURL;
 
     public User() {
         //required for Firebase setValue
     }
 
     public User(String userId, String fname, String lname, String displayName, String userEmail,
-                String dob, String gender) {
+                String dob, String gender, String url) {
         mUserId = userId;
         mFname = fname;
         mLname = lname;
@@ -32,6 +33,7 @@ public class User {
         mUserEmail = userEmail;
         mDob = dob;
         mGender = gender;
+        mUserProfileURL = url;
     }
 
     @Exclude
@@ -54,4 +56,7 @@ public class User {
 
     @Exclude
     public String getGender() { return mGender; }
+
+    @Exclude
+    public String getImgUrl() {return mUserProfileURL;}
 }

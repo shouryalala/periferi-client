@@ -15,9 +15,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.bumptech.glide.Glide;
 import com.eightyeightysix.shourya.almondclient.data.BroadCast;
 import com.eightyeightysix.shourya.almondclient.viewholder.BroadCastViewHolder;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.storage.images.FirebaseImageLoader;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -25,6 +27,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.Transaction;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -35,7 +39,6 @@ public class BroadCastFragment extends Fragment{
     private static final int COUNTRY_INDEX = 420;
 
     private DatabaseReference mDatabase;
-    // [END define_database_reference]
 
     private FirebaseRecyclerAdapter<BroadCast, BroadCastViewHolder> mAdapter;
     private RecyclerView mRecycler;
@@ -51,9 +54,7 @@ public class BroadCastFragment extends Fragment{
         super.onCreateView(inflater, container, savedInstanceState);
         View rootView = inflater.inflate(R.layout.broadcast_view, container, false);
 
-        // [START create_database_reference]
         mDatabase = FirebaseDatabase.getInstance().getReference();
-        // [END create_database_reference]
 
         mRecycler = (RecyclerView) rootView.findViewById(R.id.messages_list);
         mRecycler.setHasFixedSize(true);
@@ -119,10 +120,12 @@ public class BroadCastFragment extends Fragment{
                 BroadCastViewHolder.class, postsQuery) {
             @Override
             protected void populateViewHolder(final BroadCastViewHolder viewHolder, BroadCast model, int position) {
-
                 final DatabaseReference postRef = getRef(position);
-                //add shit
+                String imgUrl = model.userImage;
+                Log.d(DEBUG_TAG, "Fetched uri: " + imgUrl);
+                        //add shit
                 //clickable likes
+                Glide.with(getContext()).load(imgUrl).into(viewHolder.pictureView);
                 viewHolder.bindToPost(model, new View.OnClickListener() {
                     @Override
                     public void onClick(View starView) {
