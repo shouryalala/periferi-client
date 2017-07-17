@@ -41,12 +41,12 @@ import com.eightyeightysix.shourya.almondclient.view.AlmondLayout;
 public class FeedActivity extends BaseActivity implements ChatListFragment.StartChatListener{
     //TODO Put location requests in the tutorial pages. For now keep in feed page
     FragmentManager fragmentManager;
-    private static final int NUM_PAGES  = 2;
+    private static final int NUM_PAGES  = 1;
     private final static String DEBUG_TAG = "AlmondLog:: " + FeedActivity.class.getSimpleName();
     private AlmondPagerSettings mPager;
     private static SwipeUpPagerAdapter mPagerAdapter;
     private View view1, view2;
-    protected ChatListFragment chatListFragment;
+    //protected ChatListFragment chatListFragment;
     protected BroadCastFragment broadCastFragment;
     private static Context mContext;
     //protected CoordinatorLayout mainView;
@@ -95,6 +95,7 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
         DialogFragment dialog = new NewBroadCastDialog();
         dialog.show(getFragmentManager(), "NewBroadCastDialog");
     }
+
 
     public void setupAppBar() {
         almondToolbar = (Toolbar)findViewById(R.id.almond_bar);
@@ -225,17 +226,17 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
         @Override
         public Fragment getItem(int position) {
             switch(position) {
-                case 1: {
+                /*case 1: {
                     if (chatListFragment == null)
                         chatListFragment = new ChatListFragment();
                     return chatListFragment;
-                }
+                }*/
                 case 0:{
                     if(broadCastFragment == null)
                         broadCastFragment = new BroadCastFragment();
                     return broadCastFragment;
                 }
-                default: return chatListFragment;
+                default: return broadCastFragment;
             }
         }
 
@@ -264,7 +265,7 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
             Toast.makeText(mContext, "Current Circle", Toast.LENGTH_SHORT);
         else {
             currCircle = id;
-            ((ChatListFragment) mPagerAdapter.getItem(1)).fetchOnlineUsers(id);
+            //((ChatListFragment) mPagerAdapter.getItem(1)).fetchOnlineUsers(id);
             ((BroadCastFragment) mPagerAdapter.getItem(0)).fetchCircleBroadCasts(id);
         }
     }

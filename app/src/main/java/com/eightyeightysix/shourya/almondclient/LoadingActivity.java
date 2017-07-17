@@ -61,14 +61,12 @@ public class LoadingActivity extends BaseActivity implements GPSLocator.location
         mAuth = FirebaseAuth.getInstance();
         mFireUser = mAuth.getCurrentUser();
         mDatabase = FirebaseDatabase.getInstance();
-
-        //gesture
-        //getScreenCenter();
-
-        //requestAllPermissions(this);        
-        //define SharedPreference location
         preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        //class to store location details
+        if(!getConnectivityStatus()) {
+            toastit("Unable to connect. Please check your network settings");
+            finish();
+        }
+
         /*if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
             startActivity(new Intent(LoadingActivity.this, LoginActivity.class));
