@@ -18,12 +18,12 @@
         android:maxLines="10"
         android:scrollHorizontally="false" />
 
-    <Button
+    <TextView
         android:id="@+id/request_zone"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
-        android:textSize="23sp"
+        style="@style/Base.TextAppearance.AppCompat.Title"
         android:layout_marginBottom="10dp"
         android:textColor="@color/colorPrimaryRedAccent"
         android:text="Submit"/>

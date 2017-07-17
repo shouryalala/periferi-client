@@ -1,6 +1,9 @@
 package com.eightyeightysix.shourya.almondclient;
 
+import android.app.AlertDialog;
 import android.app.DialogFragment;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
@@ -51,7 +54,7 @@ public class RequestZoneActivity extends BaseActivity implements OnMapReadyCallb
     private List<Marker> markers;
     private Polygon zonePolygon, zoneUpdatePolygon;
     private boolean longClick = false;
-    private Button refresh, accept;
+    private Button refresh, ins;
     private LatLng myLoc;
     //TODO figure out values for MAX and MIN
     private static final double MAX_ZONE_AREA= 9000000;
@@ -70,6 +73,18 @@ public class RequestZoneActivity extends BaseActivity implements OnMapReadyCallb
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        ins = (Button)findViewById(R.id.button_instruction_create);
+        ins.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                InstructionsDialog ins = new InstructionsDialog();
+                Bundle b = new Bundle();
+                b.putInt("ins_reqd", 69);       //69 is constant for reqd ins
+                ins.setArguments(b);
+                ins.show(getFragmentManager(), "InstructionsDialog");
+            }
+        });
 
         refresh = (Button) findViewById(R.id.button_refresh);
         //accept = (Button) findViewById(R.id.button_accept);
@@ -269,16 +284,16 @@ public class RequestZoneActivity extends BaseActivity implements OnMapReadyCallb
     public void onMarkerDragEnd(Marker marker) {
         double area = computeZoneArea(points);
         if(area > MAX_ZONE_AREA){
-           toastit("Zone area too great");
+           toastit("Periferi area too great");
             areaViolation();
         }
         else if(area < MIN_ZONE_AREA) {
-            toastit("Zone area too small");
+            toastit("Periferi area too small");
             areaViolation();
         }
         else if(points.get(0).latitude < myLoc.latitude || points.get(0).longitude > myLoc.longitude ||
                 points.get(2).latitude > myLoc.latitude || points.get(2).longitude < myLoc.longitude) {
-            toastit("You can only create a zone around your location");
+            toastit("You can only create a Periferi around your location");
             areaViolation();
         }
         else {
@@ -321,7 +336,7 @@ public class RequestZoneActivity extends BaseActivity implements OnMapReadyCallb
         zoneAcceptedByRequests = true;
         zoneAcceptedByZones = true;
         if(zonePolygon  == null || markers.isEmpty() || points.isEmpty()){
-            toastit("Please create a zone first");
+            toastit("Create a Periferi first");
         }
         else{
             //check already created zones and requested zones
@@ -364,7 +379,7 @@ public class RequestZoneActivity extends BaseActivity implements OnMapReadyCallb
             dialog.show(getFragmentManager(), "NewZoneRequestDialog");
         }
         else{
-            toastit("A similar zone exists: " + zoneConflict);
+            toastit("A similar Periferi already exists: " + zoneConflict);
         }
         dismissProgressDialog();
     }
@@ -382,6 +397,7 @@ public class RequestZoneActivity extends BaseActivity implements OnMapReadyCallb
         String key = req.push().getKey();
         req.child(key).setValue(request);
         currZoneRequestKeys.put(request, key);
-        toastit("Zone Request created!");
+        toastit("Great! Periferi request created!");
+        toastit("Check out the requests tab to monitor its status");
     }
 }

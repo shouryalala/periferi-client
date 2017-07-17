@@ -24,6 +24,8 @@
     <string name="map_zones">Create PeriFeri</string>
     <string name="fb_welcome_text">Welcome to Almond</string>
     <string name="zone_requests_title">Requests</string>
-    <string name="create_periferi_text">Create a PeriFeri</string>
-
+    <string name="create_periferi_text">Create Periferi</string>
+    <string name="request_periferi_text">Periferi Requests</string>
+    <string name="instruction_create_request">Press and hold the map to start creating a Periferi.\nPress and hold any corner of the selection and drag to update the area.\nYou can only create a Periferi around your location.</string>
+    <string name="instruction_periferi_request">Swipe to check out all requests.\nA Periferi is created on 15 approvals.</string>
 </resources>

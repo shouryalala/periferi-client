@@ -21,7 +21,12 @@ tools:context="com.eightyeightysix.shourya.almondclient.FeedActivity">
 
 </android.support.design.widget.AppBarLayout>
 -->
-
+    <include layout="@layout/request_zone_content" />
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="end">
     <Button
         android:id="@+id/button_refresh"
         android:layout_weight="2"
@@ -31,9 +36,20 @@ tools:context="com.eightyeightysix.shourya.almondclient.FeedActivity">
         android:layout_height="40dp"
         android:layout_marginTop="10dp"
         android:layout_marginRight="10dp"
-        android:layout_gravity="end"
         android:background="@drawable/layout_circle"/>
 
+
+    <Button
+        android:id="@+id/button_instruction_create"
+        android:layout_weight="2"
+        android:text="\?"
+        android:textColor="@color/cardview_dark_background"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="10dp"
+        android:background="@drawable/layout_circle"/>
+    </LinearLayout>
 
     <Button
         android:layout_width="wrap_content"
@@ -42,16 +58,18 @@ tools:context="com.eightyeightysix.shourya.almondclient.FeedActivity">
         android:layout_marginLeft="10dp"
         android:layout_marginTop="10dp"
         android:text="@string/create_periferi_text"
+        style="@style/Base.TextAppearance.AppCompat.Subhead"
         android:textAlignment="center"
         android:textColor="@color/colorPrimaryBlack"
         android:layout_gravity="start"
         android:paddingLeft="5dp"
         android:paddingRight="5dp"
         android:clickable="false"
+        android:textAllCaps="false"
         android:alpha="0.5"
         android:background="@drawable/layout_rounded_corners"/>
 
-<include layout="@layout/request_zone_content" />
+
 
 <android.support.design.widget.FloatingActionButton
     android:id="@+id/map_fab"

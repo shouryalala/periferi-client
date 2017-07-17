@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.eightyeightysix.shourya.almondclient.data.BroadCast;
@@ -30,7 +31,7 @@ public class NewZoneRequestDialog extends DialogFragment{
     private static final String DEBUG_TAG = "AlmondLog:: " + NewBroadCastDialog.class.getSimpleName();
     private static final String REQUIRED = "Required";
     EditText zName;
-    Button submit;
+    TextView submit;
     zoneRequestCallback callback;
 
     public NewZoneRequestDialog() {
@@ -49,7 +50,7 @@ public class NewZoneRequestDialog extends DialogFragment{
         LayoutInflater inflater = getActivity().getLayoutInflater();
         final View inf2 = inflater.inflate(R.layout.new_zone_request_dialog, null);
         zName = (EditText) inf2.findViewById(R.id.zone_name);
-        submit = (Button) inf2.findViewById(R.id.request_zone);
+        submit = (TextView) inf2.findViewById(R.id.request_zone);
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

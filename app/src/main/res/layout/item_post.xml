@@ -54,7 +54,7 @@
             android:orientation="vertical">
             <TextView
                 android:id="@+id/post_author"
-                style="@style/Base.TextAppearance.AppCompat.Body2"
+                style="@style/Base.TextAppearance.AppCompat.Headline"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
@@ -63,7 +63,7 @@
 
             <TextView
                 android:id="@+id/post_body"
-                style="@style/Base.TextAppearance.AppCompat.Headline"
+                style="@style/Base.TextAppearance.AppCompat.Title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"

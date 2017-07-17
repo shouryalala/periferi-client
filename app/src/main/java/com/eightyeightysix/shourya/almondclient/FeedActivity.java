@@ -104,7 +104,6 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
             almondToolbar.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
         }
         almondToolbar.setTitle("");
-
     }
     
     ///gesture

@@ -162,7 +162,7 @@ public class BaseActivity extends AppCompatActivity{
 
 
     public void toastit(String message) {
-        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
     public static void setDefaults(String id, String fname, String lname, String sname, String email) {
