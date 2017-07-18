@@ -2,18 +2,26 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <ImageView
-        android:id="@+id/tut_image"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@mipmap/ic_periferi"/>
     <TextView
         android:id="@+id/welcome_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="10dp"
+        android:textAlignment="center"
+        android:textStyle="italic"
         android:textSize="@dimen/almond_post_title"
         android:textColor="@color/colorPrimarySilver"
         android:layout_gravity="center"/>
+
+    <ImageView
+        android:id="@+id/tut_image"
+        android:layout_width="2400dp"
+        android:layout_marginBottom="15dp"
+        android:layout_height="400dp"
+        android:layout_gravity="center_horizontal"
+        android:src="@mipmap/ic_periferi"/>
+
 </LinearLayout>

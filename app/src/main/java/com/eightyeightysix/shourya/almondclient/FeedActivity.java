@@ -28,6 +28,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.Window;
 import android.widget.Toast;
 
 import com.eightyeightysix.shourya.almondclient.data.User;
@@ -59,6 +60,7 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_feed);
         //setup toolbar
         setupAppBar();
@@ -100,11 +102,15 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
     public void setupAppBar() {
         almondToolbar = (Toolbar)findViewById(R.id.almond_bar);
         setSupportActionBar(almondToolbar);
-        almondToolbar.setTitle(null);
+        almondToolbar.setLogo(R.mipmap.icon_red);
         if(Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
             almondToolbar.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
         }
-        almondToolbar.setTitle("");
+        try {
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
+        }catch (NullPointerException e) {
+            Log.d(DEBUG_TAG, "Didnt remove title from bar");
+        }
     }
     
     ///gesture

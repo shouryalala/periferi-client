@@ -118,7 +118,6 @@ public class RequestZoneActivity extends BaseActivity implements OnMapReadyCallb
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         longClick = true;
-        LatLng temp = new LatLng(13.352326, 74.792772);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLoc, 17));
         mMap.addMarker(new MarkerOptions().position(myLoc).title("Current Location"));
 
@@ -354,7 +353,7 @@ public class RequestZoneActivity extends BaseActivity implements OnMapReadyCallb
     public void checkForConflicts() {
         //first check already created Requests
         for(ZoneRequest zr : currZoneRequests) {
-            if(zr.getFactor(lMin, lMax, gMin, gMax) < 4.0) {
+            if(!zr.getFactor(lMin, lMax, gMin, gMax)) {
                 zoneAcceptedByRequests = false;
                 zoneConflict = zr.getzName();
                 break;

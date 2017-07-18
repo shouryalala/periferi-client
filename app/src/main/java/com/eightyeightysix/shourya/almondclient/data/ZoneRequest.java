@@ -34,14 +34,14 @@ public class ZoneRequest {
     }
 
     @Exclude
-    public double getFactor(double lMin, double lMax, double gMin, double gMax) {
-        //TODO incorrect factor calculation
-        double factor = ((double)10000/(double)3);
+    public boolean getFactor(double lMin, double lMax, double gMin, double gMax) {
+        //double factor = ((double)10000/(double)3);
         double a = Math.abs(latMax-lMax);
         double b = Math.abs(latMin-lMin);
         double c = Math.abs(lngMax-gMax);
         double d = Math.abs(lngMin-gMin);
-        return (a+b+c+d)*factor;
+        double gap = 0.002;
+        return(a > gap || b > gap || c > gap || d > gap);
     }
 
     @Exclude

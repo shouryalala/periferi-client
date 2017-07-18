@@ -66,7 +66,7 @@ public class LoginActivity extends BaseActivity implements
 
     private final static String DEBUG_TAG = "AlmondLog:: " + LoginActivity.class.getSimpleName();
     private LoginFragmentOne firstFragment;
-    private static final int NUM_PAGES = 4;
+    private static final int NUM_PAGES = 3;
     private static ProgressDialog progressDialog;
 
     private ViewPager nPager;
@@ -85,7 +85,8 @@ public class LoginActivity extends BaseActivity implements
     Integer[] colors = null;
     ArgbEvaluator argbEvaluator = new ArgbEvaluator();
     private static String fb_token;
-    private static String tut_text[] = new String[3];
+    private static String tut_text[] = new String[2];
+    private static int image_res[] = new int[2];
 
     @Override
     protected void onCreate(Bundle savedInstances) {
@@ -111,7 +112,9 @@ public class LoginActivity extends BaseActivity implements
         }
         tut_text[0] = "Create or approve a Periferi to interact with people in that area";
         tut_text[1] = "Pinch to check out and socialize in another Periferi around you";
-        tut_text[2] = "Get to know the people around you in a fun and unique way";
+
+        image_res[0] = R.drawable.tut1;
+        image_res[1] = R.drawable.tut2;
         setUpColors();
     }
     @Override
@@ -231,9 +234,8 @@ public class LoginActivity extends BaseActivity implements
 
         Integer color1 = ResourcesCompat.getColor(getResources(), R.color.tut_1_green, null);
         Integer color2 = ResourcesCompat.getColor(getResources(), R.color.tut_2_blue, null);
-        Integer color3 = ResourcesCompat.getColor(getResources(), R.color.tut_3_yellow, null);
-        Integer color4 = ResourcesCompat.getColor(getResources(), R.color.colorPrimaryRedAccent, null);
-        Integer[] colors_temp = {color1, color2, color3, color4};
+        Integer color3 = ResourcesCompat.getColor(getResources(), R.color.colorPrimaryRedAccent, null);
+        Integer[] colors_temp = {color1, color2, color3};
         colors = colors_temp;
     }
 
@@ -250,7 +252,7 @@ public class LoginActivity extends BaseActivity implements
                 case 3: return new LoginFragmentFour();
                 default: return new LoginFragmentOne();
             }*/
-            if(position == 3)
+            if(position == 2)
                 return new LoginFragmentOne();
             else{
                 Fragment fragment = new TutorialObjectFragment();
@@ -308,7 +310,7 @@ public class LoginActivity extends BaseActivity implements
             View rootView = inflater.inflate(R.layout.welcome_tutorial,container,false);
             Bundle args = getArguments();
             int position = args.getInt(ARG_PAGE);
-            ((ImageView)rootView.findViewById(R.id.tut_image)).setImageResource(R.mipmap.ic_periferi);
+            ((ImageView)rootView.findViewById(R.id.tut_image)).setImageResource(image_res[position]);
             ((TextView) rootView.findViewById(R.id.welcome_text)).setText(tut_text[position]);
             //((TextView) rootView.findViewById(R.id.textView1)).setText(Integer.toString(args.getInt(ARG_PAGE)));
             return rootView;

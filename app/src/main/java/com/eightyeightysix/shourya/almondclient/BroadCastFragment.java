@@ -33,6 +33,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class BroadCastFragment extends Fragment{
@@ -124,17 +125,23 @@ public class BroadCastFragment extends Fragment{
 
         // Set up FirebaseRecyclerAdapter with the Query
         final Query postsQuery = BaseActivity.mDatabase.getReference(ref);
-
         mAdapter = new FirebaseRecyclerAdapter<BroadCast, BroadCastViewHolder>(BroadCast.class, R.layout.item_post,
                 BroadCastViewHolder.class, postsQuery) {
             @Override
+            protected void onDataChanged() {
+                super.onDataChanged();
+                pd.dismiss();
+            }
+
+            @Override
             protected void populateViewHolder(final BroadCastViewHolder viewHolder, BroadCast model, int position) {
+                //pd.dismiss();
                 final DatabaseReference postRef = getRef(position);
                 String imgUrl = model.userImage;
                 Log.d(DEBUG_TAG, "Fetched uri: " + imgUrl);
                         //add shit
                 //clickable likes
-                pd.dismiss();
+                //pd.dismiss();
                 Glide.with(getContext()).load(imgUrl).into(viewHolder.pictureView);
                 viewHolder.bindToPost(model, new View.OnClickListener() {
                     @Override
@@ -153,10 +160,11 @@ public class BroadCastFragment extends Fragment{
                 else{
                     viewHolder.starView.setImageResource(R.drawable.unlike_icon);
                 }
-            }
 
+            }
         };
         mRecycler.setAdapter(mAdapter);
+        if(mAdapter == null)pd.dismiss();
     }
 
     private void onStarClicked(DatabaseReference postRef) {
@@ -198,7 +206,6 @@ public class BroadCastFragment extends Fragment{
         if (mAdapter != null) {
             mAdapter.cleanup();
         }
-        pd.dismiss();
     }
 
     public String getUid() {
