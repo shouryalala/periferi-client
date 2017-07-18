@@ -102,7 +102,7 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
     public void setupAppBar() {
         almondToolbar = (Toolbar)findViewById(R.id.almond_bar);
         setSupportActionBar(almondToolbar);
-        almondToolbar.setLogo(R.mipmap.icon_red);
+        almondToolbar.setLogo(R.mipmap.ic_periferi);
         if(Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
             almondToolbar.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
         }

@@ -61,7 +61,7 @@ public class AllRequestsActivity extends BaseActivity implements OnMapReadyCallb
     private List<LatLng> coordinates;
     private static boolean polygonCreated;
     private static final String DEBUG_TAG = "AlmondLog:: " + AllRequestsActivity.class.getSimpleName();
-    private static int NEEDED_REQUESTS = 2;
+    private static int NEEDED_REQUESTS = 15;
     private Button ins;
     protected static boolean flag = false;
     protected static ZoneRequest deleteNode = null;
@@ -192,7 +192,7 @@ public class AllRequestsActivity extends BaseActivity implements OnMapReadyCallb
     //callback from onClick view
     @Override
     public void onRequestClick(boolean a) {
-        Toast.makeText(getApplicationContext(), requestPager.getCurrentItem() + " " + a, Toast.LENGTH_SHORT).show();
+        //Toast.makeText(getApplicationContext(), requestPager.getCurrentItem() + " " + a, Toast.LENGTH_SHORT).show();
         final boolean response = a;
         final String key = currZoneRequestKeys.get(allZoneRequests.get(requestPager.getCurrentItem()));
         HashMap<String, String> params = new HashMap<>();
