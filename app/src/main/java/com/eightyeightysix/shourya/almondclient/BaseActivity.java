@@ -86,7 +86,7 @@ public class BaseActivity extends AppCompatActivity{
     public static final int COUNTRY_INDEX = 420;
 
     public static Bitmap userProfilePic;
-    private ProgressDialog progressDialog;
+    private static ProgressDialog progressDialog;
 
     private final static String DEBUG_TAG = "AlmondLog:: " + BaseActivity.class.getSimpleName();
     private static final int MY_REQUEST_ACCESS_FINE_LOCATION = 69;
@@ -306,13 +306,13 @@ public class BaseActivity extends AppCompatActivity{
 
     }
 
-    public void showProgressDialog(String message, Context context) {
+    public static void showProgressDialog(String message, Context context) {
         progressDialog = new ProgressDialog(context);
         progressDialog.setMessage(message);
         progressDialog.show();
     }
 
-    public void dismissProgressDialog() {
+    public static void dismissProgressDialog() {
         progressDialog.dismiss();
     }
 

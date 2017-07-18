@@ -13,14 +13,14 @@
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
             android:layout_marginTop="16dp"
-            style="@style/Base.TextAppearance.AppCompat.Display1"/>
+            android:textSize="@dimen/almond_title"/>
 
         <EditText
             android:id="@+id/field_body"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/field_title"
-            style="@style/Base.TextAppearance.AppCompat.Title"
+            android:textSize="@dimen/almond_post_content"
             android:layout_marginBottom="5dp"
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
@@ -35,7 +35,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
-            style="@style/Base.TextAppearance.AppCompat.Headline"
+            android:textSize="@dimen/almond_post_title"
             android:layout_marginBottom="10dp"
             android:textColor="@color/colorPrimaryRedAccent"
             android:text="Broadcast"/>

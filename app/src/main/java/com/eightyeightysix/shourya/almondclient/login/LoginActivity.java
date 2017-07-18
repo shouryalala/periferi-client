@@ -2,6 +2,7 @@ package com.eightyeightysix.shourya.almondclient.login;
 
 import android.Manifest;
 import android.animation.ArgbEvaluator;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -26,6 +27,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.eightyeightysix.shourya.almondclient.BaseActivity;
@@ -64,7 +66,8 @@ public class LoginActivity extends BaseActivity implements
 
     private final static String DEBUG_TAG = "AlmondLog:: " + LoginActivity.class.getSimpleName();
     private LoginFragmentOne firstFragment;
-    private static final int NUM_PAGES = 3;
+    private static final int NUM_PAGES = 4;
+    private static ProgressDialog progressDialog;
 
     private ViewPager nPager;
     private PagerAdapter mPagerAdapter;
@@ -82,7 +85,7 @@ public class LoginActivity extends BaseActivity implements
     Integer[] colors = null;
     ArgbEvaluator argbEvaluator = new ArgbEvaluator();
     private static String fb_token;
-    private static String tut_text[] = new String[2];
+    private static String tut_text[] = new String[3];
 
     @Override
     protected void onCreate(Bundle savedInstances) {
@@ -97,6 +100,7 @@ public class LoginActivity extends BaseActivity implements
                 mPagerAdapter = new LoginSlidePagerAdapter(getSupportFragmentManager());
                 nPager.setAdapter(mPagerAdapter);
         }
+        progressDialog = new ProgressDialog(this);
 
         store_profile_picture = FirebaseStorage.getInstance().getReference().child("profilepictures");
 
@@ -105,8 +109,9 @@ public class LoginActivity extends BaseActivity implements
                 != PackageManager.PERMISSION_GRANTED) {
             requestAllPermissions(this);
         }
-        tut_text[0] = "Welcome to Almond. Meet friends on a platform centred around you";
-        tut_text[1] = "Decide the exclusivity of your network by pinching into the zone of your choice!";
+        tut_text[0] = "Create or approve a Periferi to interact with people in that area";
+        tut_text[1] = "Pinch to check out and socialize in another Periferi around you";
+        tut_text[2] = "Get to know the people around you in a fun and unique way";
         setUpColors();
     }
     @Override
@@ -124,13 +129,8 @@ public class LoginActivity extends BaseActivity implements
                            String gender1, String email1, boolean emailAvailable, String dob1,
                            boolean dobAvailable) {
         Log.d(DEBUG_TAG, "fbListener Callback called");
-        if(!emailAvailable) {
-            //TODO add email fragment
-        }
-        if(!dobAvailable) {
-            nPager.setCurrentItem(3);
-        }
-
+        progressDialog.setMessage("Setting up..");
+        progressDialog.show();
         //set data to local variables
         tId = id1;
         tFname = fname1;
@@ -208,7 +208,7 @@ public class LoginActivity extends BaseActivity implements
                     Log.d(DEBUG_TAG, "accessing stored user info");
                     mUser = dataSnapshot.getValue(User.class);
                 }
-
+                progressDialog.dismiss();
                 Intent i = new Intent(LoginActivity.this, LoadingActivity.class);
                 startActivity(i);
             }
@@ -231,9 +231,9 @@ public class LoginActivity extends BaseActivity implements
 
         Integer color1 = ResourcesCompat.getColor(getResources(), R.color.tut_1_green, null);
         Integer color2 = ResourcesCompat.getColor(getResources(), R.color.tut_2_blue, null);
-        Integer color3 = ResourcesCompat.getColor(getResources(), R.color.tut_3_purple, null);
-
-        Integer[] colors_temp = {color1, color2, color3};
+        Integer color3 = ResourcesCompat.getColor(getResources(), R.color.tut_3_yellow, null);
+        Integer color4 = ResourcesCompat.getColor(getResources(), R.color.colorPrimaryRedAccent, null);
+        Integer[] colors_temp = {color1, color2, color3, color4};
         colors = colors_temp;
     }
 
@@ -250,7 +250,7 @@ public class LoginActivity extends BaseActivity implements
                 case 3: return new LoginFragmentFour();
                 default: return new LoginFragmentOne();
             }*/
-            if(position == 2)
+            if(position == 3)
                 return new LoginFragmentOne();
             else{
                 Fragment fragment = new TutorialObjectFragment();
@@ -308,7 +308,7 @@ public class LoginActivity extends BaseActivity implements
             View rootView = inflater.inflate(R.layout.welcome_tutorial,container,false);
             Bundle args = getArguments();
             int position = args.getInt(ARG_PAGE);
-
+            ((ImageView)rootView.findViewById(R.id.tut_image)).setImageResource(R.mipmap.ic_periferi);
             ((TextView) rootView.findViewById(R.id.welcome_text)).setText(tut_text[position]);
             //((TextView) rootView.findViewById(R.id.textView1)).setText(Integer.toString(args.getInt(ARG_PAGE)));
             return rootView;

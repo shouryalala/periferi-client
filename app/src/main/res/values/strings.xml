@@ -2,9 +2,9 @@
     <string name="app_name">PeriFeri</string>
     <string name="action_settings">Settings</string>
 
-    <string name="title_activity_request_zone">PeriFeri</string>
+    <string name="title_activity_request_zone">Periferi</string>
     <string name="facebook_app_id">330012370764893</string>
-    <string name="facebook_error">An error occured while logging in.</string>
+    <string name="facebook_error">An error occurred while logging in.</string>
     <string name="facebook_cancel">Action Cancelled</string>
     <string name="button_continue">continue</string>
     <string name="field_empty">Email field can\'t be empty</string>
@@ -22,10 +22,12 @@
     <string name="no_location_data_provided">Location values not present</string>
     <string name="no_address_found">No address found for curent coordinates</string>
     <string name="map_zones">Create PeriFeri</string>
-    <string name="fb_welcome_text">Welcome to Almond</string>
+    <string name="fb_welcome_text">Welcome to your Periferi</string>
     <string name="zone_requests_title">Requests</string>
     <string name="create_periferi_text">Create Periferi</string>
     <string name="request_periferi_text">Periferi Requests</string>
     <string name="instruction_create_request">Press and hold the map to start creating a Periferi.\nPress and hold any corner of the selection and drag to update the area.\nYou can only create a Periferi around your location.</string>
     <string name="instruction_periferi_request">Swipe to check out all requests.\nA Periferi is created on 15 approvals.</string>
+    <string name="request_name">Provide a name for this Periferi</string>
+    <string name="new_request_hint">\"15th Block\", \"Deetee\"</string>
 </resources>

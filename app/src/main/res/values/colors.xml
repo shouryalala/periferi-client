@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
+    <!--<color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>-->
+    <color name="colorPrimary">#D32F2F</color>
+    <color name="colorPrimaryDark">#D32F2F</color>
     <color name="colorAccent">#FF4081</color>
     <color name="opaque_red">#F00</color>
     <color name="translucent_red">#50FF0000</color>
-    <color name="tut_1_green">#009933</color>
-    <color name="tut_2_blue">#0066cc</color>
-    <color name="tut_3_purple">#660066</color>
+    <color name="tut_1_green">#43D854</color>
+    <color name="tut_2_blue">#3b5998</color>
+    <color name="tut_3_yellow">#FFFB00</color>
     <color name="colorPrimaryRed">#FFEBEE</color>
     <color name="colorPrimarySilver">#F5F5F5</color>
     <color name="colorPrimaryRedAccent">#D32F2F</color>
@@ -17,4 +20,5 @@
     <color name="colorPrimarySilverDark">#9E9E9E</color>
     <color name="colorPrimaryBlack">#424242</color>
     <color name="colorPrimaryGrey">#757575</color>
+    <color name="colorHintText">#EEEEEE</color>
 </resources>

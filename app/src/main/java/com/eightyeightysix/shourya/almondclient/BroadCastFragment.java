@@ -5,7 +5,9 @@ package com.eightyeightysix.shourya.almondclient;
  */
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 
 import android.support.v7.widget.LinearLayoutManager;
@@ -39,12 +41,12 @@ public class BroadCastFragment extends Fragment{
     private static final int COUNTRY_INDEX = 420;
 
     private DatabaseReference mDatabase;
+    private Context mContext;
 
     private FirebaseRecyclerAdapter<BroadCast, BroadCastViewHolder> mAdapter;
     private RecyclerView mRecycler;
     private LinearLayoutManager mManager;
-
-    ProgressDialog progressDialog;
+    private static ProgressDialog pd;
 
     public BroadCastFragment() {}
 
@@ -59,8 +61,15 @@ public class BroadCastFragment extends Fragment{
         mRecycler = (RecyclerView) rootView.findViewById(R.id.messages_list);
         mRecycler.setHasFixedSize(true);
 
-        progressDialog = new ProgressDialog(getContext());
         return rootView;
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        mContext = getContext();
+        pd = new ProgressDialog(mContext);
     }
 
     @Override
@@ -104,8 +113,8 @@ public class BroadCastFragment extends Fragment{
     }
 
     public void fetchCircleBroadCasts(int circle) {
-        progressDialog.setMessage("Populating broadcasts..");
-        progressDialog.show();
+        pd.setMessage("Populating feed..");
+        pd.show();
         Log.d(DEBUG_TAG, "Refreshing broadcasts to circle: " + circle);
         final String ref = formReference(circle);
 
@@ -125,6 +134,7 @@ public class BroadCastFragment extends Fragment{
                 Log.d(DEBUG_TAG, "Fetched uri: " + imgUrl);
                         //add shit
                 //clickable likes
+                pd.dismiss();
                 Glide.with(getContext()).load(imgUrl).into(viewHolder.pictureView);
                 viewHolder.bindToPost(model, new View.OnClickListener() {
                     @Override
@@ -144,10 +154,9 @@ public class BroadCastFragment extends Fragment{
                     viewHolder.starView.setImageResource(R.drawable.unlike_icon);
                 }
             }
+
         };
         mRecycler.setAdapter(mAdapter);
-
-        progressDialog.dismiss();
     }
 
     private void onStarClicked(DatabaseReference postRef) {
@@ -189,6 +198,7 @@ public class BroadCastFragment extends Fragment{
         if (mAdapter != null) {
             mAdapter.cleanup();
         }
+        pd.dismiss();
     }
 
     public String getUid() {
