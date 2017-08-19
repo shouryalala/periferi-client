@@ -30,6 +30,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.eightyeightysix.shourya.almondclient.BaseActivity;
@@ -73,7 +74,8 @@ public class LoginActivity extends BaseActivity implements
     private static Window tutorialWindow;
     private ViewPager nPager;
     private PagerAdapter mPagerAdapter;
-
+    private LinearLayout pagerIndicatorStrip;
+    private ImageView[] dots;
     public static String fUid;
     Context mContext;
     private static String tId, tFname, tLname, tGender, tSname, tEmail, tDob;
@@ -124,6 +126,25 @@ public class LoginActivity extends BaseActivity implements
         tutorialWindow.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         tutorialWindow.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         tutorialWindow.setStatusBarColor(colors[0]);
+
+        setUpIndicatorStrip();
+    }
+
+    private void setUpIndicatorStrip() {
+        pagerIndicatorStrip = (LinearLayout)findViewById(R.id.viewPagerIndicatorStrip);
+        dots = new ImageView[NUM_PAGES];
+        for (int i = 0; i < NUM_PAGES; i++) {
+            dots[i] = new ImageView(this);
+            dots[i].setImageDrawable(getResources().getDrawable(R.drawable.pager_indicator_not_selected, null));
+
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+            );
+            params.setMargins(6, 0, 6, 0);
+            pagerIndicatorStrip.addView(dots[i], params);
+        }
+        dots[0].setImageDrawable(getResources().getDrawable(R.drawable.pager_indicator_selected, null));
     }
 
     @Override
@@ -246,7 +267,6 @@ public class LoginActivity extends BaseActivity implements
         colors = colors_temp;
     }
 
-
     private class LoginSlidePagerAdapter extends FragmentStatePagerAdapter {
         public LoginSlidePagerAdapter(FragmentManager fm) {
             super(fm);
@@ -296,6 +316,10 @@ public class LoginActivity extends BaseActivity implements
         @Override
         public void onPageSelected(int position) {
             tutorialWindow.setStatusBarColor(colors[position]);
+            for(int i=0; i< NUM_PAGES; i++) {
+                dots[i].setImageDrawable(getResources().getDrawable(R.drawable.pager_indicator_not_selected, null));
+            }
+            dots[position].setImageDrawable(getResources().getDrawable(R.drawable.pager_indicator_selected, null));
         }
 
         @Override
@@ -392,7 +416,3 @@ public class LoginActivity extends BaseActivity implements
         }
     }
 }
-
-
-
-
