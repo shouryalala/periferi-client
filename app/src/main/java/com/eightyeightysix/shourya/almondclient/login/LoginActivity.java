@@ -26,6 +26,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -68,7 +70,7 @@ public class LoginActivity extends BaseActivity implements
     private LoginFragmentOne firstFragment;
     private static final int NUM_PAGES = 3;
     private static ProgressDialog progressDialog;
-
+    private static Window tutorialWindow;
     private ViewPager nPager;
     private PagerAdapter mPagerAdapter;
 
@@ -116,16 +118,22 @@ public class LoginActivity extends BaseActivity implements
         image_res[0] = R.drawable.tut1;
         image_res[1] = R.drawable.tut2;
         setUpColors();
-    }
-    @Override
-    public void onBackPressed() {
-        if (nPager.getCurrentItem() == 0) {
-            super.onBackPressed();
-        } else {
-            nPager.setCurrentItem(nPager.getCurrentItem() - 1);
-        }
+
+        //status bar colors
+        tutorialWindow = this.getWindow();
+        tutorialWindow.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        tutorialWindow.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        tutorialWindow.setStatusBarColor(colors[0]);
     }
 
+    @Override
+    public void onBackPressed() {
+        finish();
+        Intent homeIntent = new Intent(Intent.ACTION_MAIN);
+        homeIntent.addCategory(Intent.CATEGORY_HOME);
+        homeIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(homeIntent);
+    }
 
     @Override
     public void fblistener(String token, String id1, URL profile_picture, String fname1, String lname1, String sname1,
@@ -231,7 +239,6 @@ public class LoginActivity extends BaseActivity implements
     }
 
     private void setUpColors(){
-
         Integer color1 = ResourcesCompat.getColor(getResources(), R.color.tut_1_green, null);
         Integer color2 = ResourcesCompat.getColor(getResources(), R.color.tut_2_blue, null);
         Integer color3 = ResourcesCompat.getColor(getResources(), R.color.colorPrimaryRedAccent, null);
@@ -279,9 +286,7 @@ public class LoginActivity extends BaseActivity implements
         @Override
         public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
             if(position < (mPagerAdapter.getCount() -1) && position < (colors.length - 1)) {
-
                 nPager.setBackgroundColor((Integer) argbEvaluator.evaluate(positionOffset, colors[position], colors[position + 1]));
-
             } else {
                 // the last page color
                 nPager.setBackgroundColor(colors[colors.length - 1]);
@@ -290,7 +295,7 @@ public class LoginActivity extends BaseActivity implements
 
         @Override
         public void onPageSelected(int position) {
-
+            tutorialWindow.setStatusBarColor(colors[position]);
         }
 
         @Override

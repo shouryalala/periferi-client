@@ -10,7 +10,6 @@
 
     <application
         android:allowBackup="false"
-
         android:icon="@mipmap/ic_periferi"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_periferi"
@@ -62,11 +61,13 @@
         <activity
             android:name=".login.LoginActivity"
             android:label="@string/app_name"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
         <activity
             android:name=".FeedActivity"
             android:label="@string/app_name"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
         <activity android:name="com.facebook.FacebookActivity"
