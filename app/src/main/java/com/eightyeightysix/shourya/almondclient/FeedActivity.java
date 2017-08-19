@@ -28,6 +28,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.Window;
 import android.widget.Toast;
 
 import com.eightyeightysix.shourya.almondclient.data.User;
@@ -41,12 +42,12 @@ import com.eightyeightysix.shourya.almondclient.view.AlmondLayout;
 public class FeedActivity extends BaseActivity implements ChatListFragment.StartChatListener{
     //TODO Put location requests in the tutorial pages. For now keep in feed page
     FragmentManager fragmentManager;
-    private static final int NUM_PAGES  = 2;
+    private static final int NUM_PAGES  = 1;
     private final static String DEBUG_TAG = "AlmondLog:: " + FeedActivity.class.getSimpleName();
     private AlmondPagerSettings mPager;
     private static SwipeUpPagerAdapter mPagerAdapter;
     private View view1, view2;
-    protected ChatListFragment chatListFragment;
+    //protected ChatListFragment chatListFragment;
     protected BroadCastFragment broadCastFragment;
     private static Context mContext;
     //protected CoordinatorLayout mainView;
@@ -59,6 +60,7 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_feed);
         //setup toolbar
         setupAppBar();
@@ -96,15 +98,19 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
         dialog.show(getFragmentManager(), "NewBroadCastDialog");
     }
 
+
     public void setupAppBar() {
         almondToolbar = (Toolbar)findViewById(R.id.almond_bar);
         setSupportActionBar(almondToolbar);
-        almondToolbar.setTitle(null);
+        almondToolbar.setLogo(R.mipmap.ic_periferi);
         if(Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
             almondToolbar.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
         }
-        almondToolbar.setTitle("");
-
+        try {
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
+        }catch (NullPointerException e) {
+            Log.d(DEBUG_TAG, "Didnt remove title from bar");
+        }
     }
     
     ///gesture
@@ -226,17 +232,17 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
         @Override
         public Fragment getItem(int position) {
             switch(position) {
-                case 1: {
+                /*case 1: {
                     if (chatListFragment == null)
                         chatListFragment = new ChatListFragment();
                     return chatListFragment;
-                }
+                }*/
                 case 0:{
                     if(broadCastFragment == null)
                         broadCastFragment = new BroadCastFragment();
                     return broadCastFragment;
                 }
-                default: return chatListFragment;
+                default: return broadCastFragment;
             }
         }
 
@@ -265,7 +271,7 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
             Toast.makeText(mContext, "Current Circle", Toast.LENGTH_SHORT);
         else {
             currCircle = id;
-            ((ChatListFragment) mPagerAdapter.getItem(1)).fetchOnlineUsers(id);
+            //((ChatListFragment) mPagerAdapter.getItem(1)).fetchOnlineUsers(id);
             ((BroadCastFragment) mPagerAdapter.getItem(0)).fetchCircleBroadCasts(id);
         }
     }

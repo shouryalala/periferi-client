@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 
+import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.graphics.PointF;
 
@@ -84,7 +85,8 @@ public class BaseActivity extends AppCompatActivity{
     public static final int CITY_INDEX = 69;
     public static final int COUNTRY_INDEX = 420;
 
-    private ProgressDialog progressDialog;
+    public static Bitmap userProfilePic;
+    private static ProgressDialog progressDialog;
 
     private final static String DEBUG_TAG = "AlmondLog:: " + BaseActivity.class.getSimpleName();
     private static final int MY_REQUEST_ACCESS_FINE_LOCATION = 69;
@@ -160,7 +162,7 @@ public class BaseActivity extends AppCompatActivity{
 
 
     public void toastit(String message) {
-        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
     public static void setDefaults(String id, String fname, String lname, String sname, String email) {
@@ -304,13 +306,13 @@ public class BaseActivity extends AppCompatActivity{
 
     }
 
-    public void showProgressDialog(String message, Context context) {
+    public static void showProgressDialog(String message, Context context) {
         progressDialog = new ProgressDialog(context);
         progressDialog.setMessage(message);
         progressDialog.show();
     }
 
-    public void dismissProgressDialog() {
+    public static void dismissProgressDialog() {
         progressDialog.dismiss();
     }
 

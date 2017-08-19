@@ -5,7 +5,9 @@ package com.eightyeightysix.shourya.almondclient;
  */
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 
 import android.support.v7.widget.LinearLayoutManager;
@@ -15,9 +17,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.bumptech.glide.Glide;
 import com.eightyeightysix.shourya.almondclient.data.BroadCast;
 import com.eightyeightysix.shourya.almondclient.viewholder.BroadCastViewHolder;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.storage.images.FirebaseImageLoader;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -25,8 +29,11 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.Transaction;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class BroadCastFragment extends Fragment{
@@ -35,13 +42,12 @@ public class BroadCastFragment extends Fragment{
     private static final int COUNTRY_INDEX = 420;
 
     private DatabaseReference mDatabase;
-    // [END define_database_reference]
+    private Context mContext;
 
     private FirebaseRecyclerAdapter<BroadCast, BroadCastViewHolder> mAdapter;
     private RecyclerView mRecycler;
     private LinearLayoutManager mManager;
-
-    ProgressDialog progressDialog;
+    private static ProgressDialog pd;
 
     public BroadCastFragment() {}
 
@@ -51,15 +57,20 @@ public class BroadCastFragment extends Fragment{
         super.onCreateView(inflater, container, savedInstanceState);
         View rootView = inflater.inflate(R.layout.broadcast_view, container, false);
 
-        // [START create_database_reference]
         mDatabase = FirebaseDatabase.getInstance().getReference();
-        // [END create_database_reference]
 
         mRecycler = (RecyclerView) rootView.findViewById(R.id.messages_list);
         mRecycler.setHasFixedSize(true);
 
-        progressDialog = new ProgressDialog(getContext());
         return rootView;
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        mContext = getContext();
+        pd = new ProgressDialog(mContext);
     }
 
     @Override
@@ -103,8 +114,8 @@ public class BroadCastFragment extends Fragment{
     }
 
     public void fetchCircleBroadCasts(int circle) {
-        progressDialog.setMessage("Populating broadcasts..");
-        progressDialog.show();
+        pd.setMessage("Populating feed..");
+        pd.show();
         Log.d(DEBUG_TAG, "Refreshing broadcasts to circle: " + circle);
         final String ref = formReference(circle);
 
@@ -114,15 +125,24 @@ public class BroadCastFragment extends Fragment{
 
         // Set up FirebaseRecyclerAdapter with the Query
         final Query postsQuery = BaseActivity.mDatabase.getReference(ref);
-
         mAdapter = new FirebaseRecyclerAdapter<BroadCast, BroadCastViewHolder>(BroadCast.class, R.layout.item_post,
                 BroadCastViewHolder.class, postsQuery) {
             @Override
-            protected void populateViewHolder(final BroadCastViewHolder viewHolder, BroadCast model, int position) {
+            protected void onDataChanged() {
+                super.onDataChanged();
+                pd.dismiss();
+            }
 
+            @Override
+            protected void populateViewHolder(final BroadCastViewHolder viewHolder, BroadCast model, int position) {
+                //pd.dismiss();
                 final DatabaseReference postRef = getRef(position);
-                //add shit
+                String imgUrl = model.userImage;
+                Log.d(DEBUG_TAG, "Fetched uri: " + imgUrl);
+                        //add shit
                 //clickable likes
+                //pd.dismiss();
+                Glide.with(getContext()).load(imgUrl).into(viewHolder.pictureView);
                 viewHolder.bindToPost(model, new View.OnClickListener() {
                     @Override
                     public void onClick(View starView) {
@@ -140,11 +160,11 @@ public class BroadCastFragment extends Fragment{
                 else{
                     viewHolder.starView.setImageResource(R.drawable.unlike_icon);
                 }
+
             }
         };
         mRecycler.setAdapter(mAdapter);
-
-        progressDialog.dismiss();
+        if(mAdapter == null)pd.dismiss();
     }
 
     private void onStarClicked(DatabaseReference postRef) {

@@ -2,10 +2,15 @@ package com.eightyeightysix.shourya.almondclient.login;
 
 import android.Manifest;
 import android.animation.ArgbEvaluator;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
@@ -22,6 +27,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.eightyeightysix.shourya.almondclient.BaseActivity;
@@ -29,6 +35,8 @@ import com.eightyeightysix.shourya.almondclient.LoadingActivity;
 import com.eightyeightysix.shourya.almondclient.R;
 import com.eightyeightysix.shourya.almondclient.data.User;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
@@ -37,7 +45,14 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -52,18 +67,26 @@ public class LoginActivity extends BaseActivity implements
     private final static String DEBUG_TAG = "AlmondLog:: " + LoginActivity.class.getSimpleName();
     private LoginFragmentOne firstFragment;
     private static final int NUM_PAGES = 3;
+    private static ProgressDialog progressDialog;
+
     private ViewPager nPager;
     private PagerAdapter mPagerAdapter;
+
     public static String fUid;
     Context mContext;
     private static String tId, tFname, tLname, tGender, tSname, tEmail, tDob;
-    DatabaseReference create_user;
-    ValueEventListener userListener;
+    //firebase
+    private DatabaseReference create_user;
+    private ValueEventListener userListener;
+    private StorageReference store_profile_picture;
+
     User temp_user;
     Thread t = null;
     Integer[] colors = null;
     ArgbEvaluator argbEvaluator = new ArgbEvaluator();
+    private static String fb_token;
     private static String tut_text[] = new String[2];
+    private static int image_res[] = new int[2];
 
     @Override
     protected void onCreate(Bundle savedInstances) {
@@ -78,14 +101,20 @@ public class LoginActivity extends BaseActivity implements
                 mPagerAdapter = new LoginSlidePagerAdapter(getSupportFragmentManager());
                 nPager.setAdapter(mPagerAdapter);
         }
+        progressDialog = new ProgressDialog(this);
+
+        store_profile_picture = FirebaseStorage.getInstance().getReference().child("profilepictures");
 
         //request Location permissions
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
             requestAllPermissions(this);
         }
-        tut_text[0] = "Welcome to Almond. Meet friends on a platform centred around you";
-        tut_text[1] = "Decide the exclusivity of your network by pinching into the zone of your choice!";
+        tut_text[0] = "Create or approve a Periferi to interact with people in that area";
+        tut_text[1] = "Pinch to check out and socialize in another Periferi around you";
+
+        image_res[0] = R.drawable.tut1;
+        image_res[1] = R.drawable.tut2;
         setUpColors();
     }
     @Override
@@ -99,17 +128,12 @@ public class LoginActivity extends BaseActivity implements
 
 
     @Override
-    public void fblistener(String token, String id1, String fname1, String lname1, String sname1,
+    public void fblistener(String token, String id1, URL profile_picture, String fname1, String lname1, String sname1,
                            String gender1, String email1, boolean emailAvailable, String dob1,
                            boolean dobAvailable) {
         Log.d(DEBUG_TAG, "fbListener Callback called");
-        if(!emailAvailable) {
-            //TODO add email fragment
-        }
-        if(!dobAvailable) {
-            nPager.setCurrentItem(3);
-        }
-
+        progressDialog.setMessage("Setting up..");
+        progressDialog.show();
         //set data to local variables
         tId = id1;
         tFname = fname1;
@@ -120,12 +144,13 @@ public class LoginActivity extends BaseActivity implements
         tDob = dob1;
 
         //Firebase Auth
-        fireBaseAuthenticate(token);
-
+        new DownloadImageTask().execute(profile_picture);
+        fb_token = token;
+        //fireBaseAuthenticate(token);
     }
 
-    private void fireBaseAuthenticate(String token) {
-        AuthCredential credential = FacebookAuthProvider.getCredential(token);
+    private void fireBaseAuthenticate() {
+        AuthCredential credential = FacebookAuthProvider.getCredential(fb_token);
         Log.d(DEBUG_TAG, "Firebase Credentials: " + credential.toString());
         Log.d(DEBUG_TAG, "Firebase Auth Instance: " + mAuth.toString());
       //  Log.d(DEBUG_TAG, "Firebase User Instance: " + mFireUser.toString());
@@ -139,7 +164,8 @@ public class LoginActivity extends BaseActivity implements
                             Log.d(DEBUG_TAG, "signInWithCredential:success");
                             fUid = mAuth.getCurrentUser().getUid();
                             Log.d(DEBUG_TAG, "FirebaseAuth: " + fUid);
-                            initiateRegistration();
+                            //initiateRegistration();
+                            uploadProfilePicToFirebase(fUid);
                         } else {
                             Log.d(DEBUG_TAG, "signInWithCredential:failure", task.getException());
                         }
@@ -147,9 +173,9 @@ public class LoginActivity extends BaseActivity implements
                 });
     }
 
-    private void initiateRegistration() {
+    private void initiateRegistration(String imgUrl) {
         //Register User::
-        final User userForm = new User(fUid, tFname, tLname, tSname, tEmail, tDob, tGender);
+        final User userForm = new User(fUid, tFname, tLname, tSname, tEmail, tDob, tGender, imgUrl);
 
         //TODO do in separate thread
         //set SharedPreferences Defaults
@@ -162,6 +188,7 @@ public class LoginActivity extends BaseActivity implements
         editor.putString("gender", tGender);
         editor.putString("email", tEmail);
         editor.putString("dob", tDob);
+        editor.putString("profileUrl", imgUrl);
         editor.apply();
 
         //reference String
@@ -184,7 +211,7 @@ public class LoginActivity extends BaseActivity implements
                     Log.d(DEBUG_TAG, "accessing stored user info");
                     mUser = dataSnapshot.getValue(User.class);
                 }
-
+                progressDialog.dismiss();
                 Intent i = new Intent(LoginActivity.this, LoadingActivity.class);
                 startActivity(i);
             }
@@ -195,7 +222,6 @@ public class LoginActivity extends BaseActivity implements
             }
         };
         create_user.addListenerForSingleValueEvent(userListener);
-
 
     }
 
@@ -208,8 +234,7 @@ public class LoginActivity extends BaseActivity implements
 
         Integer color1 = ResourcesCompat.getColor(getResources(), R.color.tut_1_green, null);
         Integer color2 = ResourcesCompat.getColor(getResources(), R.color.tut_2_blue, null);
-        Integer color3 = ResourcesCompat.getColor(getResources(), R.color.tut_3_purple, null);
-
+        Integer color3 = ResourcesCompat.getColor(getResources(), R.color.colorPrimaryRedAccent, null);
         Integer[] colors_temp = {color1, color2, color3};
         colors = colors_temp;
     }
@@ -258,10 +283,8 @@ public class LoginActivity extends BaseActivity implements
                 nPager.setBackgroundColor((Integer) argbEvaluator.evaluate(positionOffset, colors[position], colors[position + 1]));
 
             } else {
-
                 // the last page color
                 nPager.setBackgroundColor(colors[colors.length - 1]);
-
             }
         }
 
@@ -287,10 +310,80 @@ public class LoginActivity extends BaseActivity implements
             View rootView = inflater.inflate(R.layout.welcome_tutorial,container,false);
             Bundle args = getArguments();
             int position = args.getInt(ARG_PAGE);
-
+            ((ImageView)rootView.findViewById(R.id.tut_image)).setImageResource(image_res[position]);
             ((TextView) rootView.findViewById(R.id.welcome_text)).setText(tut_text[position]);
             //((TextView) rootView.findViewById(R.id.textView1)).setText(Integer.toString(args.getInt(ARG_PAGE)));
             return rootView;
+        }
+    }
+
+    private void uploadProfilePicToFirebase(String userId) {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        if(userProfilePic != null) {
+            userProfilePic.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
+            byte[] data = outputStream.toByteArray();
+            final StorageReference uploadRef = store_profile_picture.child(userId+".jpeg");
+            UploadTask uploadTask = uploadRef.putBytes(data);
+            uploadTask.addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Log.d(DEBUG_TAG, "Failed to upload to firebase");
+                }
+            }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    Log.d(DEBUG_TAG,"Uploaded File successfully");
+                    fetchStorageUri(uploadRef);
+                }
+            });
+        }
+        else{
+            Log.d(DEBUG_TAG, "Profile picture not received in inputstream");
+        }
+
+    }
+
+    private void fetchStorageUri(StorageReference ref) {
+        ref.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                initiateRegistration(uri.toString());
+                Log.d(DEBUG_TAG, "Profile_picture rl: "+ uri);
+            }
+        });
+
+    }
+
+    private class DownloadImageTask extends AsyncTask<URL, Void, Bitmap> {
+
+        public DownloadImageTask() {
+            //this.bmImage = bmImage;
+        }
+
+        protected void onPreExecute() {
+            //mDialog = ProgressDialog.show(ChartActivity.this,"Please wait...", "Retrieving data ...", true);
+        }
+
+        protected Bitmap doInBackground(URL...urls) {
+            Log.d(DEBUG_TAG, "Fetching image");
+            URL a = urls[0];
+            Bitmap mIcon11 = null;
+            try {
+                InputStream in = a.openStream();
+                mIcon11 = BitmapFactory.decodeStream(in);
+            } catch (Exception e) {
+                Log.e("Error", "image download error");
+                Log.e("Error", e.getMessage());
+                e.printStackTrace();
+            }
+            return mIcon11;
+        }
+
+        protected void onPostExecute(Bitmap result) {
+            //set image of your imageview
+            userProfilePic = result;
+            Log.d(DEBUG_TAG, "Image fetched, authenticating token");
+            fireBaseAuthenticate();
         }
     }
 }

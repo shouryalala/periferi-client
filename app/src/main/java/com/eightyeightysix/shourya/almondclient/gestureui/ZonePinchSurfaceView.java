@@ -104,7 +104,7 @@ public class ZonePinchSurfaceView extends SurfaceView implements Runnable, Almon
         paintText.setTextSize(txtview.getTextSize());
         paintText.setTypeface(txtview.getTypeface());
         paintText.setTextAlign(Paint.Align.CENTER);
-        paintText.setColor(ContextCompat.getColor(getContext(), R.color.colorPrimaryRedAccent));
+        paintText.setColor(ContextCompat.getColor(getContext(), R.color.colorPrimaryBlack));
         getZoneDetails();
     }
 

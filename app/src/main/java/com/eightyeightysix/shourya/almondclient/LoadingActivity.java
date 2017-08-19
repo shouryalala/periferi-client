@@ -10,6 +10,7 @@ import android.os.ResultReceiver;
 import android.preference.PreferenceManager;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.widget.ImageView;
 
 import com.eightyeightysix.shourya.almondclient.data.User;
 import com.eightyeightysix.shourya.almondclient.data.Zone;
@@ -60,14 +61,12 @@ public class LoadingActivity extends BaseActivity implements GPSLocator.location
         mAuth = FirebaseAuth.getInstance();
         mFireUser = mAuth.getCurrentUser();
         mDatabase = FirebaseDatabase.getInstance();
-
-        //gesture
-        //getScreenCenter();
-
-        //requestAllPermissions(this);        
-        //define SharedPreference location
         preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        //class to store location details
+        if(!getConnectivityStatus()) {
+            toastit("Unable to connect. Please check your network settings");
+            finish();
+        }
+
         /*if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
             startActivity(new Intent(LoadingActivity.this, LoginActivity.class));
@@ -102,7 +101,8 @@ public class LoadingActivity extends BaseActivity implements GPSLocator.location
                     preferences.getString("short_name", UNAVAILABLE),
                     preferences.getString("email", UNAVAILABLE),
                     preferences.getString("dob", UNAVAILABLE),
-                    preferences.getString("gender", UNAVAILABLE));
+                    preferences.getString("gender", UNAVAILABLE),
+                    preferences.getString("profileUrl", UNAVAILABLE));
 
             Map<String, String> paramsUser = new HashMap<String, String>();
             paramsUser.put("userID", mUser.getUserId());
@@ -130,6 +130,7 @@ public class LoadingActivity extends BaseActivity implements GPSLocator.location
                 }
             };
             loadChats.addListenerForSingleValueEvent(loadChatListener);
+
 
             //Add user to list of online users
             //userOnline();

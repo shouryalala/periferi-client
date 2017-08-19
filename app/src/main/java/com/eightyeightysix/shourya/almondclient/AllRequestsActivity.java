@@ -4,8 +4,10 @@ package com.eightyeightysix.shourya.almondclient;
  * Created by shourya on 12/7/17.
  */
 
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -13,6 +15,8 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.eightyeightysix.shourya.almondclient.data.ZonePerimeter;
@@ -57,8 +61,8 @@ public class AllRequestsActivity extends BaseActivity implements OnMapReadyCallb
     private List<LatLng> coordinates;
     private static boolean polygonCreated;
     private static final String DEBUG_TAG = "AlmondLog:: " + AllRequestsActivity.class.getSimpleName();
-    private static int NEEDED_REQUESTS = 2;
-
+    private static int NEEDED_REQUESTS = 15;
+    private Button ins;
     protected static boolean flag = false;
     protected static ZoneRequest deleteNode = null;
 
@@ -71,6 +75,7 @@ public class AllRequestsActivity extends BaseActivity implements OnMapReadyCallb
                 .findFragmentById(R.id.map_requests);
         mapFragment.getMapAsync(this);
 
+        ins = (Button)findViewById(R.id.button_instruction_request);
         allZoneRequests = new ArrayList<>();
         coordinates = new ArrayList<>(4);
 
@@ -86,6 +91,18 @@ public class AllRequestsActivity extends BaseActivity implements OnMapReadyCallb
         requestPager.addOnPageChangeListener(new SwapMapPolygon());
 
         myLoc = new LatLng(locationDetails.getCurrLatitutde(), locationDetails.getCurrLongitude());
+
+        ins.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                InstructionsDialog ins = new InstructionsDialog();
+                Bundle b = new Bundle();
+                b.putInt("ins_reqd", 96);       //96 is constant for reqd ins
+                ins.setArguments(b);
+                ins.show(getFragmentManager(), "InstructionsDialog");
+            }
+        });
+
     }
 
     @Override
@@ -175,7 +192,7 @@ public class AllRequestsActivity extends BaseActivity implements OnMapReadyCallb
     //callback from onClick view
     @Override
     public void onRequestClick(boolean a) {
-        Toast.makeText(getApplicationContext(), requestPager.getCurrentItem() + " " + a, Toast.LENGTH_SHORT).show();
+        //Toast.makeText(getApplicationContext(), requestPager.getCurrentItem() + " " + a, Toast.LENGTH_SHORT).show();
         final boolean response = a;
         final String key = currZoneRequestKeys.get(allZoneRequests.get(requestPager.getCurrentItem()));
         HashMap<String, String> params = new HashMap<>();

@@ -4,6 +4,8 @@ package com.eightyeightysix.shourya.almondclient.login;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.PermissionChecker;
@@ -38,6 +40,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.w3c.dom.Text;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 
@@ -52,12 +59,14 @@ public class LoginFragmentOne extends Fragment {
     public static FragmentOneListener mListener;
     private boolean fb_email, fb_dob;
     public String fb_id, fb_fname, fb_lname, fb_sname, fb_gender, fb_emailText , fb_dobText ;
+    public URL profile_pic;
+    public Bitmap shourya;
 
     private final String DEBUG_TAG = "AlmondLog:: " + LoginFragmentOne.class.getSimpleName() ;
 
 
     public interface FragmentOneListener {
-        void fblistener(String token, String id, String fname, String lname, String sname, String gender, String email, boolean emailAvailable, String dob, boolean dobAvailable);
+        void fblistener(String token, String id, URL profile_url, String fname, String lname, String sname, String gender, String email, boolean emailAvailable, String dob, boolean dobAvailable);
     }
 
     private AccessTokenTracker accessTokenTracker;
@@ -77,6 +86,19 @@ public class LoginFragmentOne extends Fragment {
                     public void onCompleted(JSONObject object, GraphResponse response) {
                         Log.d(DEBUG_TAG, "GraphRequestCalled");
                         Log.d(DEBUG_TAG, response.toString());
+
+                        try {
+                            fb_id = object.getString("id");
+                        }catch(JSONException e) {
+                            Log.d(DEBUG_TAG, "id not received");
+                        }
+                        try {
+                            profile_pic = new URL("https://graph.facebook.com/" + fb_id + "/picture?width=250&height=250");
+
+                        } catch (MalformedURLException e) {
+                            e.printStackTrace();
+                        }
+
                         try {
                             fb_emailText = object.getString("email");
                         }catch (JSONException e){
@@ -101,11 +123,6 @@ public class LoginFragmentOne extends Fragment {
                             Log.d(DEBUG_TAG, "lname not received");
                         }
                         try {
-                            fb_id = object.getString("id");
-                        }catch(JSONException e) {
-                            Log.d(DEBUG_TAG, "id not received");
-                        }
-                        try {
                             fb_gender = object.getString("gender");
                         }catch(JSONException e) {
                             Log.d(DEBUG_TAG, "gender not received");
@@ -116,7 +133,7 @@ public class LoginFragmentOne extends Fragment {
                             Log.d(DEBUG_TAG, "sname not received");
                         }
                         Log.d(DEBUG_TAG, "access token: " + accessToken.getToken());
-                        mListener.fblistener(accessToken.getToken(),fb_id,fb_fname,fb_lname,fb_sname,fb_gender,fb_emailText,fb_email,fb_dobText,fb_dob);
+                        mListener.fblistener(accessToken.getToken(),fb_id, profile_pic,fb_fname,fb_lname,fb_sname,fb_gender,fb_emailText,fb_email,fb_dobText,fb_dob);
                     }
             });
             Bundle parameters = new Bundle();
