@@ -106,6 +106,8 @@ public class LoginActivity extends BaseActivity implements
                 nPager.setAdapter(mPagerAdapter);
         }
         progressDialog = new ProgressDialog(this);
+        //progressDialog.setCanceledOnTouchOutside(false);
+        progressDialog.setCancelable(false);
 
         store_profile_picture = FirebaseStorage.getInstance().getReference().child("profilepictures");
 

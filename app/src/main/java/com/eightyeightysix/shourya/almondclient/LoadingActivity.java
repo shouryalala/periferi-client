@@ -77,7 +77,7 @@ public class LoadingActivity extends BaseActivity implements GPSLocator.location
          * cityCircle = 1
          * zoneCircles = 2, 3 sorted according to area
         */
-        currCircle = CITY_INDEX;
+        currCircle = COUNTRY_INDEX;
         //TODO check internet and display message
 
         if(!preferences.getString("id",UNAVAILABLE).equals(UNAVAILABLE)) {
