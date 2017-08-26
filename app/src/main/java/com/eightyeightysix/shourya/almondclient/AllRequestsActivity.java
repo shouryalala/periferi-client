@@ -6,6 +6,7 @@ package com.eightyeightysix.shourya.almondclient;
 
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
@@ -61,7 +62,7 @@ public class AllRequestsActivity extends BaseActivity implements OnMapReadyCallb
     private List<LatLng> coordinates;
     private static boolean polygonCreated;
     private static final String DEBUG_TAG = "AlmondLog:: " + AllRequestsActivity.class.getSimpleName();
-    private static int NEEDED_REQUESTS = 10;
+    private static int NEEDED_REQUESTS = 3;
     private Button ins;
     protected static boolean flag = false;
     protected static ZoneRequest deleteNode = null;
@@ -103,6 +104,9 @@ public class AllRequestsActivity extends BaseActivity implements OnMapReadyCallb
             }
         });
 
+        if(Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+        }
     }
 
     @Override

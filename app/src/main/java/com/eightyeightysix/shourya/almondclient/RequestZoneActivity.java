@@ -3,6 +3,7 @@ package com.eightyeightysix.shourya.almondclient;
 import android.app.AlertDialog;
 import android.app.DialogFragment;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.os.Bundle;
@@ -113,6 +114,10 @@ public class RequestZoneActivity extends BaseActivity implements OnMapReadyCallb
 
         //current location
         myLoc = new LatLng(locationDetails.getCurrLatitutde(), locationDetails.getCurrLongitude());
+        //invert status bar color
+        if(Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+        }
     }
 
 

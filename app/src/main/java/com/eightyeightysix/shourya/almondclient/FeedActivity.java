@@ -273,7 +273,10 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
         mRequests.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(FeedActivity.this, AllRequestsActivity.class));
+                if(currZoneRequestKeys.isEmpty())
+                    toastit("There are currently no active requests");
+                else
+                    startActivity(new Intent(FeedActivity.this, AllRequestsActivity.class));
             }
         });
         return true;
