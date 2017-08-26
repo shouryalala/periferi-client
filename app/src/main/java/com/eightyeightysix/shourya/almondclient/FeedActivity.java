@@ -1,16 +1,19 @@
 package com.eightyeightysix.shourya.almondclient;
 
 
-//gesture
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.graphics.PointF;
 import android.os.Build;
+import android.preference.PreferenceManager;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.MotionEventCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
 import android.view.MotionEvent;
 
 import android.app.DialogFragment;
@@ -29,11 +32,22 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.eightyeightysix.shourya.almondclient.data.User;
 import com.eightyeightysix.shourya.almondclient.gestureui.AlmondPagerSettings;
 import com.eightyeightysix.shourya.almondclient.view.AlmondLayout;
+
+import tourguide.tourguide.ChainTourGuide;
+import tourguide.tourguide.Overlay;
+import tourguide.tourguide.Pointer;
+import tourguide.tourguide.Sequence;
+import tourguide.tourguide.ToolTip;
+import tourguide.tourguide.TourGuide;
 
 /*
  * Created by shourya on 'we will never know'.
@@ -49,7 +63,10 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
     private View view1, view2;
     //protected ChatListFragment chatListFragment;
     protected BroadCastFragment broadCastFragment;
-    private static Context mContext;
+    private FloatingActionButton fab;
+    private Context mContext;
+    private ImageView mAddPeriferi, mRequests;
+    private Animation mEnterAnimation, mExitAnimation;
     //protected CoordinatorLayout mainView;
     ///gesture 
     //ZonePinchSurfaceView pinchView;
@@ -70,7 +87,9 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
         //gestureInit();
         mContext = getApplicationContext();
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab = (FloatingActionButton) findViewById(R.id.fab);
+        //mAddPeriferi = (ImageView) findViewById(R.id.map_zones);
+        //mRequests = (ImageView) findViewById(R.id.all_requests);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -91,6 +110,53 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
 
 
         Log.d(DEBUG_TAG, userId + userName + userEmail + displayName);
+    }
+
+    //tutorial
+    public void showUserHow() {
+        mEnterAnimation = new AlphaAnimation(0f, 1f);
+        mEnterAnimation.setDuration(600);
+        mEnterAnimation.setFillAfter(true);
+
+        mExitAnimation = new AlphaAnimation(1f, 0f);
+        mExitAnimation.setDuration(600);
+        mExitAnimation.setFillAfter(true);
+        ChainTourGuide mBroadcasttour = ChainTourGuide.init(this).with(TourGuide.Technique.VerticalDownward)
+                .setPointer(new Pointer())
+                .setToolTip(new ToolTip().setTitle("BroadCast").setDescription("Click to BroadCast in this Periferi")
+                .setGravity(Gravity.TOP | Gravity.LEFT))
+                .setOverlay(new Overlay())
+                .playLater(fab);
+        ChainTourGuide mAddtour = ChainTourGuide.init(this).with(TourGuide.Technique.VerticalDownward)
+                .setPointer(new Pointer())
+                .setToolTip(new ToolTip().setTitle("Create").setDescription("Create a new Periferi")
+                        .setGravity(Gravity.BOTTOM | Gravity.LEFT))
+                .setOverlay(new Overlay())
+                .playLater(mAddPeriferi);
+        ChainTourGuide mRequesttour = ChainTourGuide.init(this).with(TourGuide.Technique.VerticalDownward)
+                .setPointer(new Pointer())
+                .setToolTip(new ToolTip().setTitle("Requests").setDescription("Check out Periferi requests around you")
+                        .setGravity(Gravity.BOTTOM | Gravity.LEFT))
+                .setOverlay(new Overlay())
+                .playLater(mRequests);
+        //Pointer p1 = new Pointer(Gravity.TOP, Color.BLUE);
+        ChainTourGuide mPinchtour = ChainTourGuide.init(this).with(TourGuide.Technique.HorizontalLeft)
+                .setPointer(new Pointer().setGravity(Gravity.TOP | Gravity.LEFT))
+                .setPointer(new Pointer().setGravity(Gravity.BOTTOM | Gravity.RIGHT))
+                .setToolTip(new ToolTip().setTitle("Pinch").setGravity(Gravity.TOP))
+                .setOverlay(new Overlay()
+                        .setBackgroundColor(Color.parseColor("#EE2c3e50"))
+                        .setEnterAnimation(mEnterAnimation)
+                        .setExitAnimation(mExitAnimation))
+                .motionType(TourGuide.MotionType.SwipeOnly)
+                .playLater(getCurrentFocus());
+        Sequence sequence = new Sequence.SequenceBuilder()
+                .add(mBroadcasttour, mAddtour, mRequesttour,mPinchtour)
+                .setDefaultOverlay(new Overlay())
+                .setDefaultPointer(null)
+                .setContinueMethod(Sequence.ContinueMethod.Overlay)
+                .build();
+        ChainTourGuide.init(this).playInSequence(sequence);
     }
 
     public void createNewBroadCast() {
@@ -176,6 +242,40 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_feed, menu);
+        //MenuItem mAdd = menu.getItem(0);
+        //MenuItem mRequest = menu.getItem(1);
+        MenuItem mAdd = menu.findItem(R.id.map_zones);
+        MenuItem mRequest = menu.findItem(R.id.all_requests);
+
+        mAddPeriferi = (ImageView)mAdd.getActionView();
+        mRequests = (ImageView)mRequest.getActionView();
+
+        float density = getResources().getDisplayMetrics().density;
+        int padding = (int)(density*9);
+        mAddPeriferi.setPadding(padding,padding,padding,padding);
+        mRequests.setPadding(padding, padding, padding, padding);
+
+        mAddPeriferi.setImageDrawable(getResources().getDrawable(R.drawable.create_zone_icon, null));
+        mRequests.setImageDrawable(getResources().getDrawable(R.drawable.periferi_requests, null));
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        if(prefs.getBoolean("rookieFeed", false)){
+            showUserHow();
+        }
+
+        mAddPeriferi.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(FeedActivity.this, RequestZoneActivity.class));
+            }
+        });
+
+        mRequests.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(FeedActivity.this, AllRequestsActivity.class));
+            }
+        });
         return true;
     }
 
@@ -183,7 +283,7 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         //noinspection SimplifiableIfStatement
-
+/*
         if(id == R.id.map_zones) {
             startActivity(new Intent(FeedActivity.this, RequestZoneActivity.class));
             return true;
@@ -197,7 +297,7 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
             }
             return true;
         }
-
+*/
         return super.onOptionsItemSelected(item);
     }
 
@@ -267,9 +367,7 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
     //Callback from gesture
     public static void refreshCircleContent(int id) {
         id = decideCircleIndex(id);
-        if(currCircle == id)
-            Toast.makeText(mContext, "Current Circle", Toast.LENGTH_SHORT);
-        else {
+        if(currCircle != id){
             currCircle = id;
             //((ChatListFragment) mPagerAdapter.getItem(1)).fetchOnlineUsers(id);
             ((BroadCastFragment) mPagerAdapter.getItem(0)).fetchCircleBroadCasts(id);

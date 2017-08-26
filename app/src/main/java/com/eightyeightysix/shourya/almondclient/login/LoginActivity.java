@@ -220,6 +220,8 @@ public class LoginActivity extends BaseActivity implements
         editor.putString("email", tEmail);
         editor.putString("dob", tDob);
         editor.putString("profileUrl", imgUrl);
+        editor.putBoolean("rookieFeed", true);
+        editor.putBoolean("rookieMaps", true);
         editor.apply();
 
         //reference String

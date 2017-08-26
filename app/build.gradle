@@ -34,6 +34,9 @@ android {
 
 repositories {
     mavenCentral()
+    maven() {
+        url "https://oss.sonatype.org/content/repositories/snapshots"
+    }
 }
 
 dependencies {
@@ -41,12 +44,10 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    //maps   
-    //location services
-    //facebook login
-    //firebase
-    //firebase ui
-    
+
+    compile ('com.github.worker8:tourguide:1.0.17-SNAPSHOT@aar') {
+        transitive=true
+    }
 
     compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
