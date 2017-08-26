@@ -111,13 +111,12 @@ public class BaseActivity extends AppCompatActivity{
 
     //Current ChatUser - no need to take import all user data
     public static User mChatBuddy;
-    public static Map<String, String> friendIds;        //Name, ID
+    public static Map<String, String> friendIds;            //Name, ID
 
     public static CurrentLocationDetails locationDetails;   //stores current location details
     public static ArrayList<ZoneRequest> currZoneRequests;
     public static HashMap<ZoneRequest, String> currZoneRequestKeys;
     public static boolean zoneRequestsPresent = false;
-
 
     public static int currCircle;
 

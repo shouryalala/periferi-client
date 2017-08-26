@@ -10,6 +10,7 @@ import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.eightyeightysix.shourya.almondclient.data.Zone;
 import com.eightyeightysix.shourya.almondclient.data.ZonePerimeter;
@@ -56,6 +57,7 @@ public class RequestZoneActivity extends BaseActivity implements OnMapReadyCallb
     private boolean longClick = false;
     private Button refresh, ins;
     private LatLng myLoc;
+
     //TODO figure out values for MAX and MIN
     private static final double MAX_ZONE_AREA= 9000000;
     private static final double MIN_ZONE_AREA= 10000;
@@ -131,13 +133,33 @@ public class RequestZoneActivity extends BaseActivity implements OnMapReadyCallb
 
         boolean success = googleMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(
                         this, R.raw.style_json));
-
         if (!success) {
             Log.d(DEBUG_TAG, "Style parsing failed.");
         }
 
+        displayCurrentZones();
         mMap.getUiSettings().setMapToolbarEnabled(false);
+    }
 
+    public void displayCurrentZones() {
+        if(!locationDetails.zonesList.isEmpty()) {
+            for(int i=0; i<locationDetails.zonesList.size(); i++) {
+                ZonePerimeter zp = locationDetails.zonesList.get(i).getZonePerimeter();
+                PolygonOptions po = new PolygonOptions();
+                po.add(new LatLng(zp.latMax,zp.lngMin), new LatLng(zp.latMax, zp.lngMax), new LatLng(zp.latMin, zp.lngMax), new LatLng(zp.latMin, zp.lngMin));
+                po.strokeColor(ContextCompat.getColor(this, R.color.Aqua));
+                Polygon p = mMap.addPolygon(po);
+                p.setTag(zp.getZoneName());
+                p.setClickable(true);
+            }
+
+            mMap.setOnPolygonClickListener(new GoogleMap.OnPolygonClickListener() {
+                @Override
+                public void onPolygonClick(Polygon polygon) {
+                    Toast.makeText(getApplicationContext(), "Periferi: " + polygon.getTag(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
     }
 
     @Override
@@ -170,18 +192,16 @@ public class RequestZoneActivity extends BaseActivity implements OnMapReadyCallb
         coordinates[3] = new MarkerOptions().position(d).draggable(true).icon(BitmapDescriptorFactory.fromResource(R.drawable.almond_marker));
 
         minRectangle.add(a,b,c,d);
-        //TODO use new method
         minRectangle.strokeColor(ContextCompat.getColor(this, R.color.mapOutlineColor));// getResources().getColor(R.color.opaque_red));
         minRectangle.fillColor(ContextCompat.getColor(this, R.color.mapBoxColor));//getResources().getColor(R.color.translucent_red));
         minRectangle.strokeWidth(8);
 
+        List<PatternItem> pattern = Arrays.<PatternItem>asList(new Dot(), new Gap(20), new Dash(30), new Gap(20));
         mintempRectangle.add(a,b,c,d);
         mintempRectangle.strokeColor(ContextCompat.getColor(this, R.color.mapBoxColor));
-        //mintempRectangle.fillColor(Color.CYAN);//getResources().getColor(R.color.translucent_red));
         mintempRectangle.strokeWidth(8);
-        List<PatternItem> pattern = Arrays.<PatternItem>asList(
-                new Dot(), new Gap(20), new Dash(30), new Gap(20));
         mintempRectangle.strokePattern(pattern);
+
         zonePolygon = mMap.addPolygon(minRectangle);
         zoneUpdatePolygon = mMap.addPolygon(mintempRectangle);
     }
