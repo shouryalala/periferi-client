@@ -349,6 +349,8 @@ public class LoadingActivity extends BaseActivity implements GPSLocator.location
             }
             else {
                 Log.d(DEBUG_TAG,"Address not received, location inspection suspended");
+                toastit("There was an issue fetching your location. Please restart Periferi");
+                finish();
             }
         }
     }

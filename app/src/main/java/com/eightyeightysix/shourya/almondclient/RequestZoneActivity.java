@@ -3,6 +3,7 @@ package com.eightyeightysix.shourya.almondclient;
 import android.app.AlertDialog;
 import android.app.DialogFragment;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
@@ -109,6 +110,7 @@ public class RequestZoneActivity extends BaseActivity implements OnMapReadyCallb
                 points.clear();
                 markers.clear();
                 mMap.addMarker(new MarkerOptions().position(myLoc).title("Current Location"));
+                displayCurrentZones();
             }
         });
 
@@ -152,12 +154,13 @@ public class RequestZoneActivity extends BaseActivity implements OnMapReadyCallb
                 ZonePerimeter zp = locationDetails.zonesList.get(i).getZonePerimeter();
                 PolygonOptions po = new PolygonOptions();
                 po.add(new LatLng(zp.latMax,zp.lngMin), new LatLng(zp.latMax, zp.lngMax), new LatLng(zp.latMin, zp.lngMax), new LatLng(zp.latMin, zp.lngMin));
-                po.strokeColor(ContextCompat.getColor(this, R.color.Aqua));
+                po.strokeColor(ContextCompat.getColor(this, R.color.mapOutlineColor));
+                po.strokeWidth(5);
+                po.fillColor(Color.argb(15,255,0,0));
                 Polygon p = mMap.addPolygon(po);
                 p.setTag(zp.getZoneName());
                 p.setClickable(true);
             }
-
             mMap.setOnPolygonClickListener(new GoogleMap.OnPolygonClickListener() {
                 @Override
                 public void onPolygonClick(Polygon polygon) {
@@ -198,7 +201,8 @@ public class RequestZoneActivity extends BaseActivity implements OnMapReadyCallb
 
         minRectangle.add(a,b,c,d);
         minRectangle.strokeColor(ContextCompat.getColor(this, R.color.mapOutlineColor));// getResources().getColor(R.color.opaque_red));
-        minRectangle.fillColor(ContextCompat.getColor(this, R.color.mapBoxColor));//getResources().getColor(R.color.translucent_red));
+        //minRectangle.fillColor(ContextCompat.getColor(this, R.color.mapBoxColor));//getResources().getColor(R.color.translucent_red));
+        minRectangle.fillColor(Color.argb(200,255,235,238));
         minRectangle.strokeWidth(8);
 
         List<PatternItem> pattern = Arrays.<PatternItem>asList(new Dot(), new Gap(20), new Dash(30), new Gap(20));
