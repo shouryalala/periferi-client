@@ -57,6 +57,12 @@ public class LoadingActivity extends BaseActivity implements GPSLocator.location
         setContentView(R.layout.activity_loading);
         //TODO get location permission before
         //Firebase auth getInstance
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
         mAuth = FirebaseAuth.getInstance();
         mFireUser = mAuth.getCurrentUser();
         mDatabase = FirebaseDatabase.getInstance();
@@ -103,34 +109,6 @@ public class LoadingActivity extends BaseActivity implements GPSLocator.location
                     preferences.getString("gender", UNAVAILABLE),
                     preferences.getString("profileUrl", UNAVAILABLE));
 
-            Map<String, String> paramsUser = new HashMap<String, String>();
-            paramsUser.put("userID", mUser.getUserId());
-            final String chatReference = substituteString(getResources().getString(R.string.user_chats), paramsUser);
-            loadChats = mDatabase.getReference(chatReference);
-            loadChatListener = new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    friendIds = new HashMap<>();
-                    if(dataSnapshot.getValue() == null) {
-                        Log.d(DEBUG_TAG, "No chats yet");
-                    }
-                    else {
-                        for(DataSnapshot chatSnapShot: dataSnapshot.getChildren()){
-                            String chatId = (String)chatSnapShot.getKey();
-                            String friendName = (String)chatSnapShot.getValue();
-                            friendIds.put(friendName, extractFriendId(chatId)); //Name, ID
-                        }
-                    }
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-                    Log.d(DEBUG_TAG, "loadChat Cancelled");
-                }
-            };
-            loadChats.addListenerForSingleValueEvent(loadChatListener);
-
-
             //Add user to list of online users
             //userOnline();
         }
@@ -138,7 +116,6 @@ public class LoadingActivity extends BaseActivity implements GPSLocator.location
             //login
             startActivity(new Intent(LoadingActivity.this, LoginActivity.class));
         }
-
     }
 
     //callback from GPSLocator
@@ -354,4 +331,34 @@ public class LoadingActivity extends BaseActivity implements GPSLocator.location
             }
         }
     }
+
+    /* //Code needed for the next chat update
+            Map<String, String> paramsUser = new HashMap<String, String>();
+            paramsUser.put("userID", mUser.getUserId());
+            final String chatReference = substituteString(getResources().getString(R.string.user_chats), paramsUser);
+            loadChats = mDatabase.getReference(chatReference);
+            loadChatListener = new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    friendIds = new HashMap<>();
+                    if(dataSnapshot.getValue() == null) {
+                        Log.d(DEBUG_TAG, "No chats yet");
+                    }
+                    else {
+                        for(DataSnapshot chatSnapShot: dataSnapshot.getChildren()){
+                            String chatId = (String)chatSnapShot.getKey();
+                            String friendName = (String)chatSnapShot.getValue();
+                            friendIds.put(friendName, extractFriendId(chatId)); //Name, ID
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    Log.d(DEBUG_TAG, "loadChat Cancelled");
+                }
+            };
+            loadChats.addListenerForSingleValueEvent(loadChatListener);
+            //
+            */
 }

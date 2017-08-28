@@ -84,40 +84,43 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        Log.d(DEBUG_TAG, "onCreate Called");
         setContentView(R.layout.activity_feed);
         //setup toolbar
         setupAppBar();
+        mContext = getApplicationContext();
 
         AlmondLayout mainView = (AlmondLayout)findViewById(R.id.feed_layout);
-        mainView.gestureInit();
-        //gestureInit();
-        mContext = getApplicationContext();
-        pinchTourActive = false;
         fab = (FloatingActionButton) findViewById(R.id.fab);
-        //mAddPeriferi = (ImageView) findViewById(R.id.map_zones);
-        //mRequests = (ImageView) findViewById(R.id.all_requests);
+        tutTxt = (TextView)findViewById(R.id.no_posts_text);
+        mPager  = (AlmondPagerSettings)findViewById(R.id.feed_pager);
+        view1 = (View)findViewById(R.id.fragment_container_feed);
+        view2 = (View) findViewById(R.id.feed_pager);
+
+        //initialise fragment Manager
+        fragmentManager = getSupportFragmentManager();
+        mainView.gestureInit();
+        pinchTourActive = false;
+
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 createNewBroadCast();
             }
         });
-        tutTxt = (TextView)findViewById(R.id.no_posts_text);
-        mPager  = (AlmondPagerSettings)findViewById(R.id.feed_pager);
+
         mPagerAdapter = new SwipeUpPagerAdapter(getSupportFragmentManager());
         mPager.setAdapter(mPagerAdapter);
-
-        //initialise views
-        view1 = (View)findViewById(R.id.fragment_container_feed);
-        view2 = (View) findViewById(R.id.feed_pager);
-
-        //initialise fragment Manager
-        fragmentManager = getSupportFragmentManager();
-
-
-        Log.d(DEBUG_TAG, userId + userName + userEmail + displayName);
     }
+
+    //Refreshes app on restarting from app drawer
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d(DEBUG_TAG, "onResume Called");
+
+    }
+
 
     //tutorial
     public void showUserHow() {
@@ -348,7 +351,7 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
 
     @Override
     public void onBackPressed() {
-        if(fragmentManager.getBackStackEntryCount() == 0) {
+        /*if(fragmentManager.getBackStackEntryCount() == 0) {
             Log.d(DEBUG_TAG, "Back pressed within pager");
             if (mPager.getCurrentItem() == 0) {
                 finish();
@@ -366,7 +369,12 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
             fragmentManager.popBackStack();
             view1.setVisibility(View.GONE);
             view2.setVisibility(View.VISIBLE);
-        }
+        }*/
+        finish();
+        Intent homeIntent = new Intent(Intent.ACTION_MAIN);
+        homeIntent.addCategory(Intent.CATEGORY_HOME);
+        homeIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(homeIntent);
     }
 
     private class SwipeUpPagerAdapter extends FragmentStatePagerAdapter {
