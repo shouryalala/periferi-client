@@ -195,7 +195,7 @@ public class GPSLocator{
     }
 */
     public String getCityName() {
-        return mLastAddress.getAdminArea();
+        return mLastAddress.getLocality();
     }
 
     public String getCountryName() {

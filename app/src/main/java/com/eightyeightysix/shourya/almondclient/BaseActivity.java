@@ -242,7 +242,7 @@ public class BaseActivity extends AppCompatActivity{
         HashMap<Integer, String> names = new HashMap<>();
         int size = fetchCurrentCircleCount();
         names.put(size-1, locationDetails.getCountryName());
-        names.put(size-2, locationDetails.getAdminAreaName());
+        names.put(size-2, locationDetails.getLocalityName());
         if(size > 2) {
             for(int i= 0; i<locationDetails.zonesList.size(); i++) {
                 names.put(i, locationDetails.zonesList.get(i).zoneBounds.getZoneName());

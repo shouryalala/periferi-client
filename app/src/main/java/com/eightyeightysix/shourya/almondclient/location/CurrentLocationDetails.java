@@ -69,6 +69,8 @@ public class CurrentLocationDetails {
         this.cityID = id;
     }
 
+    public String getLocalityName() {return localityName; }
+
     public String getCountryID() {return this.countryID; }
 
     public String getCityID() {return this.cityID; }

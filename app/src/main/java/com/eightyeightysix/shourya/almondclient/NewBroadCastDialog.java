@@ -92,7 +92,7 @@ public class NewBroadCastDialog extends DialogFragment{
              return BaseActivity.locationDetails.getCountryName();
         }
         else if(BaseActivity.currCircle == CITY_INDEX){
-            return BaseActivity.locationDetails.getAdminAreaName();
+            return BaseActivity.locationDetails.getLocalityName();
         }
         else{
             //temp

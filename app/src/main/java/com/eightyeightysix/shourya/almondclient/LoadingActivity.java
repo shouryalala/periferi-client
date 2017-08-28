@@ -1,6 +1,7 @@
 package com.eightyeightysix.shourya.almondclient;
 
 import android.*;
+import android.app.ProgressDialog;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.content.Intent;
@@ -10,7 +11,10 @@ import android.os.ResultReceiver;
 import android.preference.PreferenceManager;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.eightyeightysix.shourya.almondclient.data.User;
 import com.eightyeightysix.shourya.almondclient.data.Zone;
@@ -30,6 +34,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -48,6 +54,9 @@ public class LoadingActivity extends BaseActivity implements GPSLocator.location
     private LocationRequest mLocationRequest;
     protected static final int REQUEST_CHECK_SETTINGS = 0x1;
     private String mAddressOutput;
+    private TextView errorText;
+    private boolean errorDisplayed;
+    private ProgressBar mProgressBar;
     private AddressResultReceiver mResultReceiver;
     private SharedPreferences preferences;
 
@@ -67,11 +76,10 @@ public class LoadingActivity extends BaseActivity implements GPSLocator.location
         mFireUser = mAuth.getCurrentUser();
         mDatabase = FirebaseDatabase.getInstance();
         preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        errorDisplayed = false;
         if(!getConnectivityStatus()) {
-            toastit("Unable to connect. Please check your network settings");
-            finish();
+            errorDisplay("Unable to connect. Please check your network settings");
         }
-
         /*if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
             startActivity(new Intent(LoadingActivity.this, LoginActivity.class));
@@ -83,8 +91,7 @@ public class LoadingActivity extends BaseActivity implements GPSLocator.location
          * cityCircle = 1
          * zoneCircles = 2, 3 sorted according to area
         */
-        currCircle = COUNTRY_INDEX;
-        //TODO check internet and display message
+        currCircle = CITY_INDEX;
 
         if(!preferences.getString("id",UNAVAILABLE).equals(UNAVAILABLE)) {
             //fetchLocation
@@ -98,7 +105,6 @@ public class LoadingActivity extends BaseActivity implements GPSLocator.location
 
             mLocator = new GPSLocator(this);
             mLocator.refreshLocation();
-
 
             mUser = new User(preferences.getString("id", UNAVAILABLE),
                     preferences.getString("first_name", UNAVAILABLE),
@@ -115,6 +121,17 @@ public class LoadingActivity extends BaseActivity implements GPSLocator.location
         else {
             //login
             startActivity(new Intent(LoadingActivity.this, LoginActivity.class));
+        }
+    }
+
+    public void errorDisplay(String error) {
+        if(!errorDisplayed) {
+            mProgressBar = (ProgressBar)findViewById(R.id.progress_bar_loading);
+            errorText = (TextView) findViewById(R.id.error_text);
+            errorText.setText(error);
+            errorText.setVisibility(View.VISIBLE);
+            mProgressBar.setVisibility(View.GONE);
+            errorDisplayed = true;
         }
     }
 
@@ -140,22 +157,25 @@ public class LoadingActivity extends BaseActivity implements GPSLocator.location
     }
 
     public void inspectLocation() {
-        //TODO all location coodinates and reverse geocoding has to be done through listeners. IMPORTANT
         //Load saved location variables
         String savedCityName = preferences.getString("city_name", UNAVAILABLE);
         String savedCountryName = preferences.getString("country_name", UNAVAILABLE);
         city_id = preferences.getString("city_ID", UNAVAILABLE);
         country_id = preferences.getString("country_ID", UNAVAILABLE);
 
-        String currentCityName = locationDetails.getAdminAreaName();
+        String currentCityName = locationDetails.getLocalityName();
         String currentCountryName = locationDetails.getCountryName();
+
+        Log.d(DEBUG_TAG, "Current Locality: " + currentCityName + "Saved Locality: " + savedCityName);
 
         if(currentCityName == null) {
             Log.d(DEBUG_TAG, "City Name not fetched");
+            errorDisplay("Improper data fetched. Please restart Periferi");
         }
 
         if(currentCountryName == null) {
             Log.d(DEBUG_TAG, "Country Name not fetched");
+            errorDisplay("Improper data fetched. Please restart Periferi");
         }
 
         if(!currentCountryName.equals(savedCountryName) || savedCountryName.equals(UNAVAILABLE)) {
@@ -198,7 +218,7 @@ public class LoadingActivity extends BaseActivity implements GPSLocator.location
                     countryReference.child(country_id).setValue(country);
                 }
                 Log.d(DEBUG_TAG,"Country Code is now:" + country_id);
-                refreshCityID(locationDetails.getAdminAreaName());
+                refreshCityID(locationDetails.getLocalityName());
             }
 
             @Override
@@ -268,13 +288,13 @@ public class LoadingActivity extends BaseActivity implements GPSLocator.location
                 Log.d(DEBUG_TAG,"Zones Found:" + locationDetails.getZonesStatus());
                 if(locationDetails.getZonesStatus()) {
                     //set first page as innermost zoneCircle
-                    currCircle = 0;
+                    currCircle = CITY_INDEX;
                     sortZoneListByArea();
                 }
 
                 //update preferences values;
                 SharedPreferences.Editor editor = preferences.edit();
-                editor.putString("city_name", locationDetails.getAdminAreaName());
+                editor.putString("city_name", locationDetails.getLocalityName());
                 editor.putString("country_name", locationDetails.getCountryName());
                 editor.putString("city_ID", city_id);
                 editor.putString("country_ID", country_id);
@@ -326,8 +346,7 @@ public class LoadingActivity extends BaseActivity implements GPSLocator.location
             }
             else {
                 Log.d(DEBUG_TAG,"Address not received, location inspection suspended");
-                toastit("There was an issue fetching your location. Please restart Periferi");
-                finish();
+                errorDisplay("There was an issue fetching your location. Please restart Periferi");
             }
         }
     }
