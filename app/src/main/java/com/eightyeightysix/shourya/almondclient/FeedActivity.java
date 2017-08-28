@@ -9,6 +9,7 @@ import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.MotionEventCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -36,6 +37,7 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.eightyeightysix.shourya.almondclient.data.User;
@@ -62,11 +64,16 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
     private static SwipeUpPagerAdapter mPagerAdapter;
     private View view1, view2;
     //protected ChatListFragment chatListFragment;
+    public static boolean pinchTourActive;
     protected BroadCastFragment broadCastFragment;
     private FloatingActionButton fab;
     private Context mContext;
+    private static int tut_screens_count = 0;
+    private static TourGuide abc;
     private ImageView mAddPeriferi, mRequests;
     private Animation mEnterAnimation, mExitAnimation;
+    private ChainTourGuide mTutorial;
+    TextView tutTxt;
     //protected CoordinatorLayout mainView;
     ///gesture 
     //ZonePinchSurfaceView pinchView;
@@ -86,17 +93,17 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
         mainView.gestureInit();
         //gestureInit();
         mContext = getApplicationContext();
-
+        pinchTourActive = false;
         fab = (FloatingActionButton) findViewById(R.id.fab);
         //mAddPeriferi = (ImageView) findViewById(R.id.map_zones);
         //mRequests = (ImageView) findViewById(R.id.all_requests);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-             createNewBroadCast();
+                createNewBroadCast();
             }
         });
-
+        tutTxt = (TextView)findViewById(R.id.no_posts_text);
         mPager  = (AlmondPagerSettings)findViewById(R.id.feed_pager);
         mPagerAdapter = new SwipeUpPagerAdapter(getSupportFragmentManager());
         mPager.setAdapter(mPagerAdapter);
@@ -114,6 +121,7 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
 
     //tutorial
     public void showUserHow() {
+        //mTourguide.setVisibility(View.INVISIBLE);
         mEnterAnimation = new AlphaAnimation(0f, 1f);
         mEnterAnimation.setDuration(600);
         mEnterAnimation.setFillAfter(true);
@@ -121,42 +129,76 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
         mExitAnimation = new AlphaAnimation(1f, 0f);
         mExitAnimation.setDuration(600);
         mExitAnimation.setFillAfter(true);
+        //ChainTourGuide mTutorial;
+
         ChainTourGuide mBroadcasttour = ChainTourGuide.init(this).with(TourGuide.Technique.VerticalDownward)
                 .setPointer(new Pointer())
-                .setToolTip(new ToolTip().setTitle("BroadCast").setDescription("Click to BroadCast in this Periferi")
+                .setToolTip(new ToolTip()
+                        .setBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryRedAccent))
+                        .setTitle("BroadCast").setDescription("in the current Periferi")
                 .setGravity(Gravity.TOP | Gravity.LEFT))
-                .setOverlay(new Overlay())
+                .setOverlay(new Overlay()
+                            .setEnterAnimation(mEnterAnimation)
+                            .setExitAnimation(mExitAnimation))
                 .playLater(fab);
         ChainTourGuide mAddtour = ChainTourGuide.init(this).with(TourGuide.Technique.VerticalDownward)
                 .setPointer(new Pointer())
-                .setToolTip(new ToolTip().setTitle("Create").setDescription("Create a new Periferi")
+                .setToolTip(new ToolTip()
+                        .setBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryRedAccent))
+                        .setTitle("Create").setDescription("a new Periferi to interact with new people around you")
                         .setGravity(Gravity.BOTTOM | Gravity.LEFT))
-                .setOverlay(new Overlay())
+                .setOverlay(new Overlay()
+                        .setEnterAnimation(mEnterAnimation)
+                        .setExitAnimation(mExitAnimation))
                 .playLater(mAddPeriferi);
         ChainTourGuide mRequesttour = ChainTourGuide.init(this).with(TourGuide.Technique.VerticalDownward)
                 .setPointer(new Pointer())
-                .setToolTip(new ToolTip().setTitle("Requests").setDescription("Check out Periferi requests around you")
+                .setToolTip(new ToolTip()
+                        .setBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryRedAccent))
+                        .setTitle("Requests").setDescription("Check out Periferi requests around you")
                         .setGravity(Gravity.BOTTOM | Gravity.LEFT))
-                .setOverlay(new Overlay())
-                .playLater(mRequests);
-        //Pointer p1 = new Pointer(Gravity.TOP, Color.BLUE);
-        ChainTourGuide mPinchtour = ChainTourGuide.init(this).with(TourGuide.Technique.HorizontalLeft)
-                .setPointer(new Pointer().setGravity(Gravity.TOP | Gravity.LEFT))
-                .setPointer(new Pointer().setGravity(Gravity.BOTTOM | Gravity.RIGHT))
-                .setToolTip(new ToolTip().setTitle("Pinch").setGravity(Gravity.TOP))
                 .setOverlay(new Overlay()
-                        .setBackgroundColor(Color.parseColor("#EE2c3e50"))
                         .setEnterAnimation(mEnterAnimation)
                         .setExitAnimation(mExitAnimation))
-                .motionType(TourGuide.MotionType.SwipeOnly)
-                .playLater(getCurrentFocus());
+                .playLater(mRequests);
+
         Sequence sequence = new Sequence.SequenceBuilder()
-                .add(mBroadcasttour, mAddtour, mRequesttour,mPinchtour)
-                .setDefaultOverlay(new Overlay())
+                .add(mBroadcasttour, mAddtour, mRequesttour)
+                .setDefaultOverlay(new Overlay().setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mTutorial.next();
+                        tut_screens_count++;
+                        if(tut_screens_count == 3) {
+                            startPinchTutorial();
+                        }
+                        Log.d(DEBUG_TAG, "Overlay Clicked , count=" + tut_screens_count);
+                    }
+                }))
                 .setDefaultPointer(null)
-                .setContinueMethod(Sequence.ContinueMethod.Overlay)
+                .setContinueMethod(Sequence.ContinueMethod.OverlayListener)
                 .build();
-        ChainTourGuide.init(this).playInSequence(sequence);
+        mTutorial = ChainTourGuide.init(this).playInSequence(sequence);
+    }
+
+    public void startPinchTutorial() {
+        pinchTourActive = true;
+        abc = TourGuide.init(this).with(TourGuide.Technique.VerticalDownward)
+                .setPointer(new Pointer().setGravity(Gravity.TOP | Gravity.LEFT))
+                .setToolTip(new ToolTip()
+                        .setBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryRedAccent))
+                        .setTitle("Pinch").setDescription("with 2 fingers to change your Periferi").setGravity(Gravity.TOP))
+                .setOverlay(new Overlay()
+                        .setEnterAnimation(mEnterAnimation)
+                        .setExitAnimation(mExitAnimation)
+                )
+                .playOn(view2);
+    }
+
+    //called on pinch gesture
+    public static void exitPinchTour() {
+        pinchTourActive = false;
+        abc.cleanUp();
     }
 
     public void createNewBroadCast() {
