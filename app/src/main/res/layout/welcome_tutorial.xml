@@ -9,7 +9,7 @@
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:layout_marginBottom="10dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="20dp"
         android:textAlignment="center"
         android:textStyle="italic"
         android:textSize="@dimen/almond_post_title"

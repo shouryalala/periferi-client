@@ -27,17 +27,6 @@ tools:context="com.eightyeightysix.shourya.almondclient.FeedActivity">
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_gravity="end">
-    <Button
-        android:id="@+id/button_refresh"
-        android:layout_weight="2"
-        android:text="X"
-        android:textColor="@color/cardview_dark_background"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginRight="10dp"
-        android:background="@drawable/layout_circle"/>
-
 
     <Button
         android:id="@+id/button_instruction_create"
@@ -49,9 +38,20 @@ tools:context="com.eightyeightysix.shourya.almondclient.FeedActivity">
         android:layout_marginTop="10dp"
         android:layout_marginRight="10dp"
         android:background="@drawable/layout_circle"/>
-    </LinearLayout>
 
     <Button
+        android:id="@+id/button_refresh"
+        android:layout_weight="2"
+        android:text="X"
+        android:textColor="@color/cardview_dark_background"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="10dp"
+        android:background="@drawable/layout_circle"/>
+    </LinearLayout>
+
+    <!--<Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="3"
@@ -67,9 +67,14 @@ tools:context="com.eightyeightysix.shourya.almondclient.FeedActivity">
         android:clickable="false"
         android:textAllCaps="false"
         android:alpha="0.5"
-        android:background="@drawable/layout_rounded_corners"/>
-
-
+        android:background="@drawable/layout_rounded_corners"/>-->
+    <ImageButton
+        android:id="@+id/create_periferi_button"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:background="@mipmap/ic_periferi"/>
 
 <android.support.design.widget.FloatingActionButton
     android:id="@+id/map_fab"

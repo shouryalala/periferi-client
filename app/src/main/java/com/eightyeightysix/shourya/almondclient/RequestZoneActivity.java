@@ -2,8 +2,10 @@ package com.eightyeightysix.shourya.almondclient;
 
 import android.app.AlertDialog;
 import android.app.DialogFragment;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.media.Image;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
@@ -12,6 +14,7 @@ import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.eightyeightysix.shourya.almondclient.data.Zone;
@@ -59,7 +62,7 @@ public class RequestZoneActivity extends BaseActivity implements OnMapReadyCallb
     private boolean longClick = false;
     private Button refresh, ins;
     private LatLng myLoc;
-
+    private ImageButton home;
     //TODO figure out values for MAX and MIN
     private static final double MAX_ZONE_AREA= 9000000;
     private static final double MIN_ZONE_AREA= 10000;
@@ -92,7 +95,7 @@ public class RequestZoneActivity extends BaseActivity implements OnMapReadyCallb
 
         refresh = (Button) findViewById(R.id.button_refresh);
         //accept = (Button) findViewById(R.id.button_accept);
-
+        home = (ImageButton)findViewById(R.id.create_periferi_button);
         //Floating Button
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.map_fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -105,12 +108,24 @@ public class RequestZoneActivity extends BaseActivity implements OnMapReadyCallb
         refresh.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                longClick = true;
-                mMap.clear();
-                points.clear();
-                markers.clear();
-                mMap.addMarker(new MarkerOptions().position(myLoc).title("Current Location"));
-                displayCurrentZones();
+                if(longClick) {
+                    toastit("Used to clear the created Periferi.");
+                }
+                else {
+                    longClick = true;
+                    mMap.clear();
+                    points.clear();
+                    markers.clear();
+                    mMap.addMarker(new MarkerOptions().position(myLoc).title("Current Location"));
+                    displayCurrentZones();
+                }
+            }
+        });
+
+        home.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(RequestZoneActivity.this, FeedActivity.class));
             }
         });
 

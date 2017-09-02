@@ -73,6 +73,7 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
     private ImageView mAddPeriferi, mRequests;
     private Animation mEnterAnimation, mExitAnimation;
     private ChainTourGuide mTutorial;
+    private SharedPreferences prefs;
     TextView tutTxt;
     //protected CoordinatorLayout mainView;
     ///gesture 
@@ -113,14 +114,11 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
         mPager.setAdapter(mPagerAdapter);
     }
 
-    //Refreshes app on restarting from app drawer
     @Override
     protected void onResume() {
         super.onResume();
         Log.d(DEBUG_TAG, "onResume Called");
-
     }
-
 
     //tutorial
     public void showUserHow() {
@@ -182,6 +180,11 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
                 .setContinueMethod(Sequence.ContinueMethod.OverlayListener)
                 .build();
         mTutorial = ChainTourGuide.init(this).playInSequence(sequence);
+
+        //toggle preferences
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putBoolean("rookieFeed", false);
+        editor.apply();
     }
 
     public void startPinchTutorial() {
@@ -303,7 +306,7 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
         mAddPeriferi.setImageDrawable(getResources().getDrawable(R.drawable.create_zone_icon, null));
         mRequests.setImageDrawable(getResources().getDrawable(R.drawable.periferi_requests, null));
 
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         if(prefs.getBoolean("rookieFeed", false)){
             showUserHow();
         }

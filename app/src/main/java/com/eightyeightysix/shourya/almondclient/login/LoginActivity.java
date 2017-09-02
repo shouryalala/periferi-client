@@ -303,7 +303,7 @@ public class LoginActivity extends BaseActivity implements
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        create_user.removeEventListener(userListener);
+        //create_user.removeEventListener(userListener);
     }
 
     private class AnimateColorTransition implements ViewPager.OnPageChangeListener{
