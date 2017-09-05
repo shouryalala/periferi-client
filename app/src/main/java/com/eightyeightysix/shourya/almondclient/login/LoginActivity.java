@@ -309,12 +309,26 @@ public class LoginActivity extends BaseActivity implements
     private class AnimateColorTransition implements ViewPager.OnPageChangeListener{
         @Override
         public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-            if(position < (mPagerAdapter.getCount() -1) && position < (colors.length - 1)) {
+            if(position < (NUM_PAGES - 2)) {
                 nPager.setBackgroundColor((Integer) argbEvaluator.evaluate(positionOffset, colors[position], colors[position + 1]));
-            } else {
+            }
+            else if(position == 2) {
+                //pixel_mockup.setImageAlpha((int)(positionOffset * 255));
+                //mobile_pager_screen.setAlpha(positionOffset);
+                Log.d(DEBUG_TAG, "position 2");
+                //pixel_mockup.setImageAlpha((int)((1-positionOffset)*255));
+                pixel_mockup.setTranslationX(-1 * positionOffsetPixels);
+                mobile_pager_screen.setTranslationX(-1 * positionOffsetPixels);
+                //mobile_pager_screen.setAlpha(1-positionOffset);
+                nPager.setBackgroundColor((Integer) argbEvaluator.evaluate(positionOffset, colors[position], colors[position + 1]));
+            }
+            else {
                 // the last page color
+                //pixel_mockup.setImageAlpha((int)(positionOffset * 255));
+                //mobile_pager_screen.setAlpha(positionOffset);
                 nPager.setBackgroundColor(colors[colors.length - 1]);
             }
+            Log.d(DEBUG_TAG, "Position: " + position + "offset: " + positionOffset + "offsetPixels: " + positionOffsetPixels);
             //sPager.beginFakeDrag();
             //sPager.fakeDragBy(positionOffset);
             //sPager.endFakeDrag();
@@ -335,13 +349,13 @@ public class LoginActivity extends BaseActivity implements
 
             if(position < 3) {
                 next_button.setVisibility(View.VISIBLE);
-                pixel_mockup.setVisibility(View.VISIBLE);
-                mobile_pager_screen.setVisibility(View.VISIBLE);
+                //pixel_mockup.setVisibility(View.VISIBLE);
+                //mobile_pager_screen.setVisibility(View.VISIBLE);
             }
             else{
                 next_button.setVisibility(View.GONE);
-                pixel_mockup.setVisibility(View.GONE);
-                mobile_pager_screen.setVisibility(View.GONE);
+                //pixel_mockup.setVisibility(View.GONE);
+                //mobile_pager_screen.setVisibility(View.GONE);
             }
         }
 
