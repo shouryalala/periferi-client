@@ -129,9 +129,9 @@ public class LoginActivity extends BaseActivity implements
         tut_text[1] = "Pinch to check out and socialize in another Periferi around you";
         tut_text[2] = "Something about requests";
 
-        image_res[0] = R.drawable.tut1;
-        image_res[1] = R.drawable.tut2;
-        image_res[2] = R.drawable.tut2; //TODO
+        image_res[0] = R.drawable.tutorial_mockup2;
+        image_res[1] = R.drawable.tutorial_mockup1;
+        image_res[2] = R.drawable.tutorial_mockup3;
         setUpColors();
 
         //status bar colors
@@ -268,10 +268,10 @@ public class LoginActivity extends BaseActivity implements
     }
 
     private void setUpColors(){
-        Integer color1 = ResourcesCompat.getColor(getResources(), R.color.tut_1_green, null);
-        Integer color2 = ResourcesCompat.getColor(getResources(), R.color.tut_2_blue, null);
-        Integer color3 = ResourcesCompat.getColor(getResources(), R.color.tut_3_yellow, null);
-        Integer color4 = ResourcesCompat.getColor(getResources(), R.color.tut_3_yellow, null);
+        Integer color1 = ResourcesCompat.getColor(getResources(), R.color.tut_1_screen, null);
+        Integer color2 = ResourcesCompat.getColor(getResources(), R.color.tut_2_screen, null);
+        Integer color3 = ResourcesCompat.getColor(getResources(), R.color.tut_3_screen, null);
+        Integer color4 = ResourcesCompat.getColor(getResources(), R.color.tut_4_screen, null);
         Integer[] colors_temp = {color1, color2, color3, color4};
         colors = colors_temp;
     }
@@ -315,7 +315,7 @@ public class LoginActivity extends BaseActivity implements
             else if(position == 2) {
                 //pixel_mockup.setImageAlpha((int)(positionOffset * 255));
                 //mobile_pager_screen.setAlpha(positionOffset);
-                Log.d(DEBUG_TAG, "position 2");
+                //Log.d(DEBUG_TAG, "position 2");
                 //pixel_mockup.setImageAlpha((int)((1-positionOffset)*255));
                 pixel_mockup.setTranslationX(-1 * positionOffsetPixels);
                 mobile_pager_screen.setTranslationX(-1 * positionOffsetPixels);
@@ -328,7 +328,7 @@ public class LoginActivity extends BaseActivity implements
                 //mobile_pager_screen.setAlpha(positionOffset);
                 nPager.setBackgroundColor(colors[colors.length - 1]);
             }
-            Log.d(DEBUG_TAG, "Position: " + position + "offset: " + positionOffset + "offsetPixels: " + positionOffsetPixels);
+            //Log.d(DEBUG_TAG, "Position: " + position + "offset: " + positionOffset + "offsetPixels: " + positionOffsetPixels);
             //sPager.beginFakeDrag();
             //sPager.fakeDragBy(positionOffset);
             //sPager.endFakeDrag();
@@ -342,15 +342,10 @@ public class LoginActivity extends BaseActivity implements
                 dots[i].setImageDrawable(getResources().getDrawable(R.drawable.pager_indicator_not_selected, null));
             }
             dots[position].setImageDrawable(getResources().getDrawable(R.drawable.pager_indicator_selected, null));
-            if(position > 1)
-                sPager.setCurrentItem(0);
-            else
-                sPager.setCurrentItem(position);
 
             if(position < 3) {
                 next_button.setVisibility(View.VISIBLE);
-                //pixel_mockup.setVisibility(View.VISIBLE);
-                //mobile_pager_screen.setVisibility(View.VISIBLE);
+                sPager.setCurrentItem(position);
             }
             else{
                 next_button.setVisibility(View.GONE);
@@ -386,7 +381,7 @@ public class LoginActivity extends BaseActivity implements
 
         @Override
         public int getCount() {
-            return 2;
+            return NUM_PAGES-1;
         }
     }
 
@@ -407,16 +402,14 @@ public class LoginActivity extends BaseActivity implements
     }
 
     public static class WireframeFragment extends Fragment {
-        public static final String ARG_PAGE = "obj";
+        public static final String ARG_PAGE = "obj2";
         @Nullable
         @Override
         public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
             View wireframe = inflater.inflate(R.layout.wireframe_fragment,container,false);
-            if(getArguments().getInt(ARG_PAGE) == 0) {
-                ((ImageView)wireframe.findViewById(R.id.screen_image)).setImageResource(R.drawable.tutorial_mockup1);
-            }
-            else{
-                ((ImageView)wireframe.findViewById(R.id.screen_image)).setImageResource(R.drawable.tutorial_mockup2);
+            if(getArguments().getInt(ARG_PAGE) < 3) {
+                Log.d(DEBUG_TAG, "wireframe position: " + getArguments().getInt(ARG_PAGE));
+                ((ImageView) wireframe.findViewById(R.id.screen_image)).setImageResource(image_res[getArguments().getInt(ARG_PAGE)]);
             }
             return wireframe;
         }

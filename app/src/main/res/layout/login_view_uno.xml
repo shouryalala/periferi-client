@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:gravity="center_vertical"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
     <TextView
         android:id="@+id/welcome_text_fb"
         android:text="@string/fb_welcome_text"
@@ -11,34 +9,44 @@
         android:textColor="@color/colorPrimarySilver"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
+        android:layout_alignParentTop="true"
+        android:layout_above="@+id/welcome_logo_periferi"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAlignment="center"
+        android:gravity="top"
+        android:layout_marginTop="20dp"
         android:layout_marginBottom="15dp"/>
     <ImageView
-        android:layout_gravity="center_horizontal"
+        android:id="@+id/welcome_logo_periferi"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
         android:layout_marginTop="15dp"
         android:layout_marginRight="15dp"
         android:layout_marginBottom="15dp"
         android:layout_marginLeft="15dp"
-        android:layout_width="180dp"
-        android:layout_height="180dp"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
         android:src="@drawable/wecome_periferi_logo"/>
 
     <com.facebook.login.widget.LoginButton
         xmlns:facebook="http://schemas.android.com/apk/res-auto"
         android:id="@+id/button_facebook"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:paddingTop="10dp"
         android:paddingBottom="10dp"
-        android:layout_gravity="end"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginTop="10dp"
+        android:layout_below="@+id/welcome_logo_periferi"
+        android:gravity="bottom|end"
+        android:layout_centerHorizontal="true"
+        android:textAlignment="center"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="70dp"
         android:layout_marginBottom="10dp"
-        android:textSize="20sp"
+        android:textSize="13sp"
+        android:typeface="sans"
         facebook:com_facebook_login_text="Signin with facebook"
         facebook:com_facebook_logout_text="Signin with facebook"
         />
-</LinearLayout>
+</RelativeLayout>

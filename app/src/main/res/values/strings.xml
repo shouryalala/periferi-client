@@ -23,7 +23,7 @@
     <string name="no_location_data_provided">Location values not present</string>
     <string name="no_address_found">No address found for curent coordinates</string>
     <string name="map_zones">Create PeriFeri</string>
-    <string name="fb_welcome_text">Welcome to your Periferi</string>
+    <string name="fb_welcome_text">Welcome\nto your Periferi</string>
     <string name="zone_requests_title">Requests</string>
     <string name="create_periferi_text">Create Periferi</string>
     <string name="request_periferi_text">Periferi Requests</string>
