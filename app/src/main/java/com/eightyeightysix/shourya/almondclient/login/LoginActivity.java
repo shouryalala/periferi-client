@@ -127,7 +127,7 @@ public class LoginActivity extends BaseActivity implements
         }
         tut_text[0] = "Create or approve a Periferi to interact with people in that area";
         tut_text[1] = "Pinch to check out and socialize in another Periferi around you";
-        tut_text[2] = "Something about requests";
+        tut_text[2] = "Accept requests for a Periferi to participate in its creation";
 
         image_res[0] = R.drawable.tutorial_mockup2;
         image_res[1] = R.drawable.tutorial_mockup1;

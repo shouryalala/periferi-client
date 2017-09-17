@@ -4,17 +4,43 @@
     android:layout_height="match_parent"
     android:background="@drawable/layout_rounded_corners"
     android:orientation="vertical">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/instructions_header"
+        android:textColor="@color/colorPrimaryRedAccent"
+        android:textSize="22sp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginStart="10dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="2dp"/>
 
+    <View
+        android:layout_width="wrap_content"
+        android:layout_height="1dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginTop="2dp"
+        android:layout_marginBottom="2dp"
+        android:background="@color/colorPrimaryRedAccent"
+        />
     <TextView
         android:id="@+id/instructions_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
+        android:paddingEnd="5dp"
+        android:paddingStart="5dp"
+        android:paddingTop="5dp"
         android:layout_marginBottom="10dp"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
-        android:layout_marginTop="10dp"
-        android:textColor="@color/colorPrimaryGrey"
-        style="@style/Base.TextAppearance.AppCompat.Subhead"/>
+        android:layout_marginTop="5dp"
+        android:textSize="17sp"
+        android:lineSpacingMultiplier="1.1"
+        android:textColor="@color/colorPrimaryGrey"/>
 
 </LinearLayout>

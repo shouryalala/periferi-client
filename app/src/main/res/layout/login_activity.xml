@@ -33,35 +33,29 @@
             android:layout_width="320dp"
             android:layout_height="320dp"
             android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true"
-            />
+            android:layout_centerVertical="true"/>
     </RelativeLayout>
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_below="@+id/pixel_mockup"
-        >
+        android:layout_below="@+id/pixel_mockup">
         <View
             android:id="@+id/pager_separator"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@color/translucent_white"
-            android:layout_marginBottom="20dp"
-            />
-
+            android:layout_marginBottom="20dp"/>
         <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:gravity="center"
+            android:layout_height="wrap_content">
             <LinearLayout
                 android:id="@+id/viewPagerIndicatorStrip"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="20dp"
-                android:layout_gravity="center|bottom"
-                android:gravity="center|bottom"
                 android:orientation="horizontal"/>
 
             <TextView
@@ -71,11 +65,10 @@
                 android:text="Next"
                 android:textSize="20sp"
                 android:textColor="@color/translucent_white"
-                android:layout_alignParentBottom="true"
-                android:gravity="bottom|end"
-                android:layout_gravity="bottom|end"
-                android:layout_marginBottom="20dp"
-                android:layout_marginRight="10dp"/>
+                android:layout_gravity="end"
+                android:textDirection="rtl"
+                android:layout_marginEnd="15dp"
+                />
         </LinearLayout>
     </LinearLayout>
 </RelativeLayout>

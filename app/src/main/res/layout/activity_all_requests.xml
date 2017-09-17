@@ -3,24 +3,36 @@
 android:orientation="vertical" android:layout_width="match_parent"
 android:layout_height="match_parent">
 
-<Button
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_weight="3"
-    android:layout_marginLeft="10dp"
-    android:layout_marginTop="10dp"
-    android:text="@string/request_periferi_text"
-    style="@style/Base.TextAppearance.AppCompat.Subhead"
-    android:textAlignment="center"
-    android:textAllCaps="false"
-    android:textColor="@color/colorPrimaryBlack"
-    android:layout_gravity="start"
-    android:paddingLeft="5dp"
-    android:paddingRight="5dp"
-    android:clickable="false"
-    android:alpha="0.5"
-    android:background="@drawable/layout_rounded_corners"/>
+    <!--
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="3"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:text="@string/request_periferi_text"
+        style="@style/Base.TextAppearance.AppCompat.Subhead"
+        android:textAlignment="center"
+        android:textAllCaps="false"
+        android:textColor="@color/colorPrimaryBlack"
+        android:layout_gravity="start"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        android:clickable="false"
+        android:alpha="0.5"
+        android:background="@drawable/layout_rounded_corners"/>
+    -->
 
+    <ImageButton
+        android:id="@+id/request_home_button"
+        android:layout_weight="3"
+        android:layout_gravity="start"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:elevation="10dp"
+        android:background="@drawable/icon_drop_shadow"/>
 
     <Button
         android:id="@+id/button_instruction_request"

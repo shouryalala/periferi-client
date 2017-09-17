@@ -22,33 +22,35 @@ tools:context="com.eightyeightysix.shourya.almondclient.FeedActivity">
 </android.support.design.widget.AppBarLayout>
 -->
     <include layout="@layout/request_zone_content" />
+
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_gravity="end">
 
-    <Button
-        android:id="@+id/button_instruction_create"
-        android:layout_weight="2"
-        android:text="\?"
-        android:textColor="@color/cardview_dark_background"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginRight="10dp"
-        android:background="@drawable/layout_circle"/>
+        <Button
+            android:id="@+id/button_refresh"
+            android:layout_weight="2"
+            android:text="X"
+            android:textColor="@color/cardview_dark_background"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="10dp"
+            android:visibility="invisible"
+            android:background="@drawable/layout_circle"/>
 
-    <Button
-        android:id="@+id/button_refresh"
-        android:layout_weight="2"
-        android:text="X"
-        android:textColor="@color/cardview_dark_background"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginRight="10dp"
-        android:background="@drawable/layout_circle"/>
+        <Button
+            android:id="@+id/button_instruction_create"
+            android:layout_weight="2"
+            android:text="\?"
+            android:textColor="@color/cardview_dark_background"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/layout_circle"/>
     </LinearLayout>
 
     <!--<Button
@@ -74,7 +76,8 @@ tools:context="com.eightyeightysix.shourya.almondclient.FeedActivity">
         android:layout_marginLeft="10dp"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:background="@mipmap/ic_periferi"/>
+        android:elevation="10dp"
+        android:background="@drawable/icon_drop_shadow"/>
 
 <android.support.design.widget.FloatingActionButton
     android:id="@+id/map_fab"

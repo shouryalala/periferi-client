@@ -108,17 +108,14 @@ public class RequestZoneActivity extends BaseActivity implements OnMapReadyCallb
         refresh.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(longClick) {
-                    toastit("Used to clear the created Periferi.");
-                }
-                else {
-                    longClick = true;
-                    mMap.clear();
-                    points.clear();
-                    markers.clear();
-                    mMap.addMarker(new MarkerOptions().position(myLoc).title("Current Location"));
-                    displayCurrentZones();
-                }
+                refresh.animate().alpha(0.0f);
+                refresh.setVisibility(View.INVISIBLE);
+                longClick = true;
+                mMap.clear();
+                points.clear();
+                markers.clear();
+                mMap.addMarker(new MarkerOptions().position(myLoc).title("Current Location"));
+                displayCurrentZones();
             }
         });
 
@@ -191,6 +188,8 @@ public class RequestZoneActivity extends BaseActivity implements OnMapReadyCallb
     }
 
     public void createMinRectangle(LatLng coordinate) {
+        refresh.animate().alpha(1.0f);
+        refresh.setVisibility(View.VISIBLE);
         PolygonOptions minRectangle = new PolygonOptions();
         PolygonOptions mintempRectangle = new PolygonOptions();
 
@@ -420,6 +419,9 @@ public class RequestZoneActivity extends BaseActivity implements OnMapReadyCallb
             //get zoneRequestname
             DialogFragment dialog = new NewZoneRequestDialog();
             dialog.show(getFragmentManager(), "NewZoneRequestDialog");
+        }
+        else if(!zoneAcceptedByRequests){
+            toastit("A similar Periferi request already exists: " + zoneConflict);
         }
         else{
             toastit("A similar Periferi already exists: " + zoneConflict);
