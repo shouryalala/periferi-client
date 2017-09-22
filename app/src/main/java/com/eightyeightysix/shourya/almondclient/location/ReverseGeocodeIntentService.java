@@ -73,7 +73,7 @@ public class ReverseGeocodeIntentService extends IntentService {
         if (location == null) {
             errorMessage = getString(R.string.no_location_data_provided);
             Log.wtf(DEBUG_TAG, errorMessage);
-            deliverResultToReceiver(Constants.FAILURE_RESULT);
+            deliverResultToReceiver(Constants.LOCATION_DISABLED);
             return;
         }
 

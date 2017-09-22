@@ -150,7 +150,7 @@ public class GPSLocator{
                     }
                     case Activity.RESULT_CANCELED:
                     {
-                        Toast.makeText(mActivity, "Please switch on location manually for almond", Toast.LENGTH_LONG).show();
+                        Toast.makeText(mActivity, "Please switch location on and restart Periferi", Toast.LENGTH_SHORT).show();
                         break;
                     }
                     default:

@@ -66,7 +66,6 @@ import java.util.Map;
 public class LoginActivity extends BaseActivity implements
         LoginFragmentOne.FragmentOneListener,
         LoginFragmentFour.FragmentFourListener{
-
     private final static String DEBUG_TAG = "AlmondLog:: " + LoginActivity.class.getSimpleName();
     private LoginFragmentOne firstFragment;
     private static final int NUM_PAGES = 4;
@@ -189,7 +188,6 @@ public class LoginActivity extends BaseActivity implements
         Log.d(DEBUG_TAG, "Firebase Credentials: " + credential.toString());
         Log.d(DEBUG_TAG, "Firebase Auth Instance: " + mAuth.toString());
       //  Log.d(DEBUG_TAG, "Firebase User Instance: " + mFireUser.toString());
-        //TODO Not getting called
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override

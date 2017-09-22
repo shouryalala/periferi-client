@@ -299,7 +299,7 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
         mRequests = (ImageView)mRequest.getActionView();
 
         float density = getResources().getDisplayMetrics().density;
-        int padding = (int)(density*9);
+        int padding = (int)(density*10);
         mAddPeriferi.setPadding(padding,padding,padding,padding);
         mRequests.setPadding(padding, padding, padding, padding);
 

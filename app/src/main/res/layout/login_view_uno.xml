@@ -2,51 +2,51 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <TextView
-        android:id="@+id/welcome_text_fb"
-        android:text="@string/fb_welcome_text"
-        android:textSize="30sp"
-        android:textColor="@color/colorPrimarySilver"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_alignParentTop="true"
-        android:layout_above="@+id/welcome_logo_periferi"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textAlignment="center"
-        android:gravity="top"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="15dp"/>
+
     <ImageView
         android:id="@+id/welcome_logo_periferi"
         android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:layout_marginTop="15dp"
+        android:layout_marginTop="70dp"
         android:layout_marginRight="15dp"
-        android:layout_marginBottom="15dp"
+        android:layout_marginBottom="5dp"
         android:layout_marginLeft="15dp"
         android:layout_width="150dp"
         android:layout_height="150dp"
         android:src="@drawable/wecome_periferi_logo"/>
 
+    <TextView
+        android:id="@+id/welcome_text_fb2"
+        android:text="@string/fb_welcome_text"
+        android:textSize="30sp"
+        android:textColor="@color/colorPrimarySilver"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:textAlignment="center"
+        android:layout_below="@id/welcome_logo_periferi"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="top"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="15dp"/>
+
     <com.facebook.login.widget.LoginButton
         xmlns:facebook="http://schemas.android.com/apk/res-auto"
         android:id="@+id/button_facebook"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="30dp"
         android:paddingTop="10dp"
         android:paddingBottom="10dp"
-        android:layout_below="@+id/welcome_logo_periferi"
+
         android:gravity="bottom|end"
         android:layout_centerHorizontal="true"
         android:textAlignment="center"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
-        android:layout_marginTop="70dp"
-        android:layout_marginBottom="10dp"
-        android:textSize="13sp"
-        android:typeface="sans"
+
+        android:layout_marginBottom="90dp"
+        android:textSize="17sp"
+        android:typeface="monospace"
+        android:layout_alignParentBottom="true"
         facebook:com_facebook_login_text="Signin with facebook"
-        facebook:com_facebook_logout_text="Signin with facebook"
-        />
+        facebook:com_facebook_logout_text="Signin with facebook"/>
 </RelativeLayout>
