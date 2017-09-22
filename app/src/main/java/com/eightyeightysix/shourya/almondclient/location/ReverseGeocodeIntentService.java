@@ -119,7 +119,6 @@ public class ReverseGeocodeIntentService extends IntentService {
             deliverResultToReceiver(Constants.FAILURE_RESULT);
         } else {
             Address address = addresses.get(0);
-            ArrayList<String> addressFragments = new ArrayList<>();
 
             BaseActivity.locationDetails.setValues(address.getAdminArea(), address.getLocality(), address.getPostalCode(),
                                     address.getCountryCode(), address.getCountryName(), address.getFeatureName(), address.getSubAdminArea());

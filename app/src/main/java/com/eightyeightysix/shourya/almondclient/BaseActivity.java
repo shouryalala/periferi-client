@@ -111,13 +111,12 @@ public class BaseActivity extends AppCompatActivity{
 
     //Current ChatUser - no need to take import all user data
     public static User mChatBuddy;
-    public static Map<String, String> friendIds;        //Name, ID
+    public static Map<String, String> friendIds;            //Name, ID
 
     public static CurrentLocationDetails locationDetails;   //stores current location details
     public static ArrayList<ZoneRequest> currZoneRequests;
     public static HashMap<ZoneRequest, String> currZoneRequestKeys;
     public static boolean zoneRequestsPresent = false;
-
 
     public static int currCircle;
 
@@ -243,7 +242,7 @@ public class BaseActivity extends AppCompatActivity{
         HashMap<Integer, String> names = new HashMap<>();
         int size = fetchCurrentCircleCount();
         names.put(size-1, locationDetails.getCountryName());
-        names.put(size-2, locationDetails.getAdminAreaName());
+        names.put(size-2, locationDetails.getLocalityName());
         if(size > 2) {
             for(int i= 0; i<locationDetails.zonesList.size(); i++) {
                 names.put(i, locationDetails.zonesList.get(i).zoneBounds.getZoneName());

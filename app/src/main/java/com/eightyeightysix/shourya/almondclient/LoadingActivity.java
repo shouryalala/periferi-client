@@ -1,6 +1,7 @@
 package com.eightyeightysix.shourya.almondclient;
 
 import android.*;
+import android.app.ProgressDialog;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.content.Intent;
@@ -10,7 +11,10 @@ import android.os.ResultReceiver;
 import android.preference.PreferenceManager;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.eightyeightysix.shourya.almondclient.data.User;
 import com.eightyeightysix.shourya.almondclient.data.Zone;
@@ -30,10 +34,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-
 
 /*
  * Created by shourya on 23/5/17.
@@ -49,6 +54,9 @@ public class LoadingActivity extends BaseActivity implements GPSLocator.location
     private LocationRequest mLocationRequest;
     protected static final int REQUEST_CHECK_SETTINGS = 0x1;
     private String mAddressOutput;
+    private TextView errorText;
+    private boolean errorDisplayed;
+    private ProgressBar mProgressBar;
     private AddressResultReceiver mResultReceiver;
     private SharedPreferences preferences;
 
@@ -58,15 +66,20 @@ public class LoadingActivity extends BaseActivity implements GPSLocator.location
         setContentView(R.layout.activity_loading);
         //TODO get location permission before
         //Firebase auth getInstance
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
         mAuth = FirebaseAuth.getInstance();
         mFireUser = mAuth.getCurrentUser();
         mDatabase = FirebaseDatabase.getInstance();
         preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        errorDisplayed = false;
         if(!getConnectivityStatus()) {
-            toastit("Unable to connect. Please check your network settings");
-            finish();
+            errorDisplay("Unable to connect. Please check your network settings");
         }
-
         /*if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
             startActivity(new Intent(LoadingActivity.this, LoginActivity.class));
@@ -79,7 +92,6 @@ public class LoadingActivity extends BaseActivity implements GPSLocator.location
          * zoneCircles = 2, 3 sorted according to area
         */
         currCircle = CITY_INDEX;
-        //TODO check internet and display message
 
         if(!preferences.getString("id",UNAVAILABLE).equals(UNAVAILABLE)) {
             //fetchLocation
@@ -94,7 +106,6 @@ public class LoadingActivity extends BaseActivity implements GPSLocator.location
             mLocator = new GPSLocator(this);
             mLocator.refreshLocation();
 
-
             mUser = new User(preferences.getString("id", UNAVAILABLE),
                     preferences.getString("first_name", UNAVAILABLE),
                     preferences.getString("last_name", UNAVAILABLE),
@@ -104,34 +115,6 @@ public class LoadingActivity extends BaseActivity implements GPSLocator.location
                     preferences.getString("gender", UNAVAILABLE),
                     preferences.getString("profileUrl", UNAVAILABLE));
 
-            Map<String, String> paramsUser = new HashMap<String, String>();
-            paramsUser.put("userID", mUser.getUserId());
-            final String chatReference = substituteString(getResources().getString(R.string.user_chats), paramsUser);
-            loadChats = mDatabase.getReference(chatReference);
-            loadChatListener = new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    friendIds = new HashMap<>();
-                    if(dataSnapshot.getValue() == null) {
-                        Log.d(DEBUG_TAG, "No chats yet");
-                    }
-                    else {
-                        for(DataSnapshot chatSnapShot: dataSnapshot.getChildren()){
-                            String chatId = (String)chatSnapShot.getKey();
-                            String friendName = (String)chatSnapShot.getValue();
-                            friendIds.put(friendName, extractFriendId(chatId)); //Name, ID
-                        }
-                    }
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-                    Log.d(DEBUG_TAG, "loadChat Cancelled");
-                }
-            };
-            loadChats.addListenerForSingleValueEvent(loadChatListener);
-
-
             //Add user to list of online users
             //userOnline();
         }
@@ -139,7 +122,17 @@ public class LoadingActivity extends BaseActivity implements GPSLocator.location
             //login
             startActivity(new Intent(LoadingActivity.this, LoginActivity.class));
         }
+    }
 
+    public void errorDisplay(String error) {
+        if(!errorDisplayed) {
+            mProgressBar = (ProgressBar)findViewById(R.id.progress_bar_loading);
+            errorText = (TextView) findViewById(R.id.error_text);
+            errorText.setText(error);
+            errorText.setVisibility(View.VISIBLE);
+            mProgressBar.setVisibility(View.GONE);
+            errorDisplayed = true;
+        }
     }
 
     //callback from GPSLocator
@@ -164,22 +157,25 @@ public class LoadingActivity extends BaseActivity implements GPSLocator.location
     }
 
     public void inspectLocation() {
-        //TODO all location coodinates and reverse geocoding has to be done through listeners. IMPORTANT
         //Load saved location variables
         String savedCityName = preferences.getString("city_name", UNAVAILABLE);
         String savedCountryName = preferences.getString("country_name", UNAVAILABLE);
         city_id = preferences.getString("city_ID", UNAVAILABLE);
         country_id = preferences.getString("country_ID", UNAVAILABLE);
 
-        String currentCityName = locationDetails.getAdminAreaName();
+        String currentCityName = locationDetails.getLocalityName();
         String currentCountryName = locationDetails.getCountryName();
+
+        Log.d(DEBUG_TAG, "Current Locality: " + currentCityName + "Saved Locality: " + savedCityName);
 
         if(currentCityName == null) {
             Log.d(DEBUG_TAG, "City Name not fetched");
+            errorDisplay("Improper data fetched. Please restart Periferi");
         }
 
         if(currentCountryName == null) {
             Log.d(DEBUG_TAG, "Country Name not fetched");
+            errorDisplay("Improper data fetched. Please restart Periferi");
         }
 
         if(!currentCountryName.equals(savedCountryName) || savedCountryName.equals(UNAVAILABLE)) {
@@ -222,7 +218,7 @@ public class LoadingActivity extends BaseActivity implements GPSLocator.location
                     countryReference.child(country_id).setValue(country);
                 }
                 Log.d(DEBUG_TAG,"Country Code is now:" + country_id);
-                refreshCityID(locationDetails.getAdminAreaName());
+                refreshCityID(locationDetails.getLocalityName());
             }
 
             @Override
@@ -292,13 +288,13 @@ public class LoadingActivity extends BaseActivity implements GPSLocator.location
                 Log.d(DEBUG_TAG,"Zones Found:" + locationDetails.getZonesStatus());
                 if(locationDetails.getZonesStatus()) {
                     //set first page as innermost zoneCircle
-                    currCircle = 0;
+                    currCircle = CITY_INDEX;
                     sortZoneListByArea();
                 }
 
                 //update preferences values;
                 SharedPreferences.Editor editor = preferences.edit();
-                editor.putString("city_name", locationDetails.getAdminAreaName());
+                editor.putString("city_name", locationDetails.getLocalityName());
                 editor.putString("country_name", locationDetails.getCountryName());
                 editor.putString("city_ID", city_id);
                 editor.putString("country_ID", country_id);
@@ -350,7 +346,38 @@ public class LoadingActivity extends BaseActivity implements GPSLocator.location
             }
             else {
                 Log.d(DEBUG_TAG,"Address not received, location inspection suspended");
+                errorDisplay("There was an issue fetching your location. Please restart Periferi");
             }
         }
     }
+
+    /* //Code needed for the next chat update
+            Map<String, String> paramsUser = new HashMap<String, String>();
+            paramsUser.put("userID", mUser.getUserId());
+            final String chatReference = substituteString(getResources().getString(R.string.user_chats), paramsUser);
+            loadChats = mDatabase.getReference(chatReference);
+            loadChatListener = new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    friendIds = new HashMap<>();
+                    if(dataSnapshot.getValue() == null) {
+                        Log.d(DEBUG_TAG, "No chats yet");
+                    }
+                    else {
+                        for(DataSnapshot chatSnapShot: dataSnapshot.getChildren()){
+                            String chatId = (String)chatSnapShot.getKey();
+                            String friendName = (String)chatSnapShot.getValue();
+                            friendIds.put(friendName, extractFriendId(chatId)); //Name, ID
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    Log.d(DEBUG_TAG, "loadChat Cancelled");
+                }
+            };
+            loadChats.addListenerForSingleValueEvent(loadChatListener);
+            //
+            */
 }

@@ -1,13 +1,74 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/fragment_container"
     android:orientation="vertical"
+    android:fitsSystemWindows="true"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     <android.support.v4.view.ViewPager
         android:id="@+id/pager"
+        android:fitsSystemWindows="true"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
     </android.support.v4.view.ViewPager>
 
-</LinearLayout>
+    <ImageView
+        android:id="@+id/pixel_mockup"
+        android:layout_width="400dp"
+        android:layout_height="400dp"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:src="@drawable/pixel_mockup"
+        android:layout_marginBottom="20dp"/>
+    <!--android:background="@drawable/custom_drop_shadow"-->
+
+    <RelativeLayout
+        android:layout_width="180dp"
+        android:layout_height="320dp"
+        android:layout_centerHorizontal="true"
+        android:elevation="1dp"
+        android:layout_centerVertical="true">
+        <com.eightyeightysix.shourya.almondclient.login.NonSwipeableViewPager
+            android:id="@+id/mobile_pager"
+            android:layout_width="320dp"
+            android:layout_height="320dp"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"/>
+    </RelativeLayout>
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_below="@+id/pixel_mockup">
+        <View
+            android:id="@+id/pager_separator"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/translucent_white"
+            android:layout_marginBottom="20dp"/>
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:gravity="center"
+            android:layout_height="wrap_content">
+            <LinearLayout
+                android:id="@+id/viewPagerIndicatorStrip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"/>
+
+            <TextView
+                android:id="@+id/next_tutorial"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Next"
+                android:textSize="20sp"
+                android:textColor="@color/translucent_white"
+                android:layout_gravity="end"
+                android:textDirection="rtl"
+                android:layout_marginEnd="15dp"
+                />
+        </LinearLayout>
+    </LinearLayout>
+</RelativeLayout>

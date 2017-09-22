@@ -16,6 +16,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.eightyeightysix.shourya.almondclient.data.BroadCast;
@@ -32,6 +33,8 @@ import com.google.firebase.database.Transaction;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import org.w3c.dom.Text;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,7 +43,9 @@ public class BroadCastFragment extends Fragment{
     private static final String DEBUG_TAG = "AlmondLog:: " + BroadCastFragment.class.getSimpleName();
     private static final int CITY_INDEX = 69;
     private static final int COUNTRY_INDEX = 420;
-
+    private TextView noPosts;
+    private static boolean noPostFlag;
+    private static boolean noPostSwitched;
     private DatabaseReference mDatabase;
     private Context mContext;
 
@@ -62,6 +67,7 @@ public class BroadCastFragment extends Fragment{
         mRecycler = (RecyclerView) rootView.findViewById(R.id.messages_list);
         mRecycler.setHasFixedSize(true);
 
+        noPosts = (TextView) rootView.findViewById(R.id.no_posts_text);
         return rootView;
     }
 
@@ -114,6 +120,9 @@ public class BroadCastFragment extends Fragment{
     }
 
     public void fetchCircleBroadCasts(int circle) {
+        //noPostFlag = true;
+        noPostSwitched = false;
+        noPosts.setVisibility(View.VISIBLE);
         pd.setMessage("Populating feed..");
         pd.show();
         Log.d(DEBUG_TAG, "Refreshing broadcasts to circle: " + circle);
@@ -122,7 +131,6 @@ public class BroadCastFragment extends Fragment{
         if (mAdapter != null) {
             mAdapter.cleanup();
         }
-
         // Set up FirebaseRecyclerAdapter with the Query
         final Query postsQuery = BaseActivity.mDatabase.getReference(ref);
         mAdapter = new FirebaseRecyclerAdapter<BroadCast, BroadCastViewHolder>(BroadCast.class, R.layout.item_post,
@@ -136,6 +144,12 @@ public class BroadCastFragment extends Fragment{
             @Override
             protected void populateViewHolder(final BroadCastViewHolder viewHolder, BroadCast model, int position) {
                 //pd.dismiss();
+                if(!noPostSwitched) {
+                    noPosts.setVisibility(View.GONE);
+                    noPostSwitched = true;
+                }
+                //noPostFlag = false;
+                //Log.d(DEBUG_TAG, "flag: " + noPostFlag);
                 final DatabaseReference postRef = getRef(position);
                 String imgUrl = model.userImage;
                 Log.d(DEBUG_TAG, "Fetched uri: " + imgUrl);
@@ -160,11 +174,13 @@ public class BroadCastFragment extends Fragment{
                 else{
                     viewHolder.starView.setImageResource(R.drawable.unlike_icon);
                 }
-
             }
         };
         mRecycler.setAdapter(mAdapter);
         if(mAdapter == null)pd.dismiss();
+
+        //Log.d(DEBUG_TAG, "Outer flag: " + noPostFlag);
+
     }
 
     private void onStarClicked(DatabaseReference postRef) {

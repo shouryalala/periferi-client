@@ -1,16 +1,20 @@
 package com.eightyeightysix.shourya.almondclient;
 
 
-//gesture
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.graphics.PointF;
 import android.os.Build;
+import android.preference.PreferenceManager;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.MotionEventCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
 import android.view.MotionEvent;
 
 import android.app.DialogFragment;
@@ -29,11 +33,23 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.eightyeightysix.shourya.almondclient.data.User;
 import com.eightyeightysix.shourya.almondclient.gestureui.AlmondPagerSettings;
 import com.eightyeightysix.shourya.almondclient.view.AlmondLayout;
+
+import tourguide.tourguide.ChainTourGuide;
+import tourguide.tourguide.Overlay;
+import tourguide.tourguide.Pointer;
+import tourguide.tourguide.Sequence;
+import tourguide.tourguide.ToolTip;
+import tourguide.tourguide.TourGuide;
 
 /*
  * Created by shourya on 'we will never know'.
@@ -48,8 +64,17 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
     private static SwipeUpPagerAdapter mPagerAdapter;
     private View view1, view2;
     //protected ChatListFragment chatListFragment;
+    public static boolean pinchTourActive;
     protected BroadCastFragment broadCastFragment;
-    private static Context mContext;
+    private FloatingActionButton fab;
+    private Context mContext;
+    private static int tut_screens_count = 0;
+    private static TourGuide abc;
+    private ImageView mAddPeriferi, mRequests;
+    private Animation mEnterAnimation, mExitAnimation;
+    private ChainTourGuide mTutorial;
+    private SharedPreferences prefs;
+    TextView tutTxt;
     //protected CoordinatorLayout mainView;
     ///gesture 
     //ZonePinchSurfaceView pinchView;
@@ -60,37 +85,126 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        Log.d(DEBUG_TAG, "onCreate Called");
         setContentView(R.layout.activity_feed);
         //setup toolbar
         setupAppBar();
-
-        AlmondLayout mainView = (AlmondLayout)findViewById(R.id.feed_layout);
-        mainView.gestureInit();
-        //gestureInit();
         mContext = getApplicationContext();
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-             createNewBroadCast();
-            }
-        });
-
+        AlmondLayout mainView = (AlmondLayout)findViewById(R.id.feed_layout);
+        fab = (FloatingActionButton) findViewById(R.id.fab);
+        tutTxt = (TextView)findViewById(R.id.no_posts_text);
         mPager  = (AlmondPagerSettings)findViewById(R.id.feed_pager);
-        mPagerAdapter = new SwipeUpPagerAdapter(getSupportFragmentManager());
-        mPager.setAdapter(mPagerAdapter);
-
-        //initialise views
         view1 = (View)findViewById(R.id.fragment_container_feed);
         view2 = (View) findViewById(R.id.feed_pager);
 
         //initialise fragment Manager
         fragmentManager = getSupportFragmentManager();
+        mainView.gestureInit();
+        pinchTourActive = false;
 
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                createNewBroadCast();
+            }
+        });
 
-        Log.d(DEBUG_TAG, userId + userName + userEmail + displayName);
+        mPagerAdapter = new SwipeUpPagerAdapter(getSupportFragmentManager());
+        mPager.setAdapter(mPagerAdapter);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d(DEBUG_TAG, "onResume Called");
+    }
+
+    //tutorial
+    public void showUserHow() {
+        //mTourguide.setVisibility(View.INVISIBLE);
+        mEnterAnimation = new AlphaAnimation(0f, 1f);
+        mEnterAnimation.setDuration(600);
+        mEnterAnimation.setFillAfter(true);
+
+        mExitAnimation = new AlphaAnimation(1f, 0f);
+        mExitAnimation.setDuration(600);
+        mExitAnimation.setFillAfter(true);
+        //ChainTourGuide mTutorial;
+
+        ChainTourGuide mBroadcasttour = ChainTourGuide.init(this).with(TourGuide.Technique.VerticalDownward)
+                .setPointer(new Pointer())
+                .setToolTip(new ToolTip()
+                        .setBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryRedAccent))
+                        .setTitle("BroadCast").setDescription("in the current Periferi")
+                .setGravity(Gravity.TOP | Gravity.LEFT))
+                .setOverlay(new Overlay()
+                            .setEnterAnimation(mEnterAnimation)
+                            .setExitAnimation(mExitAnimation))
+                .playLater(fab);
+        ChainTourGuide mAddtour = ChainTourGuide.init(this).with(TourGuide.Technique.VerticalDownward)
+                .setPointer(new Pointer())
+                .setToolTip(new ToolTip()
+                        .setBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryRedAccent))
+                        .setTitle("Create").setDescription("a new Periferi to interact with new people around you")
+                        .setGravity(Gravity.BOTTOM | Gravity.LEFT))
+                .setOverlay(new Overlay()
+                        .setEnterAnimation(mEnterAnimation)
+                        .setExitAnimation(mExitAnimation))
+                .playLater(mAddPeriferi);
+        ChainTourGuide mRequesttour = ChainTourGuide.init(this).with(TourGuide.Technique.VerticalDownward)
+                .setPointer(new Pointer())
+                .setToolTip(new ToolTip()
+                        .setBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryRedAccent))
+                        .setTitle("Requests").setDescription("Check out Periferi requests around you")
+                        .setGravity(Gravity.BOTTOM | Gravity.LEFT))
+                .setOverlay(new Overlay()
+                        .setEnterAnimation(mEnterAnimation)
+                        .setExitAnimation(mExitAnimation))
+                .playLater(mRequests);
+
+        Sequence sequence = new Sequence.SequenceBuilder()
+                .add(mBroadcasttour, mAddtour, mRequesttour)
+                .setDefaultOverlay(new Overlay().setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mTutorial.next();
+                        tut_screens_count++;
+                        if(tut_screens_count == 3) {
+                            startPinchTutorial();
+                        }
+                        Log.d(DEBUG_TAG, "Overlay Clicked , count=" + tut_screens_count);
+                    }
+                }))
+                .setDefaultPointer(null)
+                .setContinueMethod(Sequence.ContinueMethod.OverlayListener)
+                .build();
+        mTutorial = ChainTourGuide.init(this).playInSequence(sequence);
+
+        //toggle preferences
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putBoolean("rookieFeed", false);
+        editor.apply();
+    }
+
+    public void startPinchTutorial() {
+        pinchTourActive = true;
+        abc = TourGuide.init(this).with(TourGuide.Technique.VerticalDownward)
+                .setPointer(new Pointer().setGravity(Gravity.TOP | Gravity.LEFT))
+                .setToolTip(new ToolTip()
+                        .setBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryRedAccent))
+                        .setTitle("Pinch").setDescription("with 2 fingers to change your Periferi").setGravity(Gravity.TOP))
+                .setOverlay(new Overlay()
+                        .setEnterAnimation(mEnterAnimation)
+                        .setExitAnimation(mExitAnimation)
+                )
+                .playOn(view2);
+    }
+
+    //called on pinch gesture
+    public static void exitPinchTour() {
+        pinchTourActive = false;
+        abc.cleanUp();
     }
 
     public void createNewBroadCast() {
@@ -176,6 +290,43 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_feed, menu);
+        //MenuItem mAdd = menu.getItem(0);
+        //MenuItem mRequest = menu.getItem(1);
+        MenuItem mAdd = menu.findItem(R.id.map_zones);
+        MenuItem mRequest = menu.findItem(R.id.all_requests);
+
+        mAddPeriferi = (ImageView)mAdd.getActionView();
+        mRequests = (ImageView)mRequest.getActionView();
+
+        float density = getResources().getDisplayMetrics().density;
+        int padding = (int)(density*9);
+        mAddPeriferi.setPadding(padding,padding,padding,padding);
+        mRequests.setPadding(padding, padding, padding, padding);
+
+        mAddPeriferi.setImageDrawable(getResources().getDrawable(R.drawable.create_zone_icon, null));
+        mRequests.setImageDrawable(getResources().getDrawable(R.drawable.periferi_requests, null));
+
+        prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        if(prefs.getBoolean("rookieFeed", false)){
+            showUserHow();
+        }
+
+        mAddPeriferi.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(FeedActivity.this, RequestZoneActivity.class));
+            }
+        });
+
+        mRequests.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(currZoneRequestKeys.isEmpty())
+                    toastit("There are currently no active requests");
+                else
+                    startActivity(new Intent(FeedActivity.this, AllRequestsActivity.class));
+            }
+        });
         return true;
     }
 
@@ -183,7 +334,7 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         //noinspection SimplifiableIfStatement
-
+/*
         if(id == R.id.map_zones) {
             startActivity(new Intent(FeedActivity.this, RequestZoneActivity.class));
             return true;
@@ -197,13 +348,13 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
             }
             return true;
         }
-
+*/
         return super.onOptionsItemSelected(item);
     }
 
     @Override
     public void onBackPressed() {
-        if(fragmentManager.getBackStackEntryCount() == 0) {
+        /*if(fragmentManager.getBackStackEntryCount() == 0) {
             Log.d(DEBUG_TAG, "Back pressed within pager");
             if (mPager.getCurrentItem() == 0) {
                 finish();
@@ -221,7 +372,12 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
             fragmentManager.popBackStack();
             view1.setVisibility(View.GONE);
             view2.setVisibility(View.VISIBLE);
-        }
+        }*/
+        finish();
+        Intent homeIntent = new Intent(Intent.ACTION_MAIN);
+        homeIntent.addCategory(Intent.CATEGORY_HOME);
+        homeIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(homeIntent);
     }
 
     private class SwipeUpPagerAdapter extends FragmentStatePagerAdapter {
@@ -267,9 +423,7 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
     //Callback from gesture
     public static void refreshCircleContent(int id) {
         id = decideCircleIndex(id);
-        if(currCircle == id)
-            Toast.makeText(mContext, "Current Circle", Toast.LENGTH_SHORT);
-        else {
+        if(currCircle != id){
             currCircle = id;
             //((ChatListFragment) mPagerAdapter.getItem(1)).fetchOnlineUsers(id);
             ((BroadCastFragment) mPagerAdapter.getItem(0)).fetchCircleBroadCasts(id);

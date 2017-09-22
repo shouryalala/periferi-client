@@ -1,0 +1,18 @@
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <layer-list>
+            <item android:right="5dp" android:top="5dp">
+                <shape android:shape="oval">
+                    <solid android:color="#16000000" />
+                </shape>
+            </item>
+            <item
+                android:bottom="2dp"
+                android:drawable="@mipmap/ic_periferi"
+                android:left="0dp"
+                android:right="0dp"
+                android:top="0dp">
+            </item>
+        </layer-list>
+    </item>
+</selector>

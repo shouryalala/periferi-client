@@ -9,19 +9,19 @@
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:layout_marginBottom="10dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="20dp"
         android:textAlignment="center"
-        android:textStyle="italic"
+
         android:textSize="@dimen/almond_post_title"
         android:textColor="@color/colorPrimarySilver"
         android:layout_gravity="center"/>
 
-    <ImageView
+    <!--<ImageView
         android:id="@+id/tut_image"
         android:layout_width="2400dp"
         android:layout_marginBottom="15dp"
         android:layout_height="400dp"
         android:layout_gravity="center_horizontal"
-        android:src="@mipmap/ic_periferi"/>
+        android:src="@mipmap/ic_periferi"/>-->
 
 </LinearLayout>

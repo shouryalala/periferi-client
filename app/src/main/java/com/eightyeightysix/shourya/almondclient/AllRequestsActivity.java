@@ -4,8 +4,10 @@ package com.eightyeightysix.shourya.almondclient;
  * Created by shourya on 12/7/17.
  */
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
@@ -17,6 +19,7 @@ import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.eightyeightysix.shourya.almondclient.data.ZonePerimeter;
@@ -61,7 +64,7 @@ public class AllRequestsActivity extends BaseActivity implements OnMapReadyCallb
     private List<LatLng> coordinates;
     private static boolean polygonCreated;
     private static final String DEBUG_TAG = "AlmondLog:: " + AllRequestsActivity.class.getSimpleName();
-    private static int NEEDED_REQUESTS = 15;
+    private static int NEEDED_REQUESTS = 3;
     private Button ins;
     protected static boolean flag = false;
     protected static ZoneRequest deleteNode = null;
@@ -76,6 +79,8 @@ public class AllRequestsActivity extends BaseActivity implements OnMapReadyCallb
         mapFragment.getMapAsync(this);
 
         ins = (Button)findViewById(R.id.button_instruction_request);
+        ImageButton homeBtn = (ImageButton) findViewById(R.id.request_home_button);
+
         allZoneRequests = new ArrayList<>();
         coordinates = new ArrayList<>(4);
 
@@ -103,6 +108,16 @@ public class AllRequestsActivity extends BaseActivity implements OnMapReadyCallb
             }
         });
 
+        homeBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(AllRequestsActivity.this, FeedActivity.class));
+            }
+        });
+
+        if(Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+        }
     }
 
     @Override

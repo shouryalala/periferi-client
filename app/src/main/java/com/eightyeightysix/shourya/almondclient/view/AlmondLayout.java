@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.Display;
 import android.view.MotionEvent;
 
+import com.eightyeightysix.shourya.almondclient.FeedActivity;
 import com.eightyeightysix.shourya.almondclient.R;
 import com.eightyeightysix.shourya.almondclient.gestureui.ZonePinchSurfaceView;
 
@@ -76,6 +77,9 @@ public class AlmondLayout extends CoordinatorLayout {
                 break;
             }
             case MotionEvent.ACTION_POINTER_DOWN: {
+                if(FeedActivity.pinchTourActive && event.getPointerCount()<3) {
+                    FeedActivity.exitPinchTour();
+                }
                 if(event.getPointerCount() < 3) {
                     mDiaSecondary = event.getPointerId(index);
                     secondary.set(event.getX(index), event.getY(index));

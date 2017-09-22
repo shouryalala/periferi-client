@@ -28,8 +28,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.eightyeightysix.shourya.almondclient.BaseActivity;
@@ -51,8 +51,9 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import org.w3c.dom.Text;
+
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.HashMap;
@@ -68,27 +69,29 @@ public class LoginActivity extends BaseActivity implements
 
     private final static String DEBUG_TAG = "AlmondLog:: " + LoginActivity.class.getSimpleName();
     private LoginFragmentOne firstFragment;
-    private static final int NUM_PAGES = 3;
+    private static final int NUM_PAGES = 4;
     private static ProgressDialog progressDialog;
     private static Window tutorialWindow;
     private ViewPager nPager;
-    private PagerAdapter mPagerAdapter;
-
+    private NonSwipeableViewPager sPager;
+    private PagerAdapter mPagerAdapter, sPagerAdapter;
+    private LinearLayout pagerIndicatorStrip;
+    private ImageView[] dots;
     public static String fUid;
     Context mContext;
     private static String tId, tFname, tLname, tGender, tSname, tEmail, tDob;
     //firebase
+    private TextView next_button;
+    private ImageView pixel_mockup;
+    private NonSwipeableViewPager mobile_pager_screen;
     private DatabaseReference create_user;
     private ValueEventListener userListener;
     private StorageReference store_profile_picture;
-
-    User temp_user;
-    Thread t = null;
     Integer[] colors = null;
     ArgbEvaluator argbEvaluator = new ArgbEvaluator();
     private static String fb_token;
-    private static String tut_text[] = new String[2];
-    private static int image_res[] = new int[2];
+    private static String tut_text[] = new String[3];
+    private static int image_res[] = new int[3];
 
     @Override
     protected void onCreate(Bundle savedInstances) {
@@ -99,11 +102,21 @@ public class LoginActivity extends BaseActivity implements
         nPager = (ViewPager)findViewById(R.id.pager);
         nPager.addOnPageChangeListener(new AnimateColorTransition());
 
+        sPager = (NonSwipeableViewPager) findViewById(R.id.mobile_pager);
+        next_button = (TextView) findViewById(R.id.next_tutorial);
+        pixel_mockup = (ImageView) findViewById(R.id.pixel_mockup);
+        mobile_pager_screen = (NonSwipeableViewPager) findViewById(R.id.mobile_pager);
+
         if (findViewById(R.id.fragment_container) != null) {
                 mPagerAdapter = new LoginSlidePagerAdapter(getSupportFragmentManager());
                 nPager.setAdapter(mPagerAdapter);
+
+                sPagerAdapter = new MobileScreenPagerAdapter(getSupportFragmentManager());
+                sPager.setAdapter(sPagerAdapter);
+                //sPager.setClickable(false);
         }
         progressDialog = new ProgressDialog(this);
+        progressDialog.setCancelable(false);
 
         store_profile_picture = FirebaseStorage.getInstance().getReference().child("profilepictures");
 
@@ -114,9 +127,11 @@ public class LoginActivity extends BaseActivity implements
         }
         tut_text[0] = "Create or approve a Periferi to interact with people in that area";
         tut_text[1] = "Pinch to check out and socialize in another Periferi around you";
+        tut_text[2] = "Accept requests for a Periferi to participate in its creation";
 
-        image_res[0] = R.drawable.tut1;
-        image_res[1] = R.drawable.tut2;
+        image_res[0] = R.drawable.tutorial_mockup2;
+        image_res[1] = R.drawable.tutorial_mockup1;
+        image_res[2] = R.drawable.tutorial_mockup3;
         setUpColors();
 
         //status bar colors
@@ -124,7 +139,19 @@ public class LoginActivity extends BaseActivity implements
         tutorialWindow.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         tutorialWindow.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         tutorialWindow.setStatusBarColor(colors[0]);
+
+        setUpIndicatorStrip();
+
+        next_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(nPager.getCurrentItem() < NUM_PAGES-1) {
+                    nPager.setCurrentItem(nPager.getCurrentItem() + 1);
+                }
+            }
+        });
     }
+
 
     @Override
     public void onBackPressed() {
@@ -197,6 +224,8 @@ public class LoginActivity extends BaseActivity implements
         editor.putString("email", tEmail);
         editor.putString("dob", tDob);
         editor.putString("profileUrl", imgUrl);
+        editor.putBoolean("rookieFeed", true);
+        editor.putBoolean("rookieMaps", true);
         editor.apply();
 
         //reference String
@@ -235,17 +264,17 @@ public class LoginActivity extends BaseActivity implements
 
     @Override
     public void nameListener(String a, String b) {
-
+        //TODO
     }
 
     private void setUpColors(){
-        Integer color1 = ResourcesCompat.getColor(getResources(), R.color.tut_1_green, null);
-        Integer color2 = ResourcesCompat.getColor(getResources(), R.color.tut_2_blue, null);
-        Integer color3 = ResourcesCompat.getColor(getResources(), R.color.colorPrimaryRedAccent, null);
-        Integer[] colors_temp = {color1, color2, color3};
+        Integer color1 = ResourcesCompat.getColor(getResources(), R.color.tut_1_screen, null);
+        Integer color2 = ResourcesCompat.getColor(getResources(), R.color.tut_2_screen, null);
+        Integer color3 = ResourcesCompat.getColor(getResources(), R.color.tut_3_screen, null);
+        Integer color4 = ResourcesCompat.getColor(getResources(), R.color.tut_4_screen, null);
+        Integer[] colors_temp = {color1, color2, color3, color4};
         colors = colors_temp;
     }
-
 
     private class LoginSlidePagerAdapter extends FragmentStatePagerAdapter {
         public LoginSlidePagerAdapter(FragmentManager fm) {
@@ -259,8 +288,9 @@ public class LoginActivity extends BaseActivity implements
                 case 3: return new LoginFragmentFour();
                 default: return new LoginFragmentOne();
             }*/
-            if(position == 2)
+            if(position == 3) {
                 return new LoginFragmentOne();
+            }
             else{
                 Fragment fragment = new TutorialObjectFragment();
                 Bundle args = new Bundle();
@@ -276,38 +306,87 @@ public class LoginActivity extends BaseActivity implements
         }
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        create_user.removeEventListener(userListener);
-    }
-
     private class AnimateColorTransition implements ViewPager.OnPageChangeListener{
         @Override
         public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-            if(position < (mPagerAdapter.getCount() -1) && position < (colors.length - 1)) {
+            if(position < (NUM_PAGES - 2)) {
                 nPager.setBackgroundColor((Integer) argbEvaluator.evaluate(positionOffset, colors[position], colors[position + 1]));
-            } else {
+            }
+            else if(position == 2) {
+                //pixel_mockup.setImageAlpha((int)(positionOffset * 255));
+                //mobile_pager_screen.setAlpha(positionOffset);
+                //Log.d(DEBUG_TAG, "position 2");
+                //pixel_mockup.setImageAlpha((int)((1-positionOffset)*255));
+                pixel_mockup.setTranslationX(-1 * positionOffsetPixels);
+                mobile_pager_screen.setTranslationX(-1 * positionOffsetPixels);
+                //mobile_pager_screen.setAlpha(1-positionOffset);
+                nPager.setBackgroundColor((Integer) argbEvaluator.evaluate(positionOffset, colors[position], colors[position + 1]));
+            }
+            else {
                 // the last page color
+                //pixel_mockup.setImageAlpha((int)(positionOffset * 255));
+                //mobile_pager_screen.setAlpha(positionOffset);
                 nPager.setBackgroundColor(colors[colors.length - 1]);
             }
+            //Log.d(DEBUG_TAG, "Position: " + position + "offset: " + positionOffset + "offsetPixels: " + positionOffsetPixels);
+            //sPager.beginFakeDrag();
+            //sPager.fakeDragBy(positionOffset);
+            //sPager.endFakeDrag();
+            //sPager.se
         }
 
         @Override
         public void onPageSelected(int position) {
             tutorialWindow.setStatusBarColor(colors[position]);
+            for(int i=0; i< NUM_PAGES; i++) {
+                dots[i].setImageDrawable(getResources().getDrawable(R.drawable.pager_indicator_not_selected, null));
+            }
+            dots[position].setImageDrawable(getResources().getDrawable(R.drawable.pager_indicator_selected, null));
+
+            if(position < 3) {
+                next_button.setVisibility(View.VISIBLE);
+                sPager.setCurrentItem(position);
+            }
+            else{
+                next_button.setVisibility(View.GONE);
+                //pixel_mockup.setVisibility(View.GONE);
+                //mobile_pager_screen.setVisibility(View.GONE);
+            }
         }
 
         @Override
         public void onPageScrollStateChanged(int state) {
+            /*if(state == ViewPager.SCROLL_STATE_IDLE) {
+                sPager.endFakeDrag();
+            }
+            else if(state == ViewPager.SCROLL_STATE_DRAGGING){
+                sPager.beginFakeDrag();
+            }*/
+        }
+    }
 
+    private class MobileScreenPagerAdapter extends FragmentStatePagerAdapter {
+        public MobileScreenPagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            Fragment fragment = new WireframeFragment();
+            Bundle args = new Bundle();
+            args.putInt(WireframeFragment.ARG_PAGE,position);
+            fragment.setArguments(args);
+            return fragment;
+        }
+
+        @Override
+        public int getCount() {
+            return NUM_PAGES-1;
         }
     }
 
     public static class TutorialObjectFragment extends Fragment{
-
         public static final String ARG_PAGE = "obj";
-
         @Nullable
         @Override
         public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
@@ -315,10 +394,24 @@ public class LoginActivity extends BaseActivity implements
             View rootView = inflater.inflate(R.layout.welcome_tutorial,container,false);
             Bundle args = getArguments();
             int position = args.getInt(ARG_PAGE);
-            ((ImageView)rootView.findViewById(R.id.tut_image)).setImageResource(image_res[position]);
+            //((ImageView)rootView.findViewById(R.id.tut_image)).setImageResource(image_res[position]);
             ((TextView) rootView.findViewById(R.id.welcome_text)).setText(tut_text[position]);
             //((TextView) rootView.findViewById(R.id.textView1)).setText(Integer.toString(args.getInt(ARG_PAGE)));
             return rootView;
+        }
+    }
+
+    public static class WireframeFragment extends Fragment {
+        public static final String ARG_PAGE = "obj2";
+        @Nullable
+        @Override
+        public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+            View wireframe = inflater.inflate(R.layout.wireframe_fragment,container,false);
+            if(getArguments().getInt(ARG_PAGE) < 3) {
+                Log.d(DEBUG_TAG, "wireframe position: " + getArguments().getInt(ARG_PAGE));
+                ((ImageView) wireframe.findViewById(R.id.screen_image)).setImageResource(image_res[getArguments().getInt(ARG_PAGE)]);
+            }
+            return wireframe;
         }
     }
 
@@ -359,6 +452,23 @@ public class LoginActivity extends BaseActivity implements
 
     }
 
+    private void setUpIndicatorStrip() {
+        pagerIndicatorStrip = (LinearLayout)findViewById(R.id.viewPagerIndicatorStrip);
+        dots = new ImageView[NUM_PAGES];
+        for (int i = 0; i < NUM_PAGES; i++) {
+            dots[i] = new ImageView(this);
+            dots[i].setImageDrawable(getResources().getDrawable(R.drawable.pager_indicator_not_selected, null));
+
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+            );
+            params.setMargins(28, 18, 28, 18);
+            pagerIndicatorStrip.addView(dots[i], params);
+        }
+        dots[0].setImageDrawable(getResources().getDrawable(R.drawable.pager_indicator_selected, null));
+    }
+
     private class DownloadImageTask extends AsyncTask<URL, Void, Bitmap> {
 
         public DownloadImageTask() {
@@ -392,7 +502,3 @@ public class LoginActivity extends BaseActivity implements
         }
     }
 }
-
-
-
-

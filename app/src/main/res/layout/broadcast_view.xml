@@ -15,4 +15,14 @@
         android:scrollbars="vertical"
         tools:listitem="@layout/item_post" />
 
+    <TextView
+        android:id="@+id/no_posts_text"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="10dp"
+        android:text="@string/no_posts"
+        android:gravity="center"
+        android:textSize="@dimen/almond_post_content"
+        android:visibility="gone"/>
+
 </FrameLayout>

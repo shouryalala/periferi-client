@@ -2,7 +2,11 @@ package com.eightyeightysix.shourya.almondclient;
 
 import android.app.AlertDialog;
 import android.app.DialogFragment;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.media.Image;
+import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.os.Bundle;
@@ -10,6 +14,8 @@ import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.Toast;
 
 import com.eightyeightysix.shourya.almondclient.data.Zone;
 import com.eightyeightysix.shourya.almondclient.data.ZonePerimeter;
@@ -56,6 +62,7 @@ public class RequestZoneActivity extends BaseActivity implements OnMapReadyCallb
     private boolean longClick = false;
     private Button refresh, ins;
     private LatLng myLoc;
+    private ImageButton home;
     //TODO figure out values for MAX and MIN
     private static final double MAX_ZONE_AREA= 9000000;
     private static final double MIN_ZONE_AREA= 10000;
@@ -88,7 +95,7 @@ public class RequestZoneActivity extends BaseActivity implements OnMapReadyCallb
 
         refresh = (Button) findViewById(R.id.button_refresh);
         //accept = (Button) findViewById(R.id.button_accept);
-
+        home = (ImageButton)findViewById(R.id.create_periferi_button);
         //Floating Button
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.map_fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -101,16 +108,30 @@ public class RequestZoneActivity extends BaseActivity implements OnMapReadyCallb
         refresh.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                refresh.animate().alpha(0.0f);
+                refresh.setVisibility(View.INVISIBLE);
                 longClick = true;
                 mMap.clear();
                 points.clear();
                 markers.clear();
                 mMap.addMarker(new MarkerOptions().position(myLoc).title("Current Location"));
+                displayCurrentZones();
+            }
+        });
+
+        home.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(RequestZoneActivity.this, FeedActivity.class));
             }
         });
 
         //current location
         myLoc = new LatLng(locationDetails.getCurrLatitutde(), locationDetails.getCurrLongitude());
+        //invert status bar color
+        if(Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+        }
     }
 
 
@@ -131,13 +152,34 @@ public class RequestZoneActivity extends BaseActivity implements OnMapReadyCallb
 
         boolean success = googleMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(
                         this, R.raw.style_json));
-
         if (!success) {
             Log.d(DEBUG_TAG, "Style parsing failed.");
         }
 
+        displayCurrentZones();
         mMap.getUiSettings().setMapToolbarEnabled(false);
+    }
 
+    public void displayCurrentZones() {
+        if(!locationDetails.zonesList.isEmpty()) {
+            for(int i=0; i<locationDetails.zonesList.size(); i++) {
+                ZonePerimeter zp = locationDetails.zonesList.get(i).getZonePerimeter();
+                PolygonOptions po = new PolygonOptions();
+                po.add(new LatLng(zp.latMax,zp.lngMin), new LatLng(zp.latMax, zp.lngMax), new LatLng(zp.latMin, zp.lngMax), new LatLng(zp.latMin, zp.lngMin));
+                po.strokeColor(ContextCompat.getColor(this, R.color.mapOutlineColor));
+                po.strokeWidth(5);
+                po.fillColor(Color.argb(15,255,0,0));
+                Polygon p = mMap.addPolygon(po);
+                p.setTag(zp.getZoneName());
+                p.setClickable(true);
+            }
+            mMap.setOnPolygonClickListener(new GoogleMap.OnPolygonClickListener() {
+                @Override
+                public void onPolygonClick(Polygon polygon) {
+                    Toast.makeText(getApplicationContext(), "Periferi: " + polygon.getTag(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
     }
 
     @Override
@@ -146,6 +188,8 @@ public class RequestZoneActivity extends BaseActivity implements OnMapReadyCallb
     }
 
     public void createMinRectangle(LatLng coordinate) {
+        refresh.animate().alpha(1.0f);
+        refresh.setVisibility(View.VISIBLE);
         PolygonOptions minRectangle = new PolygonOptions();
         PolygonOptions mintempRectangle = new PolygonOptions();
 
@@ -170,18 +214,17 @@ public class RequestZoneActivity extends BaseActivity implements OnMapReadyCallb
         coordinates[3] = new MarkerOptions().position(d).draggable(true).icon(BitmapDescriptorFactory.fromResource(R.drawable.almond_marker));
 
         minRectangle.add(a,b,c,d);
-        //TODO use new method
         minRectangle.strokeColor(ContextCompat.getColor(this, R.color.mapOutlineColor));// getResources().getColor(R.color.opaque_red));
-        minRectangle.fillColor(ContextCompat.getColor(this, R.color.mapBoxColor));//getResources().getColor(R.color.translucent_red));
+        //minRectangle.fillColor(ContextCompat.getColor(this, R.color.mapBoxColor));//getResources().getColor(R.color.translucent_red));
+        minRectangle.fillColor(Color.argb(200,255,235,238));
         minRectangle.strokeWidth(8);
 
+        List<PatternItem> pattern = Arrays.<PatternItem>asList(new Dot(), new Gap(20), new Dash(30), new Gap(20));
         mintempRectangle.add(a,b,c,d);
         mintempRectangle.strokeColor(ContextCompat.getColor(this, R.color.mapBoxColor));
-        //mintempRectangle.fillColor(Color.CYAN);//getResources().getColor(R.color.translucent_red));
         mintempRectangle.strokeWidth(8);
-        List<PatternItem> pattern = Arrays.<PatternItem>asList(
-                new Dot(), new Gap(20), new Dash(30), new Gap(20));
         mintempRectangle.strokePattern(pattern);
+
         zonePolygon = mMap.addPolygon(minRectangle);
         zoneUpdatePolygon = mMap.addPolygon(mintempRectangle);
     }
@@ -376,6 +419,9 @@ public class RequestZoneActivity extends BaseActivity implements OnMapReadyCallb
             //get zoneRequestname
             DialogFragment dialog = new NewZoneRequestDialog();
             dialog.show(getFragmentManager(), "NewZoneRequestDialog");
+        }
+        else if(!zoneAcceptedByRequests){
+            toastit("A similar Periferi request already exists: " + zoneConflict);
         }
         else{
             toastit("A similar Periferi already exists: " + zoneConflict);
