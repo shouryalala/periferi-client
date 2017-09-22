@@ -20,6 +20,7 @@ import com.eightyeightysix.shourya.almondclient.gestureui.ZonePinchSurfaceView;
 
 public class AlmondLayout extends CoordinatorLayout {
     public static final int INVALID_POINTER = -1;
+    public static final double MIN_DISTANCE_BW_FINGERS = 300000;
     private static int mDiaPrimary = INVALID_POINTER;
     private static int mDiaSecondary = INVALID_POINTER;
     //public static Point SCREEN_CENTER;
@@ -77,13 +78,14 @@ public class AlmondLayout extends CoordinatorLayout {
                 break;
             }
             case MotionEvent.ACTION_POINTER_DOWN: {
-                if(FeedActivity.pinchTourActive && event.getPointerCount()<3) {
-                    FeedActivity.exitPinchTour();
-                }
-                if(event.getPointerCount() < 3) {
+                //Log.d(DEBUG_TAG, "Distance between fingers: " + minDistanceApart(primary,event.getX(index),event.getY(index)));
+                if(event.getPointerCount() < 3 && minDistanceApart(primary, event.getX(index),event.getY(index))) {
+                    if(FeedActivity.pinchTourActive) {
+                        FeedActivity.exitPinchTour();
+                    }
                     mDiaSecondary = event.getPointerId(index);
                     secondary.set(event.getX(index), event.getY(index));
-                    Log.d(DEBUG_TAG, "ACTION_POINTER_DOWN: \nPRIMARY: " + primary.x + "," + primary.y + "\nSECONDARY: " + secondary.x + "," + secondary.y);
+                    //Log.d(DEBUG_TAG, "ACTION_POINTER_DOWN: \nPRIMARY: " + primary.x + "," + primary.y + "\nSECONDARY: " + secondary.x + "," + secondary.y);
                     if(mDiaPrimary != INVALID_POINTER)
                         pinchView.setPinchRadius(primary, secondary);
                 }
@@ -165,6 +167,8 @@ public class AlmondLayout extends CoordinatorLayout {
         primary.set(INVALID_POINTER, INVALID_POINTER);
         secondary.set(INVALID_POINTER, INVALID_POINTER);
     }
-    ////////////////////////
 
+    private boolean minDistanceApart(PointF mPnt, float mX, float mY) {
+        return ((Math.pow((mPnt.x-mX),2) + Math.pow((mPnt.y-mY),2)) > MIN_DISTANCE_BW_FINGERS);
+    }
 }

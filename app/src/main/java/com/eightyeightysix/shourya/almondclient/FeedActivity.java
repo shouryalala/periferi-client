@@ -68,6 +68,7 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
     protected BroadCastFragment broadCastFragment;
     private FloatingActionButton fab;
     private Context mContext;
+    private static boolean tutorialActive = false;
     private static int tut_screens_count = 0;
     private static TourGuide abc;
     private ImageView mAddPeriferi, mRequests;
@@ -106,7 +107,8 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                createNewBroadCast();
+                if(!tutorialActive)
+                    createNewBroadCast();
             }
         });
 
@@ -123,6 +125,7 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
     //tutorial
     public void showUserHow() {
         //mTourguide.setVisibility(View.INVISIBLE);
+        tutorialActive = true;
         mEnterAnimation = new AlphaAnimation(0f, 1f);
         mEnterAnimation.setDuration(600);
         mEnterAnimation.setFillAfter(true);
@@ -205,6 +208,7 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
     public static void exitPinchTour() {
         pinchTourActive = false;
         abc.cleanUp();
+        tutorialActive = false;
     }
 
     public void createNewBroadCast() {
@@ -314,17 +318,20 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
         mAddPeriferi.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(FeedActivity.this, RequestZoneActivity.class));
+                if(!tutorialActive)
+                    startActivity(new Intent(FeedActivity.this, RequestZoneActivity.class));
             }
         });
 
         mRequests.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(currZoneRequestKeys.isEmpty())
-                    toastit("There are currently no active requests");
-                else
-                    startActivity(new Intent(FeedActivity.this, AllRequestsActivity.class));
+                if(!tutorialActive) {
+                    if (currZoneRequestKeys.isEmpty())
+                        toastit("There are currently no active requests");
+                    else
+                        startActivity(new Intent(FeedActivity.this, AllRequestsActivity.class));
+                }
             }
         });
         return true;
