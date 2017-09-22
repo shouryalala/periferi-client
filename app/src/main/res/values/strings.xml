@@ -27,6 +27,7 @@
     <string name="zone_requests_title">Requests</string>
     <string name="create_periferi_text">Create Periferi</string>
     <string name="request_periferi_text">Periferi Requests</string>
+    <string name="suggestions_title">Suggest</string>
     <string name="instruction_create_request">\u25CF Press and hold the map to start creating a Periferi.\n\u25CF Press and hold any corner of the selection and drag to update the area.\n\u25CF You can only create a Periferi around your location.</string>
     <string name="instruction_periferi_request">Swipe to check out all requests.\nA Periferi is created on 15 approvals.</string>
     <string name="request_name">Provide a name for this Periferi</string>

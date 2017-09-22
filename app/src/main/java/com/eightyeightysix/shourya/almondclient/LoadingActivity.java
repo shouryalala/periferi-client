@@ -304,7 +304,6 @@ public class LoadingActivity extends BaseActivity implements GPSLocator.location
                 locationDetails.setCityID(city_id);
 
                 backgroundRefreshRequestsList();        //refreshes RequestList in the background and updates on addition
-
                 startActivity(new Intent(LoadingActivity.this, FeedActivity.class));
             }
             @Override
@@ -327,7 +326,6 @@ public class LoadingActivity extends BaseActivity implements GPSLocator.location
         AddressResultReceiver(Handler handler) {
             super(handler);
         }
-
         /**
          *  Receives data sent from ReverseGeocodeIntentService and updates the UI in MainActivity.
          */
@@ -344,7 +342,7 @@ public class LoadingActivity extends BaseActivity implements GPSLocator.location
                 //Location fetched, address fetched, now fetch zones
                 inspectLocation();
             }
-            else {
+            else if(resultCode == Constants.FAILURE_RESULT){
                 Log.d(DEBUG_TAG,"Address not received, location inspection suspended");
                 errorDisplay("There was an issue fetching your location. Please restart Periferi");
             }

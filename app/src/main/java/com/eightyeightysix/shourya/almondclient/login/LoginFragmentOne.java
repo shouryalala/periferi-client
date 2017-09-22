@@ -61,7 +61,7 @@ public class LoginFragmentOne extends Fragment {
     public String fb_id, fb_fname, fb_lname, fb_sname, fb_gender, fb_emailText , fb_dobText ;
     public URL profile_pic;
     public Bitmap shourya;
-
+    TextView welcome_text;
     private final String DEBUG_TAG = "AlmondLog:: " + LoginFragmentOne.class.getSimpleName() ;
 
 
@@ -197,12 +197,12 @@ public class LoginFragmentOne extends Fragment {
         super.onViewCreated(view, savedInstances);
 
         loginButton = (LoginButton) view.findViewById(R.id.button_facebook);
+        welcome_text = (TextView) view.findViewById(R.id.welcome_text_fb2);
         List<String> permissions = Arrays.asList("email","public_profile","user_birthday");
 
         loginButton.setReadPermissions(permissions);
         loginButton.setFragment(this);
         loginButton.registerCallback(callbackManager, callback);
-
     }
 
     @Override
@@ -210,5 +210,4 @@ public class LoginFragmentOne extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
         callbackManager.onActivityResult(requestCode, resultCode, data);
     }
-
 }

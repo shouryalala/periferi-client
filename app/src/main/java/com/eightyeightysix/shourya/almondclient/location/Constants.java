@@ -9,6 +9,8 @@ public final class Constants {
 
     public static final int FAILURE_RESULT = 1;
 
+    public static final int LOCATION_DISABLED = 2;
+
     public static final String PACKAGE_NAME =
             "com.eightyeightysix.shourya.almondclient.location";
 
