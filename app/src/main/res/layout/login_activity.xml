@@ -35,37 +35,40 @@
             android:layout_centerVertical="true"/>
     </RelativeLayout>
 
-    <LinearLayout
-        android:orientation="vertical"
+    <RelativeLayout
+        android:id="@+id/indicatorFooter"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
+        android:gravity="bottom|center"
+        android:layout_marginBottom="20dp"
         android:layout_below="@+id/pixel_mockup">
         <View
             android:id="@+id/pager_separator"
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/translucent_white"
-            android:layout_marginBottom="20dp"/>
+            android:background="@color/translucent_white"/>
 
         <LinearLayout
             android:id="@+id/viewPagerIndicatorStrip"
+            android:layout_marginTop="20dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
+            android:layout_below="@id/pager_separator"
             android:orientation="horizontal"/>
 
         <TextView
             android:id="@+id/next_tutorial"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Next"
+            android:layout_alignBottom="@id/viewPagerIndicatorStrip"
+            android:text="@string/next"
             android:textSize="20sp"
             android:layout_alignParentEnd="true"
             android:textColor="@color/translucent_white"
             android:layout_gravity="end"
-            android:textDirection="rtl"
+            android:layout_marginTop="20dp"
             android:layout_marginEnd="15dp"/>
-
-    </LinearLayout>
+    </RelativeLayout>
 </RelativeLayout>

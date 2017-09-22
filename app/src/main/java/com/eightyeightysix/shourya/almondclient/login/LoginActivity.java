@@ -317,6 +317,7 @@ public class LoginActivity extends BaseActivity implements
                 //pixel_mockup.setImageAlpha((int)((1-positionOffset)*255));
                 pixel_mockup.setTranslationX(-1 * positionOffsetPixels);
                 mobile_pager_screen.setTranslationX(-1 * positionOffsetPixels);
+
                 //mobile_pager_screen.setAlpha(1-positionOffset);
                 nPager.setBackgroundColor((Integer) argbEvaluator.evaluate(positionOffset, colors[position], colors[position + 1]));
             }
