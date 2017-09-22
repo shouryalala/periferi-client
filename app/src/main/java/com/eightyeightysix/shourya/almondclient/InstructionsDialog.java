@@ -45,8 +45,7 @@ public class InstructionsDialog extends DialogFragment {
         TextView head = (TextView)li.findViewById(R.id.instructions_header);
         if(choice == CREATE_PERIFERI_INSTRUCTIONS) {
             final String[] bulletpoint = {"Press and hold the map to start creating a Periferi.",
-                    "Press and hold any corner of the selection and drag to update the area.",
-                    "You can only create a Periferi around your location."};
+                    "Press and hold any corner of the selection and drag to update the area."};
             head.setText("Create");
             /*SpannableString span1 = new SpannableString(text1);
             span1.setSpan(new BulletSpan(16),0,text1.length(), 0);

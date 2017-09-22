@@ -190,7 +190,7 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
     public void startPinchTutorial() {
         pinchTourActive = true;
         abc = TourGuide.init(this).with(TourGuide.Technique.VerticalDownward)
-                .setPointer(new Pointer().setGravity(Gravity.TOP | Gravity.LEFT))
+                .setPointer(new Pointer().setGravity(Gravity.TOP | Gravity.START))
                 .setToolTip(new ToolTip()
                         .setBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryRedAccent))
                         .setTitle("Pinch").setDescription("with 2 fingers to change your Periferi").setGravity(Gravity.TOP))

@@ -143,7 +143,8 @@ public class BaseActivity extends AppCompatActivity{
                 }
                 else {
                     permissionLocation = false;
-                    toastit("Sorry, Almond cant function without Location");
+                    toastit("Sorry, Periferi cant function without Location");
+                    finish();
                     //TODO tell the user that this functionality is a core necessity for the functioning of the application
                 }
             }

@@ -3,6 +3,7 @@ package com.eightyeightysix.shourya.almondclient;
 import android.*;
 import android.app.ProgressDialog;
 import android.content.pm.PackageManager;
+import android.media.Image;
 import android.os.Bundle;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -12,6 +13,8 @@ import android.preference.PreferenceManager;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -55,8 +58,10 @@ public class LoadingActivity extends BaseActivity implements GPSLocator.location
     protected static final int REQUEST_CHECK_SETTINGS = 0x1;
     private String mAddressOutput;
     private TextView errorText;
+    private ImageView splashLogo;
     private boolean errorDisplayed;
     private ProgressBar mProgressBar;
+    private Handler handler;
     private AddressResultReceiver mResultReceiver;
     private SharedPreferences preferences;
 
@@ -64,8 +69,19 @@ public class LoadingActivity extends BaseActivity implements GPSLocator.location
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_loading);
-        //TODO get location permission before
-        //Firebase auth getInstance
+        splashLogo = (ImageView)findViewById(R.id.splash_icon);
+        mProgressBar = (ProgressBar)findViewById(R.id.progress_bar_loading);
+        Animation anim = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fadein);
+        splashLogo.startAnimation(anim);
+
+        handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if(!errorDisplayed)
+                    mProgressBar.setVisibility(View.VISIBLE);
+            }
+        }, 1500);
     }
 
     @Override
@@ -126,11 +142,10 @@ public class LoadingActivity extends BaseActivity implements GPSLocator.location
 
     public void errorDisplay(String error) {
         if(!errorDisplayed) {
-            mProgressBar = (ProgressBar)findViewById(R.id.progress_bar_loading);
             errorText = (TextView) findViewById(R.id.error_text);
             errorText.setText(error);
             errorText.setVisibility(View.VISIBLE);
-            mProgressBar.setVisibility(View.GONE);
+            mProgressBar.setVisibility(View.INVISIBLE);
             errorDisplayed = true;
         }
     }

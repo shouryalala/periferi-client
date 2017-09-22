@@ -25,8 +25,8 @@
         android:layout_marginEnd="10dp"
         android:layout_marginTop="2dp"
         android:layout_marginBottom="2dp"
-        android:background="@color/colorPrimaryRedAccent"
-        />
+        android:background="@color/colorPrimaryRedAccent"/>
+
     <TextView
         android:id="@+id/instructions_text"
         android:layout_width="match_parent"
@@ -42,5 +42,4 @@
         android:textSize="17sp"
         android:lineSpacingMultiplier="1.1"
         android:textColor="@color/colorPrimaryGrey"/>
-
 </LinearLayout>
