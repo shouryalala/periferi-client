@@ -74,7 +74,7 @@ public class InstructionsDialog extends DialogFragment {
         }
         else if(choice == PERIFERI_REQUESTS_INSTRUCTIONS) {
             head.setText("Request");
-            final String[] bulletpoint = {"Swipe lower panel to check out all requests.", "A Periferi is created on 15 approvals."};
+            final String[] bulletpoint = {"Swipe lower panel to check out all requests.", "A Periferi is created on 10 approvals."};
             CharSequence allText = "";
             for (String aBulletpoint : bulletpoint) {
                 String text = aBulletpoint.trim();

@@ -38,5 +38,4 @@ public class BroadCastViewHolder extends RecyclerView.ViewHolder{
 
         starView.setOnClickListener(starClickListener);
     }
-
 }

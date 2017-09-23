@@ -51,7 +51,7 @@ public class AllRequestsActivity extends BaseActivity implements OnMapReadyCallb
     private List<LatLng> coordinates;
     private static boolean polygonCreated;
     private static final String DEBUG_TAG = "AlmondLog:: " + AllRequestsActivity.class.getSimpleName();
-    private static int NEEDED_REQUESTS = 3;
+    private static int NEEDED_REQUESTS = 10;
     private Button ins;
     protected static boolean flag = false;
     protected static ZoneRequest deleteNode = null;

@@ -43,7 +43,7 @@ public class BroadCastFragment extends Fragment{
     private DatabaseReference mDatabase;
     private Context mContext;
 
-    private FirebaseRecyclerAdapter<BroadCast, BroadCastViewHolder> mAdapter;
+    private static FirebaseRecyclerAdapter<BroadCast, BroadCastViewHolder> mAdapter;
     private RecyclerView mRecycler;
     private LinearLayoutManager mManager;
     private static ProgressDialog pd;

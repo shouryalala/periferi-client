@@ -310,6 +310,21 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
 -keep public class com.client.shourya.periferi.Manifest
 -keep public class com.client.shourya.periferi.NewBroadCastDialog
 -keep public class com.client.shourya.periferi.NewZoneRequestDialog
+
+-dontshrink
+-dontoptimize
+-dontusemixedcaseclassnames
+-dontskipnonpubliclibraryclasses
+-dontpreverify
+
+
+-dontwarn android.support.v7.**
+-keep class android.support.v7.** { *; }
+-keep interface android.support.v7.** { *; }
+-keep public class com.google.android.gms.**
+-dontwarn com.google.android.gms.**
+-keep class com.firebase.**
+-keep class com.google.firebase.**
          */
         mAddPeriferi.setOnClickListener(new View.OnClickListener() {
             @Override
