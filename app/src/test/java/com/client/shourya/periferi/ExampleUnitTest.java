@@ -1,4 +1,4 @@
-package com.client.shourya.pagerindicatorlibrary;
+package com.client.shourya.periferi;
 
 import org.junit.Test;
 

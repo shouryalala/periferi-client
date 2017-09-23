@@ -15,16 +15,16 @@
       },
       "oauth_client": [
         {
-          "client_id": "297604749135-bdagej5tdoc3fuqkqdad5b7bils6q43e.apps.googleusercontent.com",
+          "client_id": "297604749135-q26um87rguprmhf5i6oth41tpqu3dbps.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "297604749135-104jtm6ne9m4k6kr2icaivj1ln4ac4i6.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.eightyeightysix.shourya.almondclient",
             "certificate_hash": "6ec84a0d332cd2bcd9375643865be71fe2f1e022"
           }
-        },
-        {
-          "client_id": "297604749135-q26um87rguprmhf5i6oth41tpqu3dbps.apps.googleusercontent.com",
-          "client_type": 3
         }
       ],
       "api_key": [
@@ -44,6 +44,37 @@
               "client_type": 3
             }
           ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:297604749135:android:98a006ee1fae0746",
+        "android_client_info": {
+          "package_name": "com.client.shourya.periferi"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "297604749135-q26um87rguprmhf5i6oth41tpqu3dbps.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD9PJ21FY7FGMBFBLzTOkWpu3mdf_EyWSc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
         },
         "ads_service": {
           "status": 2

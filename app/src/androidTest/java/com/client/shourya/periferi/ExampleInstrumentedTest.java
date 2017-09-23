@@ -1,4 +1,4 @@
-package com.client.shourya.pagerindicatorlibrary;
+package com.client.shourya.periferi;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("com.eightyeightysix.shourya.pagerindicatorlibrary.test", appContext.getPackageName());
+        assertEquals("com.eightyeightysix.shourya.almondclient", appContext.getPackageName());
     }
 }
