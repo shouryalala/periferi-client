@@ -301,6 +301,16 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
             showUserHow();
         }
 
+        /*
+        -keep public class com.client.shourya.periferi.BaseActivity
+-keep public class com.client.shourya.periferi.FeedActivity
+-keep public class com.client.shourya.periferi.InstructionsDialog
+-keep public class com.client.shourya.periferi.LoadingActivity
+-keep public class com.client.shourya.periferi.data.*
+-keep public class com.client.shourya.periferi.Manifest
+-keep public class com.client.shourya.periferi.NewBroadCastDialog
+-keep public class com.client.shourya.periferi.NewZoneRequestDialog
+         */
         mAddPeriferi.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
