@@ -55,7 +55,7 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
     private FloatingActionButton fab;
     private Context mContext;
     private static boolean tutorialActive = false;
-    private static int tut_screens_count = 0;
+    private int tut_screens_count = 0;
     private static TourGuide abc;
     private ImageView mAddPeriferi, mRequests;
     private Animation mEnterAnimation, mExitAnimation;

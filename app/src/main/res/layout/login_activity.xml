@@ -68,6 +68,7 @@
             android:layout_alignParentEnd="true"
             android:textColor="@color/translucent_white"
             android:layout_gravity="end"
+            android:layout_marginBottom="10dp"
             android:layout_marginTop="20dp"
             android:layout_marginEnd="15dp"/>
     </RelativeLayout>
