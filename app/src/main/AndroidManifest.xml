@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.client.shourya.periferi">
+    package="com.client.shourya.almond">
 
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
@@ -23,32 +23,32 @@
         <meta-data android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id"/>
 
-        <service android:name="com.client.shourya.periferi.fcm.AlmondFirebaseMessagingService">
+        <service android:name="com.client.shourya.almond.fcm.AlmondFirebaseMessagingService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT"/>
             </intent-filter>
         </service>
 
-        <service android:name="com.client.shourya.periferi.fcm.FirebaseIDService">
+        <service android:name="com.client.shourya.almond.fcm.FirebaseIDService">
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
             </intent-filter>
         </service>
 
         <service
-            android:name="com.client.shourya.periferi.location.ReverseGeocodeIntentService"
+            android:name="com.client.shourya.almond.location.ReverseGeocodeIntentService"
             android:exported="false"/>
 
         <activity
-            android:name="com.client.shourya.periferi.RequestZoneActivity"
+            android:name="com.client.shourya.almond.RequestZoneActivity"
             android:label="@string/title_activity_request_zone">
         </activity>
         <activity
-            android:name="com.client.shourya.periferi.AllRequestsActivity"
+            android:name="com.client.shourya.almond.AllRequestsActivity"
             android:label="@string/title_activity_request_zone">
         </activity>
         <activity
-            android:name="com.client.shourya.periferi.LoadingActivity"
+            android:name="com.client.shourya.almond.LoadingActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -59,13 +59,13 @@
         </activity>
 
         <activity
-            android:name="com.client.shourya.periferi.login.LoginActivity"
+            android:name="com.client.shourya.almond.login.LoginActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
         <activity
-            android:name="com.client.shourya.periferi.FeedActivity"
+            android:name="com.client.shourya.almond.FeedActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">

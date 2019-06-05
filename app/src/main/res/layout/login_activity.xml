@@ -27,7 +27,7 @@
         android:layout_centerHorizontal="true"
         android:elevation="1dp"
         android:layout_centerVertical="true">
-        <com.client.shourya.periferi.login.NonSwipeableViewPager
+        <com.client.shourya.almond.login.NonSwipeableViewPager
             android:id="@+id/mobile_pager"
             android:layout_width="320dp"
             android:layout_height="320dp"

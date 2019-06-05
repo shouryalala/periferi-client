@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.client.shourya.periferi.FeedActivity"
+    tools:context="com.client.shourya.almond.FeedActivity"
     tools:showIn="@layout/activity_feed">
    <FrameLayout
        android:id="@+id/fragment_container_feed"
@@ -13,7 +13,7 @@
        android:layout_height="match_parent"
        android:visibility="gone"/>
 
-   <com.client.shourya.periferi.gestureui.AlmondPagerSettings
+   <com.client.shourya.almond.gestureui.AlmondPagerSettings
        xmlns:android="http://schemas.android.com/apk/res/android"
        android:id="@+id/feed_pager"
        android:layout_width="match_parent"

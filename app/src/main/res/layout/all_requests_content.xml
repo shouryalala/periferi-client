@@ -12,7 +12,7 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_weight="1"
-        tools:context="com.client.shourya.periferi.AllRequestsActivity" />
+        tools:context="com.client.shourya.almond.AllRequestsActivity" />
 
     <android.support.v4.view.ViewPager
         android:id="@+id/request_pager"
