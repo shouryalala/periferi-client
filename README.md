@@ -1,5 +1,5 @@
-# almondclient
-Client app for Almond
+# Periferi
+Client app
 
 Short Description: A social network built around you.
 
@@ -16,5 +16,5 @@ Features to be added in coming updates
 * User Profiles
 * User scores
 
-To provide any suggestions, point out issues and bug fixes, or shower much needed compliments: 
-mail to: shouryalala@gmail.com
+To provide any suggestions, point out issues and bug fixes, or to say hi: mail@shouryalala.com
+
