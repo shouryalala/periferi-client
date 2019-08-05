@@ -5,15 +5,20 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.client.shourya.almond.BaseActivity;
 import com.client.shourya.almond.R;
+import com.client.shourya.almond.data.User;
 import com.facebook.AccessToken;
 import com.facebook.AccessTokenTracker;
 import com.facebook.CallbackManager;
@@ -25,6 +30,10 @@ import com.facebook.Profile;
 import com.facebook.ProfileTracker;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -32,7 +41,12 @@ import org.json.JSONObject;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import static com.client.shourya.almond.BaseActivity.mDatabase;
+import static com.client.shourya.almond.BaseActivity.substituteString;
 
 /*
  * Created by shourya on 22/5/17.
@@ -41,6 +55,8 @@ import java.util.List;
 public class LoginFragmentOne extends Fragment {
     //Facebook
     LoginButton loginButton;
+    Button emailLoginButton;
+    EditText emailEditText;
     CallbackManager callbackManager;
     public static FragmentOneListener mListener;
     private boolean fb_email, fb_dob;
@@ -181,19 +197,60 @@ public class LoginFragmentOne extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstances) {
         super.onViewCreated(view, savedInstances);
-
+        emailEditText = (EditText) view.findViewById(R.id.emailEditText);
         loginButton = (LoginButton) view.findViewById(R.id.button_facebook);
+        emailLoginButton = (Button) view.findViewById(R.id.button_email_login);
         welcome_text = (TextView) view.findViewById(R.id.welcome_text_fb2);
         List<String> permissions = Arrays.asList("email","public_profile","user_birthday");
 
+        //fb button
         loginButton.setReadPermissions(permissions);
         loginButton.setFragment(this);
         loginButton.registerCallback(callbackManager, callback);
+
+        //email login/signup
+        emailLoginButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(!BaseActivity.validateEmail(emailEditText.getText().toString())) {
+                    emailEditText.setError("Please enter a valid email address");
+                    return;
+                }
+                checkExistingUserAndCreateDialog(emailEditText.getText().toString());
+            }
+        });
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         callbackManager.onActivityResult(requestCode, resultCode, data);
+    }
+
+    protected void checkExistingUserAndCreateDialog(String email) {
+        mDatabase.getReference("users").orderByChild("mUserEmail").equalTo(email).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Bundle b = new Bundle();
+                if(dataSnapshot.exists()) {
+                    User user = (User)dataSnapshot.getValue(User.class);
+                    b.putBoolean("isExistingUser", true);
+                    b.putString("userName", user.getFname());
+                }
+                else{
+                    b.putBoolean("isExistingUser", false);
+                }
+                EmailLoginDialog emailLoginDialog = new EmailLoginDialog();
+                emailLoginDialog.setArguments(b);
+                emailLoginDialog.show(getFragmentManager(), "emailLoginDialog");
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                EmailLoginDialog emailLoginDialog = new EmailLoginDialog();
+                emailLoginDialog.show(getFragmentManager(), "emailLoginDialog");
+            }
+        });
+
     }
 }

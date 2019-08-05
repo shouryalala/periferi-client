@@ -420,5 +420,17 @@ public class BaseActivity extends AppCompatActivity{
         return 2.0D * Math.atan2(t * Math.sin(deltaLng), 1.0D + t * Math.cos(deltaLng));
     }
 
+
+    public static boolean validateEmail(String email) {
+        if(email == null || email.isEmpty())return false;
+        String regex = "(.*)@(.*).com"; //TODO
+        return email.matches(regex);
+    }
+
+    public static boolean validatePassword(String password) {
+        if(password == null || password.isEmpty() || password.length() < 8) return false;
+        return true;
+    }
+
 }
 

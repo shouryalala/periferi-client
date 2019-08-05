@@ -68,7 +68,8 @@ import java.util.Map;
 
 public class LoginActivity extends BaseActivity implements
         LoginFragmentOne.FragmentOneListener,
-        LoginFragmentFour.FragmentFourListener{
+        LoginFragmentFour.FragmentFourListener,
+        EmailLoginDialog.EmailLoginListener {
     private final static String DEBUG_TAG = "AlmondLog:: " + LoginActivity.class.getSimpleName();
     private LoginFragmentOne firstFragment;
     private static final int NUM_PAGES = 4;
@@ -153,11 +154,8 @@ public class LoginActivity extends BaseActivity implements
             }
         });
 
-
         try {
-            PackageInfo info = getPackageManager().getPackageInfo(
-                    "com.client.shourya.periferi",
-                    PackageManager.GET_SIGNATURES);
+            PackageInfo info = getPackageManager().getPackageInfo("com.client.shourya.almond",PackageManager.GET_SIGNATURES);
             for (Signature signature : info.signatures) {
                 MessageDigest md = MessageDigest.getInstance("SHA");
                 md.update(signature.toByteArray());
@@ -169,7 +167,6 @@ public class LoginActivity extends BaseActivity implements
 
         }
     }
-
 
     @Override
     public void onBackPressed() {
@@ -200,6 +197,34 @@ public class LoginActivity extends BaseActivity implements
         new DownloadImageTask().execute(profile_picture);
         fb_token = token;
         //fireBaseAuthenticate(token);
+    }
+
+    @Override
+    public void onSignInRequest(String email, String password) {
+        mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                if(task.isSuccessful()) {
+
+                }else{
+
+                }
+            }
+        });
+    }
+
+    @Override
+    public void onSignUpRequest(String userId, String email, String password, String name) {
+        mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                if(task.isSuccessful()) {
+
+                }else{
+
+                }
+            }
+        });
     }
 
     private void fireBaseAuthenticate() {

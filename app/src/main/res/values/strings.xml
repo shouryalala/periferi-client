@@ -34,4 +34,6 @@
     <string name="request_name">Name this Periferi request</string>
     <string name="new_request_hint">\"15th Block\", \"Deetee\"</string>
     <string name="next">Next</string>
+    <string name="email_signup_button">SIGN UP</string>
+    <string name="login_button_text">Login</string>
 </resources>
