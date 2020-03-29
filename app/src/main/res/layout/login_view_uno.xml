@@ -31,42 +31,11 @@
         android:layout_marginTop="10dp"
         android:layout_marginBottom="15dp"/>
 
-
-    <EditText
-        android:id="@+id/emailEditText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/welcome_text_fb2"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentEnd="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="50dp"
-        android:layout_marginEnd="20dp"
-        android:ems="10"
-        android:inputType="textEmailAddress" />
-
-    <ProgressBar
-        android:id="@+id/progressBar3"
-        style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/emailEditText"
-        android:visibility="gone"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="-17dp"
-        android:layout_marginEnd="20dp"
-        android:layout_marginBottom="10dp"
-        android:indeterminate="true" />
-
-
     <Button
         android:id="@+id/button_email_login"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/emailEditText"
+        android:layout_below="@+id/welcome_text_fb2"
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
         android:layout_centerHorizontal="true"

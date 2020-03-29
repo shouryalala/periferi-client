@@ -6,13 +6,21 @@ package com.client.shourya.almond.fcm;
 
 import android.util.Log;
 
-import com.google.firebase.iid.FirebaseInstanceId;
-import com.google.firebase.iid.FirebaseInstanceIdService;
+import androidx.annotation.NonNull;
 
-public class FirebaseIDService extends FirebaseInstanceIdService {
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.messaging.FirebaseMessagingService;
+
+public class FirebaseIDService extends FirebaseMessagingService {
     private static final String DEBUG_TAG = "AlmondLog:: " + FirebaseIDService.class.getSimpleName();
 
     @Override
+    public void onNewToken(@NonNull String s) {
+        super.onNewToken(s);
+        sendRegistrationToServer(s);
+    }
+
+    //@Override
     public void onTokenRefresh() {
         // Get updated InstanceID token.
         String refreshedToken = FirebaseInstanceId.getInstance().getToken();

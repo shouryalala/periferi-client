@@ -73,9 +73,11 @@ public class BaseActivity extends AppCompatActivity{
 
     public static final int CITY_INDEX = 69;
     public static final int COUNTRY_INDEX = 420;
+    public static final int GALLERY_REQUEST_CODE = 1231;
 
     public static Bitmap userProfilePic;
     private static ProgressDialog progressDialog;
+    public static ImageUploader imageUploader;
 
     private final static String DEBUG_TAG = "AlmondLog:: " + BaseActivity.class.getSimpleName();
     private static final int MY_REQUEST_ACCESS_FINE_LOCATION = 69;

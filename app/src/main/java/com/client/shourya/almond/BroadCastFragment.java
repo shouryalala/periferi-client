@@ -7,6 +7,8 @@ package com.client.shourya.almond;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
+
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
@@ -22,6 +24,7 @@ import com.bumptech.glide.Glide;
 import com.client.shourya.almond.data.BroadCast;
 import com.client.shourya.almond.viewholder.BroadCastViewHolder;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -86,6 +89,19 @@ public class BroadCastFragment extends Fragment{
         fetchCircleBroadCasts(BaseActivity.currCircle);
     }
 
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        mAdapter.startListening();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        mAdapter.stopListening();
+    }
+
     private String formReference(int circle) {
         Map<String, String> params = new HashMap<>();
         String reference;
@@ -123,19 +139,35 @@ public class BroadCastFragment extends Fragment{
         final String ref = formReference(circle);
 
         if (mAdapter != null) {
-            mAdapter.cleanup();
+//            mAdapter.cleanup();
+            mAdapter.notifyDataSetChanged();
         }
         // Set up FirebaseRecyclerAdapter with the Query
         final Query postsQuery = BaseActivity.mDatabase.getReference(ref);
-        mAdapter = new FirebaseRecyclerAdapter<BroadCast, BroadCastViewHolder>(BroadCast.class, R.layout.item_post,
-                BroadCastViewHolder.class, postsQuery) {
+        FirebaseRecyclerOptions<BroadCast> options = new FirebaseRecyclerOptions.Builder<BroadCast>().setQuery(postsQuery, BroadCast.class).build();
+//        mAdapter = new FirebaseRecyclerAdapter<BroadCast, BroadCastViewHolder>(BroadCast.class, R.layout.item_post,
+//                BroadCastViewHolder.class, postsQuery) {
+        mAdapter = new FirebaseRecyclerAdapter<BroadCast, BroadCastViewHolder>(options) {
             @Override
-            protected void onDataChanged() {
+            protected void onBindViewHolder(@NonNull BroadCastViewHolder holder, int position, @NonNull BroadCast model) {
+                populateViewHolder(holder, model, position);
+            }
+
+            @NonNull
+            @Override
+            public BroadCastViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                View view = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.item_post, parent, false);
+                return new BroadCastViewHolder(view);
+            }
+
+            @Override
+            public void onDataChanged() {
                 super.onDataChanged();
                 pd.dismiss();
             }
 
-            @Override
+           // @Override
             protected void populateViewHolder(final BroadCastViewHolder viewHolder, BroadCast model, int position) {
                 //pd.dismiss();
                 if(!noPostSwitched) {
@@ -214,7 +246,8 @@ public class BroadCastFragment extends Fragment{
     public void onDestroy() {
         super.onDestroy();
         if (mAdapter != null) {
-            mAdapter.cleanup();
+            //mAdapter.cleanup();
+            mAdapter.notifyDataSetChanged();
         }
     }
 

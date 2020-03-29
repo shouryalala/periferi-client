@@ -17,4 +17,9 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
+    <style name="SignInTheme">
+        <item name="colorPrimary">@color/colorPrimarySilver</item>
+        <item name="colorPrimaryDark">@color/colorPrimarySilver</item>
+    </style>
+
 </resources>

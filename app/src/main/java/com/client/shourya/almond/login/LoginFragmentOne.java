@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 
+import androidx.core.content.ContextCompat;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -31,6 +33,8 @@ import com.facebook.Profile;
 import com.facebook.ProfileTracker;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import com.firebase.ui.auth.AuthUI;
+import com.firebase.ui.auth.IdpResponse;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
@@ -43,6 +47,7 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 
+import static android.app.Activity.RESULT_OK;
 import static com.client.shourya.almond.BaseActivity.mDatabase;
 
 /*
@@ -219,12 +224,29 @@ public class LoginFragmentOne extends Fragment {
         emailLoginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!BaseActivity.validateEmail(emailEditText.getText().toString())) {
+             /*   if(!BaseActivity.validateEmail(emailEditText.getText().toString())) {
                     emailEditText.setError("Please enter a valid email address");
                     return;
                 }
                 progressBar.setVisibility(View.VISIBLE);
-                checkExistingUserAndCreateDialog(emailEditText.getText().toString());
+                checkExistingUserAndCreateDialog(emailEditText.getText().toString());*/
+                List<AuthUI.IdpConfig> providers = Arrays.asList(
+                        new AuthUI.IdpConfig.EmailBuilder().build(),
+                        new AuthUI.IdpConfig.PhoneBuilder().build(),
+                        new AuthUI.IdpConfig.GoogleBuilder().build()
+//                        new AuthUI.IdpConfig.FacebookBuilder().build(),
+//                        new AuthUI.IdpConfig.TwitterBuilder().build()
+                );
+
+// Create and launch sign-in intent
+                startActivityForResult(
+                        AuthUI.getInstance()
+                                .createSignInIntentBuilder()
+                                .setAvailableProviders(providers)
+                                .setLogo(R.drawable.wecome_periferi_logo)
+                                .setTheme(R.style.SignInTheme)
+                                .build(),
+                        123);
             }
         });
     }
@@ -232,7 +254,14 @@ public class LoginFragmentOne extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        callbackManager.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == 123) {
+            IdpResponse response = IdpResponse.fromResultIntent(data);
+            if(resultCode == RESULT_OK){
+                Log.d(DEBUG_TAG, "HEY HEY HEY");
+            }
+        }else {
+            callbackManager.onActivityResult(requestCode, resultCode, data);
+        }
     }
 
     protected void checkExistingUserAndCreateDialog(String email) {

@@ -1,11 +1,14 @@
 package com.client.shourya.almond;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import androidx.annotation.Nullable;
 import android.text.TextUtils;
@@ -22,6 +25,8 @@ import com.google.firebase.database.DatabaseReference;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.client.shourya.almond.BaseActivity.GALLERY_REQUEST_CODE;
+
 /*
  * Created by shourya on 20/6/17.
  */
@@ -37,6 +42,7 @@ public class NewBroadCastDialog extends DialogFragment{
     public View inf2;
     DatabaseReference userPosts, allPosts;
     private String currentCircle;
+    private Uri selectedImage;
     public static final int CITY_INDEX = 69;
     public static final int COUNTRY_INDEX = 420;
 
@@ -63,7 +69,7 @@ public class NewBroadCastDialog extends DialogFragment{
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                pushBroadCast();
+                onPush();
             }
         });
         builder.setView(inf2);
@@ -120,16 +126,36 @@ public class NewBroadCastDialog extends DialogFragment{
         return reference;
     }
 
-    private void pushBroadCast() {
+    private void onPush() {
         //final String title = fTitle.getText().toString();
         final String body = fBody.getText().toString();
-
         // Body is required
-        if (TextUtils.isEmpty(body)) {
+        if (TextUtils.isEmpty(body) && selectedImage == null) {
             fBody.setError(REQUIRED);
             return;
         }
 
+        if(selectedImage != null) {
+            BaseActivity.imageUploader.setUploadTask(new ImageUploader.UploaderTask() {
+                @Override
+                public void onUploadComplete(String downloadUrl) {
+                    pushBroadcast(body, downloadUrl);
+                }
+
+                @Override
+                public void onFailed() {
+                    Toast.makeText(getActivity(), "Failed to upload image. Please try again soon", Toast.LENGTH_SHORT).show();
+                    dismiss();
+                }
+            });
+            BaseActivity.imageUploader.uploadImage(selectedImage);
+        }
+        else{
+            pushBroadcast(body, null);
+        }
+    }
+
+    private void pushBroadcast(String message, String imageUrl) {
         // Disable button so there are no multi-posts
         setEditingEnabled(false);
         Toast.makeText(getActivity().getApplicationContext(), "Posting...", Toast.LENGTH_SHORT).show();
@@ -147,7 +173,8 @@ public class NewBroadCastDialog extends DialogFragment{
         allPosts = BaseActivity.mDatabase.getReference(bReference);
         String key = allPosts.push().getKey();
 
-        BroadCast new_bc = new BroadCast(params.get("userID"), BaseActivity.mUser.getDisplayName(), currentCircle, body, BaseActivity.mUser.getImgUrl());
+        BroadCast new_bc = new BroadCast(params.get("userID"), BaseActivity.mUser.getDisplayName(),
+                currentCircle, message, BaseActivity.mUser.getImgUrl(), imageUrl);
         Map<String, Object> postValues = new_bc.toMap();
 
         Map<String, Object> childUpdates = new HashMap<>();
@@ -159,6 +186,18 @@ public class NewBroadCastDialog extends DialogFragment{
         dismiss();
     }
 
+    private void pickImage() {
+        //Create an Intent with action as ACTION_PICK
+        Intent intent=new Intent(Intent.ACTION_PICK);
+        // Sets the type as image/*. This ensures only components of type image are selected
+        intent.setType("image/*");
+        //We pass an extra array with the accepted mime types. This will ensure only components with these MIME types as targeted.
+        String[] mimeTypes = {"image/jpeg", "image/png"};
+        intent.putExtra(Intent.EXTRA_MIME_TYPES,mimeTypes);
+        // Launching the Intent
+        startActivityForResult(intent,GALLERY_REQUEST_CODE);
+    }
+
     private void setEditingEnabled(boolean enabled) {
         //fTitle.setEnabled(enabled);
         fBody.setEnabled(enabled);
@@ -167,5 +206,13 @@ public class NewBroadCastDialog extends DialogFragment{
         } else {
             submit.setVisibility(View.GONE);
         }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(resultCode == Activity.RESULT_OK && requestCode == GALLERY_REQUEST_CODE) {
+            this.selectedImage = data.getData();
+        }
+        else super.onActivityResult(requestCode, resultCode, data);
     }
 }
