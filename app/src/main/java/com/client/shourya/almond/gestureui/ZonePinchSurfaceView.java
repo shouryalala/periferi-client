@@ -8,7 +8,7 @@ import android.graphics.PixelFormat;
 import android.graphics.PointF;
 import android.graphics.PorterDuff;
 import android.os.Vibrator;
-import android.support.v4.content.ContextCompat;
+import androidx.core.content.ContextCompat;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.SurfaceHolder;

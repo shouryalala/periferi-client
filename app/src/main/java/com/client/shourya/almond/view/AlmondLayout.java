@@ -2,8 +2,8 @@ package com.client.shourya.almond.view;
 
 import android.content.Context;
 import android.graphics.PointF;
-import android.support.design.widget.CoordinatorLayout;
-import android.support.v4.view.MotionEventCompat;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.view.MotionEventCompat;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;

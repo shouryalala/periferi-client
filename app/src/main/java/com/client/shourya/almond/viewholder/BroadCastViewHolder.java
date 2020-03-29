@@ -4,7 +4,7 @@ package com.client.shourya.almond.viewholder;
  * Created by shourya on 20/6/17.
  */
 
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;

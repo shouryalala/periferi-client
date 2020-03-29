@@ -5,8 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.provider.ContactsContract;
-import android.support.v4.app.Fragment;
+
+import androidx.fragment.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,7 +33,6 @@ import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import org.json.JSONException;
@@ -42,12 +41,9 @@ import org.json.JSONObject;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static com.client.shourya.almond.BaseActivity.mDatabase;
-import static com.client.shourya.almond.BaseActivity.substituteString;
 
 /*
  * Created by shourya on 22/5/17.
