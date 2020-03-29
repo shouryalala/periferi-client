@@ -203,6 +203,7 @@ public class BroadCastFragment extends Fragment{
             }
         };
         mRecycler.setAdapter(mAdapter);
+        mAdapter.startListening();
         if(mAdapter == null)pd.dismiss();
 
         //Log.d(DEBUG_TAG, "Outer flag: " + noPostFlag);

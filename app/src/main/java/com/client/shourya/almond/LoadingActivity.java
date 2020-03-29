@@ -121,7 +121,8 @@ public class LoadingActivity extends BaseActivity implements GPSLocator.location
         */
         currCircle = CITY_INDEX;
 
-        if(!preferences.getString("id",UNAVAILABLE).equals(UNAVAILABLE)) {
+        //if(!preferences.getString("id",UNAVAILABLE).equals(UNAVAILABLE)) {
+        if(preferences.getBoolean("isOnboarded", false)){
             //fetchLocation
             //refreshes location and places it in a callback
             locationDetails = new CurrentLocationDetails();
@@ -142,6 +143,12 @@ public class LoadingActivity extends BaseActivity implements GPSLocator.location
                     preferences.getString("dob", UNAVAILABLE),
                     preferences.getString("gender", UNAVAILABLE),
                     preferences.getString("profileUrl", UNAVAILABLE));
+
+            //HARDCODE
+            if(mUser.mUserId == UNAVAILABLE){
+                mUser.mUserId = "cgookfOrIGd9sKb2ijple8mMVCo1";
+                mUser.mDisplayName = "Shourya";
+            }
 
             //Add user to list of online users
             //userOnline();

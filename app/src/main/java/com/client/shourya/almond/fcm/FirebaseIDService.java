@@ -4,12 +4,17 @@ package com.client.shourya.almond.fcm;
  * Created by shourya on 20/6/17.
  */
 
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.client.shourya.almond.BaseActivity;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessagingService;
+import com.google.firebase.storage.FirebaseStorage;
 
 public class FirebaseIDService extends FirebaseMessagingService {
     private static final String DEBUG_TAG = "AlmondLog:: " + FirebaseIDService.class.getSimpleName();
@@ -40,6 +45,11 @@ public class FirebaseIDService extends FirebaseMessagingService {
      */
     private void sendRegistrationToServer(String token) {
         // Add custom implementation, as needed.
+        SharedPreferences preferences = preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString("token", token);
+        editor.putBoolean("isPushed", false);
+        editor.apply();
     }
 }
 

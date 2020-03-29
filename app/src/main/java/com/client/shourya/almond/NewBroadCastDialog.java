@@ -69,6 +69,7 @@ public class NewBroadCastDialog extends DialogFragment{
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                setEditingEnabled(false);
                 onPush();
             }
         });
@@ -132,6 +133,7 @@ public class NewBroadCastDialog extends DialogFragment{
         // Body is required
         if (TextUtils.isEmpty(body) && selectedImage == null) {
             fBody.setError(REQUIRED);
+            setEditingEnabled(true);
             return;
         }
 
@@ -157,7 +159,6 @@ public class NewBroadCastDialog extends DialogFragment{
 
     private void pushBroadcast(String message, String imageUrl) {
         // Disable button so there are no multi-posts
-        setEditingEnabled(false);
         Toast.makeText(getActivity().getApplicationContext(), "Posting...", Toast.LENGTH_SHORT).show();
 
         //for all broadcasts

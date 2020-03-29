@@ -3,12 +3,15 @@ package com.client.shourya.almond.login;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 
 import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
+
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,6 +23,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.client.shourya.almond.BaseActivity;
+import com.client.shourya.almond.LoadingActivity;
 import com.client.shourya.almond.R;
 import com.client.shourya.almond.data.User;
 import com.facebook.AccessToken;
@@ -58,7 +62,7 @@ public class LoginFragmentOne extends Fragment {
     //Facebook
     LoginButton loginButton;
     Button emailLoginButton;
-    EditText emailEditText;
+  //  EditText emailEditText;
     ProgressBar progressBar;
     CallbackManager callbackManager;
     public static FragmentOneListener mListener;
@@ -200,7 +204,7 @@ public class LoginFragmentOne extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstances) {
         super.onViewCreated(view, savedInstances);
-        emailEditText = (EditText) view.findViewById(R.id.emailEditText);
+    //    emailEditText = (EditText) view.findViewById(R.id.emailEditText);
         loginButton = (LoginButton) view.findViewById(R.id.button_facebook);
         emailLoginButton = (Button) view.findViewById(R.id.button_email_login);
         welcome_text = (TextView) view.findViewById(R.id.welcome_text_fb2);
@@ -213,12 +217,12 @@ public class LoginFragmentOne extends Fragment {
         loginButton.setFragment(this);
         loginButton.registerCallback(callbackManager, callback);
 
-        emailEditText.setOnClickListener(new View.OnClickListener() {
+  /*      emailEditText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 emailEditText.setError(null);
             }
-        });
+        });*/
 
         //email login/signup
         emailLoginButton.setOnClickListener(new View.OnClickListener() {
@@ -230,7 +234,7 @@ public class LoginFragmentOne extends Fragment {
                 }
                 progressBar.setVisibility(View.VISIBLE);
                 checkExistingUserAndCreateDialog(emailEditText.getText().toString());*/
-                List<AuthUI.IdpConfig> providers = Arrays.asList(
+                /*List<AuthUI.IdpConfig> providers = Arrays.asList(
                         new AuthUI.IdpConfig.EmailBuilder().build(),
                         new AuthUI.IdpConfig.PhoneBuilder().build(),
                         new AuthUI.IdpConfig.GoogleBuilder().build()
@@ -246,7 +250,14 @@ public class LoginFragmentOne extends Fragment {
                                 .setLogo(R.drawable.wecome_periferi_logo)
                                 .setTheme(R.style.SignInTheme)
                                 .build(),
-                        123);
+                        123);*/
+                SharedPreferences preferences = preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+                SharedPreferences.Editor editor = preferences.edit();
+                editor.putBoolean("isOnboarded", true);
+                editor.apply();
+                Intent intent = new Intent(getContext(), LoadingActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
             }
         });
     }

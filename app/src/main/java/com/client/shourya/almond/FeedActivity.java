@@ -77,7 +77,7 @@ public class FeedActivity extends BaseActivity implements ChatListFragment.Start
         //setup toolbar
         setupAppBar();
         mContext = getApplicationContext();
-        imageUploader = new ImageUploader(mFireUser.getUid(), getContentResolver());
+        imageUploader = new ImageUploader(mUser.getUserId(), getContentResolver());
 
         AlmondLayout mainView = (AlmondLayout)findViewById(R.id.feed_layout);
         fab = (FloatingActionButton) findViewById(R.id.fab);
