@@ -2,12 +2,13 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_above="@id/indicatorFooter"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:layout_margin="10dp">
 
     <ImageView
         android:id="@+id/welcome_logo_periferi"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="70dp"
         android:layout_marginRight="15dp"
         android:layout_marginBottom="5dp"
         android:layout_marginLeft="15dp"
@@ -40,10 +41,25 @@
         android:layout_alignParentEnd="true"
         android:layout_centerHorizontal="true"
         android:layout_marginStart="20dp"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="50dp"
         android:layout_marginEnd="20dp"
         android:ems="10"
         android:inputType="textEmailAddress" />
+
+    <ProgressBar
+        android:id="@+id/progressBar3"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/emailEditText"
+        android:visibility="gone"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="-17dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="10dp"
+        android:indeterminate="true" />
 
 
     <Button
@@ -80,6 +96,5 @@
         android:typeface="monospace"
         facebook:com_facebook_login_text="Signin with facebook"
         facebook:com_facebook_logout_text="Signin with facebook" />
-
 
 </RelativeLayout>

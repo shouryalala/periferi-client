@@ -28,7 +28,7 @@ public class EmailLoginDialog extends DialogFragment {
     EmailLoginListener emailLoginListener;
 
     interface EmailLoginListener{
-        public void onSignInRequest(String email, String password);
+        public void onSignInRequest(String email, String password, String name);
         public void onSignUpRequest(String userId, String email, String password, String name);
     }
 
@@ -88,7 +88,13 @@ public class EmailLoginDialog extends DialogFragment {
                 return;
             }
             mProgressBar.setVisibility(View.VISIBLE);
-            emailLoginListener.onSignInRequest(etEmail.getText().toString(), etPassword.getText().toString());
+            String uName = null;
+            try{
+                uName = getArguments().getString("userName");
+            }catch (NullPointerException e) {
+                Log.e(DEBUG_TAG, "Couldnt fetch user name from bundle. Defaulting to null. Needs to be fetched from server");
+            }
+            emailLoginListener.onSignInRequest(etEmail.getText().toString(), etPassword.getText().toString(), uName);
         }else {
             boolean flag = true;
             if (!validateEmail(etEmail.getText().toString())) {

@@ -200,28 +200,68 @@ public class LoginActivity extends BaseActivity implements
     }
 
     @Override
-    public void onSignInRequest(String email, String password) {
+    public void onSignInRequest(String email, String password, String name) {
+        tFname = name;
+        tEmail = email;
+        progressDialog.setMessage("Signing in..");
+        progressDialog.show();
         mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if(task.isSuccessful()) {
+                    //no need to pull existing data from server. Have all we need
+                    SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                    SharedPreferences.Editor editor = preferences.edit();
+                    editor.putString("id", mAuth.getCurrentUser().getUid());
+                    editor.putString("first_name", tFname);
+                    editor.putString("email", tEmail);
+                    editor.putBoolean("rookieFeed", true);
+                    editor.putBoolean("rookieMaps", true);
+                    editor.apply();
 
+                    progressDialog.dismiss();
+                    Intent i = new Intent(LoginActivity.this, LoadingActivity.class);
+                    startActivity(i);
                 }else{
-
+                    Log.e(DEBUG_TAG, "Sign In failed. Now what? Tell the user and make them retry?");
+                    //TODO
                 }
             }
         });
     }
 
     @Override
-    public void onSignUpRequest(String userId, String email, String password, String name) {
+    public void onSignUpRequest(final String userId, final String email, final String password, final String name) {
+        fUid = mAuth.getCurrentUser().getUid();
+        tFname = name;
+        tEmail = email;
+        progressDialog.setMessage("Setting up..");
+        progressDialog.show();
         mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if(task.isSuccessful()) {
+                    SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                    SharedPreferences.Editor editor = preferences.edit();
+                    editor.putString("id", fUid);
+                    editor.putString("first_name", tFname);
+                    editor.putString("email", tEmail);
+                    editor.putBoolean("rookieFeed", true);
+                    editor.putBoolean("rookieMaps", true);
+                    editor.apply();
 
+                    final User aUser = new User(fUid, tFname, null, null, tEmail, null, null, null);
+                    Map<String, String> params = new HashMap<String, String>();
+                    Log.d(DEBUG_TAG, "fireID: " + fUid);
+                    params.put("userID", fUid);
+                    final String reference = substituteString(getResources().getString(R.string.user_check), params);
+                    mDatabase.getReference(reference).setValue(aUser);
+
+                    progressDialog.dismiss();
+                    Intent i = new Intent(LoginActivity.this, LoadingActivity.class);
+                    startActivity(i);
                 }else{
-
+                    Log.e(DEBUG_TAG, "Sign up Authentication failed. Nowhere to go. Nowhere to hide");
                 }
             }
         });

@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -57,6 +58,7 @@ public class LoginFragmentOne extends Fragment {
     LoginButton loginButton;
     Button emailLoginButton;
     EditText emailEditText;
+    ProgressBar progressBar;
     CallbackManager callbackManager;
     public static FragmentOneListener mListener;
     private boolean fb_email, fb_dob;
@@ -201,12 +203,21 @@ public class LoginFragmentOne extends Fragment {
         loginButton = (LoginButton) view.findViewById(R.id.button_facebook);
         emailLoginButton = (Button) view.findViewById(R.id.button_email_login);
         welcome_text = (TextView) view.findViewById(R.id.welcome_text_fb2);
+        progressBar = (ProgressBar) view.findViewById(R.id.progressBar3);
+
         List<String> permissions = Arrays.asList("email","public_profile","user_birthday");
 
         //fb button
         loginButton.setReadPermissions(permissions);
         loginButton.setFragment(this);
         loginButton.registerCallback(callbackManager, callback);
+
+        emailEditText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                emailEditText.setError(null);
+            }
+        });
 
         //email login/signup
         emailLoginButton.setOnClickListener(new View.OnClickListener() {
@@ -216,6 +227,7 @@ public class LoginFragmentOne extends Fragment {
                     emailEditText.setError("Please enter a valid email address");
                     return;
                 }
+                progressBar.setVisibility(View.VISIBLE);
                 checkExistingUserAndCreateDialog(emailEditText.getText().toString());
             }
         });
@@ -233,13 +245,16 @@ public class LoginFragmentOne extends Fragment {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Bundle b = new Bundle();
                 if(dataSnapshot.exists()) {
+                    Log.d(DEBUG_TAG, "Found user. Setting up dialog with password field.");
                     User user = (User)dataSnapshot.getValue(User.class);
                     b.putBoolean("isExistingUser", true);
                     b.putString("userName", user.getFname());
                 }
                 else{
+                    Log.d(DEBUG_TAG, "Didnt find user. Setting up dialog with sign up fields.");
                     b.putBoolean("isExistingUser", false);
                 }
+                progressBar.setVisibility(View.GONE);
                 EmailLoginDialog emailLoginDialog = new EmailLoginDialog();
                 emailLoginDialog.setArguments(b);
                 emailLoginDialog.show(getFragmentManager(), "emailLoginDialog");
