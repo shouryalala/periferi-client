@@ -1,7 +1,7 @@
 # Periferi
-Client app
+Client app - Tweaked to address the issues of today
 
-Short Description: A social network built around you.
+Short Description: A social network driven by the community, that works around you.
 
 Description:
 Periferi experiments with a new approach to networking.
