@@ -16,5 +16,7 @@ Features to be added in coming updates
 * User Profiles
 * User scores
 
+![Walthrough A](https://github.com/shouryalala/periferi-client/blob/master/walkthrough-a.gif)
+
 To provide any suggestions, point out issues and bug fixes, or to say hi: mail@shouryalala.com
 
