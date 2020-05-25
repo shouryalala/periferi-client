@@ -10,20 +10,19 @@ Periferi experiments with a new approach to networking.
 <br />
 
 > A Periferi could be any region around you. It could be your neighbourhood, your college, a school etc.
-If you create a request for a new Periferi, and a certain number of active users present in that area approve your request, that Periferi gets created and thus a community is formed!
+If you create a request for a new Periferi, and a certain number of active users present in that area approve your request, that Periferi gets created and thus a community is formed!<br />
 
 
-<br />
 ![Walthrough C](https://github.com/shouryalala/periferi-client/blob/master/walkthrough-c.gif) 
-
 <br />
+
 > Based on your location, you can read, interact and socialize with people in that Periferi. Choosing a Periferi you want to interact with  is simple:
 >  - Pinch in to enter a smaller Periferi
->  - Pinch out to check out posts from a larger Periferi around you.
+>  - Pinch out to check out posts from a larger Periferi around you.<br />
 
-<br />
+
+
 ![Walthrough B](https://github.com/shouryalala/periferi-client/blob/master/walkthrough-b.gif)
-
 <br />
 > Add posts about local attractions, delicious food joints or new happenings nearby. Learn and strengthen communities, one Periferi at a time ⭐️
 
