@@ -1,5 +1,6 @@
-# <img src="https://github.com/shouryalala/periferi-client/blob/master/app/src/main/res/drawable/periferi_loader.png" width="128" height="128" title="Periferi"> Periferi
-Client app - Tweaked to address the issues of today
+# <img src="https://github.com/shouryalala/periferi-client/blob/master/app/src/main/res/drawable/periferi_loader.png" width="50" height="50" title="Periferi">  Periferi
+
+[![Version badge](https://img.shields.io/badge/Version-4.2-green.svg)](https://shields.io/) [![Generic badge](https://img.shields.io/badge/Active%3F-no-red.svg)](https://shields.io/) 
 
 Short Description: A social network driven by the community, that works around you.
 
