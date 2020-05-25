@@ -1,10 +1,9 @@
-# <img src="https://github.com/shouryalala/periferi-client/blob/master/app/src/main/res/drawable/periferi_loader.png" width="50" height="50" title="Periferi">  Periferi
+# <img src="https://github.com/shouryalala/periferi-client/blob/master/app/src/main/res/drawable/periferi_loader.png" width="50" height="50">  Periferi
 
 [![Version badge](https://img.shields.io/badge/Version-4.2-green.svg)](https://shields.io/) [![Generic badge](https://img.shields.io/badge/Active%3F-no-red.svg)](https://shields.io/) 
 
-Short Description: A social network driven by the community, that works around you.
+_A location based social networking platform curated by the community, driven by you_ 💛
 
-Description:
 Periferi experiments with a new approach to networking.
 - A user can create a Periferi request of any area around them.
 - If a certain number of people approve, the Periferi gets created, and thus a community is formed. 
