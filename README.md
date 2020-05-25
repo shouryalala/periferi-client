@@ -1,4 +1,4 @@
-# Periferi
+# <img src="https://github.com/shouryalala/periferi-client/blob/master/app/src/main/res/drawable/periferi_loader.png" width="128" height="128" title="Periferi"> Periferi
 Client app - Tweaked to address the issues of today
 
 Short Description: A social network driven by the community, that works around you.
